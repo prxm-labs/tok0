@@ -1,0 +1,72 @@
+# Build
+/target
+apps/cli/target/
+
+# OS
+.DS_Store
+Thumbs.db
+
+refs/
+
+# Environment & Secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+credentials.json
+secrets.json
+*.secret
+
+# Test artifacts
+*.cast.bak
+
+# Benchmark results
+scripts/benchmark/
+benchmark-report.md
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+claudedocs
+.omc
+
+# Vitals provenance data
+.vitals/
+.worktrees/
+
+plan/
+/docs/
+/.claude/
+/.superpowers/
+.supermemory/
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target
+
+# JS workspace
+node_modules/
+.pnpm-store/
+*.tsbuildinfo
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+.dev.vars.*
+
+# Astro
+.astro/
+dist/
+
+# Vitest
+coverage/
+.vitest-cache/
+
+# Playwright
+test-results/
+playwright-report/
