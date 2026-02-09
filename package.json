@@ -1,0 +1,21 @@
+{
+  "name": "tok0-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "tok0 monorepo — CLI (apps/cli), API (apps/api), website (apps/website)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3"
+  }
+}
