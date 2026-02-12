@@ -1,0 +1,957 @@
+use anyhow::{Context, Result};
+use clap::{CommandFactory, Parser, Subcommand};
+use std::sync::OnceLock;
+
+mod bridge;
+mod compressors;
+mod engine;
+mod extensions;
+mod insights;
+mod scanner;
+
+use engine::shell;
+
+static EXTENSION_RULES: OnceLock<Vec<engine::rules::FilterConfig>> = OnceLock::new();
+
+/// Ensures the "skipped N project rules (untrusted)" stderr hint prints
+/// at most once per process, even if something re-enters the rule-loading
+/// path. Each tok0 invocation is a fresh process, so this is effectively
+/// per-invocation.
+static UNTRUSTED_HINT_SHOWN: OnceLock<()> = OnceLock::new();
+
+fn get_extension_rules() -> &'static [engine::rules::FilterConfig] {
+    EXTENSION_RULES.get_or_init(|| {
+        // Priority (highest → lowest):
+        //   1. Project-local rules (.tok0/filters/*.toml) — requires trust
+        //   2. User global rules (~/.config/tok0/filters/)
+        //   3. Installed extension rules
+        //   4. Built-in embedded rules
+        // Higher-priority rules with the same name shadow lower-priority ones.
+
+        // 1. Project-local rules (trust-gated)
+        let project_rules = load_project_local_rules();
+
+        // 2-3. Extension rules (user-installed, always loaded)
+        let extension_rules: Vec<engine::rules::FilterConfig> =
+            extensions::loader::load_extension_rules()
+                .unwrap_or_default()
+                .into_iter()
+                .map(|r| r.filter)
+                .collect();
+
+        // 4. Built-in rules
+        let builtin = engine::builtin_rules::builtin_rules();
+
+        // Dedup: higher-priority rules shadow lower-priority by name
+        let mut seen = std::collections::HashSet::new();
+        let mut merged =
+            Vec::with_capacity(project_rules.len() + extension_rules.len() + builtin.len());
+
+        for rule in project_rules {
+            seen.insert(rule.name.clone());
+            merged.push(rule);
+        }
+        for rule in extension_rules {
+            if !seen.contains(&rule.name) {
+                seen.insert(rule.name.clone());
+                merged.push(rule);
+            }
+        }
+        for rule in builtin {
+            if !seen.contains(&rule.name) {
+                seen.insert(rule.name.clone());
+                merged.push(rule.clone());
+            }
+        }
+
+        merged
+    })
+}
+
+/// Detect the user's shell from the $SHELL env value. Pure + testable.
+/// Returns None if unset or unrecognized.
+fn detect_shell(shell_env: Option<&str>) -> Option<&'static str> {
+    let path = shell_env?;
+    let name = path.rsplit('/').next().unwrap_or(path);
+    match name {
+        "bash" => Some("bash"),
+        "zsh" => Some("zsh"),
+        "fish" => Some("fish"),
+        _ => None,
+    }
+}
+
+/// Completion install path for a given shell, under the user's home.
+/// Pure + testable. Returns None for unrecognized shells.
+fn completions_install_path(shell: &str, home: &std::path::Path) -> Option<std::path::PathBuf> {
+    match shell {
+        "bash" => Some(
+            home.join(".local")
+                .join("share")
+                .join("bash-completion")
+                .join("completions")
+                .join("tok0"),
+        ),
+        "zsh" => Some(home.join(".zsh").join("completions").join("_tok0")),
+        "fish" => Some(
+            home.join(".config")
+                .join("fish")
+                .join("completions")
+                .join("tok0.fish"),
+        ),
+        _ => None,
+    }
+}
+
+/// Print the "install shell completions" hint for the detected shell.
+/// Pure + testable via a Writer injection.
+fn print_completions_hint<W: std::io::Write>(
+    writer: &mut W,
+    shell_env: Option<&str>,
+    home: &std::path::Path,
+) -> std::io::Result<()> {
+    let Some(shell) = detect_shell(shell_env) else {
+        return Ok(());
+    };
+    let Some(target) = completions_install_path(shell, home) else {
+        return Ok(());
+    };
+    writeln!(writer)?;
+    writeln!(writer, "Shell completions ({}):", shell)?;
+    writeln!(
+        writer,
+        "  Run: tok0 completions {} > {}",
+        shell,
+        target.display()
+    )?;
+    Ok(())
+}
+
+/// Load project-local rules from `.tok0/filters/`, gated by trust.
+/// Returns empty vec if project is untrusted or no rules exist.
+fn load_project_local_rules() -> Vec<engine::rules::FilterConfig> {
+    let project_dir = match std::env::current_dir() {
+        Ok(d) => d,
+        Err(_) => return vec![],
+    };
+
+    let filters_dir = project_dir.join(".tok0").join("filters");
+    if !filters_dir.is_dir() {
+        return vec![];
+    }
+
+    // Trust gate: skip untrusted projects
+    match bridge::trust::is_trusted(&project_dir) {
+        Ok(true) => {}
+        Ok(false) => {
+            // Count rules that would be loaded
+            let count = std::fs::read_dir(&filters_dir)
+                .map(|entries| {
+                    entries
+                        .filter_map(|e| e.ok())
+                        .filter(|e| {
+                            e.path().extension().and_then(|ext| ext.to_str()) == Some("toml")
+                        })
+                        .count()
+                })
+                .unwrap_or(0);
+            if count > 0 {
+                UNTRUSTED_HINT_SHOWN.get_or_init(|| {
+                    eprintln!(
+                        "tok0: skipped {} project rule(s) (untrusted \u{2014} run `tok0 trust`)",
+                        count
+                    );
+                });
+            }
+            return vec![];
+        }
+        Err(_) => return vec![],
+    }
+
+    engine::rules::load_rules_from_dir(&filters_dir, None)
+        .unwrap_or_default()
+        .into_iter()
+        .map(|r| r.filter)
+        .collect()
+}
+
+#[derive(Parser)]
+#[command(
+    name = "tok0",
+    version,
+    about = "Token-optimized CLI proxy for AI tools"
+)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+
+    /// Increase verbosity (-v, -vv, -vvv)
+    #[arg(short, long, action = clap::ArgAction::Count, global = true)]
+    verbose: u8,
+
+    /// Ultra-compact output mode
+    #[arg(short, long, global = true)]
+    ultra_compact: bool,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Token savings analytics
+    Stats {
+        #[arg(long)]
+        graph: bool,
+        #[arg(long)]
+        history: bool,
+        #[arg(long)]
+        daily: bool,
+        #[arg(long)]
+        format: Option<String>,
+    },
+    /// Git operations
+    Git {
+        #[arg(trailing_var_arg = true)]
+        command: Vec<String>,
+    },
+    /// Smart file reading
+    Read {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Directory listing
+    Ls {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Search files
+    Grep {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Find files
+    Find {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// File diff
+    Diff {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Smart code summary
+    Smart {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Proxy passthrough (no filtering, tracking only)
+    Proxy {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Show tok0 status: version, hooks, savings, trust, extensions
+    Status,
+    /// Diagnose configuration + hook-health problems
+    Doctor,
+    /// Inspect and test compression rules
+    Rule {
+        #[command(subcommand)]
+        command: RuleCommands,
+    },
+    /// Initialize hooks for AI tools
+    Init {
+        #[arg(short, long)]
+        global: bool,
+        #[arg(long)]
+        uninstall: bool,
+        #[arg(long)]
+        show: bool,
+        /// Run the guided onboarding wizard
+        #[arg(long)]
+        wizard: bool,
+    },
+    /// Update tok0 to the latest version (use --check to only check)
+    Update {
+        /// Only check whether an update is available; do not install it
+        #[arg(long)]
+        check: bool,
+    },
+    /// Discover missed savings opportunities
+    Discover {
+        #[arg(long)]
+        all: bool,
+        #[arg(long)]
+        since: Option<u32>,
+    },
+    /// Rewrite command (used by hooks)
+    Rewrite {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Profile compression pipeline timing
+    Profile {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Manage extension rule packs
+    Ext {
+        #[command(subcommand)]
+        command: ExtCommands,
+    },
+    /// Control anonymous telemetry (on/off/status)
+    #[cfg(feature = "cloud")]
+    Telemetry {
+        #[command(subcommand)]
+        command: TelemetryCommands,
+    },
+    /// Authenticate with tok0 cloud for team analytics
+    #[cfg(feature = "cloud")]
+    Auth {
+        #[command(subcommand)]
+        command: AuthCommands,
+    },
+    /// View team dashboard (requires auth)
+    #[cfg(feature = "cloud")]
+    Cloud {
+        #[command(subcommand)]
+        command: CloudCommands,
+    },
+    /// Generate shell completions
+    Completions {
+        /// Shell to generate completions for
+        #[arg(value_enum)]
+        shell: clap_complete::Shell,
+    },
+    /// Trust a project directory for local filter rules
+    Trust,
+    /// Remove trust from a project directory
+    Untrust,
+    /// Verify hook file integrity
+    Verify {
+        /// Path to the hook file
+        path: String,
+        /// Expected SHA-256 hash
+        hash: String,
+    },
+    /// Vite (dev / build) — JS/TS bundler & dev server
+    Vite {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Next.js CLI (dev / build / start)
+    Next {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// Prisma CLI (migrate / generate / validate / studio)
+    Prisma {
+        #[arg(trailing_var_arg = true)]
+        args: Vec<String>,
+    },
+    /// JSON pretty-print + array/object truncation (reads stdin)
+    Json,
+}
+
+#[cfg(feature = "cloud")]
+#[derive(Subcommand)]
+enum TelemetryCommands {
+    /// Enable anonymous telemetry
+    On,
+    /// Disable anonymous telemetry
+    Off,
+    /// Show current telemetry status
+    Status,
+}
+
+#[derive(Subcommand)]
+enum RuleCommands {
+    /// List all active rules (builtin + extensions + project-local)
+    List,
+    /// Show full config for a single rule by name
+    Show {
+        /// Rule name (matches the `name` field in the [filter] section)
+        name: String,
+    },
+    /// Apply a rule to stdin and print the before/after savings
+    Test {
+        /// Rule name to exercise
+        name: String,
+    },
+}
+
+#[cfg(feature = "cloud")]
+#[derive(Subcommand)]
+enum AuthCommands {
+    /// Login with API token
+    Login {
+        /// API token (or set TOK0_API_KEY env var)
+        #[arg(long, env = "TOK0_API_KEY")]
+        token: String,
+        /// Cloud API URL
+        #[arg(long, default_value = "https://api.tok0.dev")]
+        api_url: String,
+    },
+    /// Show authentication status
+    Status,
+    /// Remove stored credentials and disable cloud reporting
+    Logout,
+}
+
+#[cfg(feature = "cloud")]
+#[derive(Subcommand)]
+enum CloudCommands {
+    /// Show team savings summary
+    Team,
+}
+
+#[derive(Subcommand)]
+enum ExtCommands {
+    /// Install extension from a git URL
+    Install {
+        url: String,
+        #[arg(long)]
+        name: Option<String>,
+        /// Pin the install to a specific git commit SHA (7-40 hex chars).
+        /// Without this the install tracks the remote default-branch tip
+        /// and updates silently on every clone — pinning gives you
+        /// reproducible, auditable extension content.
+        #[arg(long)]
+        commit: Option<String>,
+    },
+    /// List installed extensions
+    List,
+    /// Remove an installed extension
+    Remove { name: String },
+}
+
+fn main() {
+    let cli = Cli::parse();
+    if let Err(e) = run(cli) {
+        eprintln!("tok0: {:#}", e);
+        std::process::exit(1);
+    }
+}
+
+fn run(cli: Cli) -> Result<()> {
+    match cli.command {
+        Commands::Git { command } => run_proxy("git", &command),
+        Commands::Ls { args } => run_proxy("ls", &args),
+        Commands::Read { args } => run_proxy("cat", &args),
+        Commands::Grep { args } => run_proxy("grep", &args),
+        Commands::Find { args } => run_proxy("find", &args),
+        Commands::Diff { args } => run_proxy("diff", &args),
+        Commands::Smart { args } => run_proxy("smart", &args),
+        Commands::Vite { args } => run_proxy("vite", &args),
+        Commands::Next { args } => run_proxy("next", &args),
+        Commands::Prisma { args } => run_proxy("prisma", &args),
+        Commands::Json => {
+            // JSON reads stdin, filters, writes stdout — no subprocess.
+            use std::io::Read;
+            let mut buf = String::new();
+            std::io::stdin()
+                .read_to_string(&mut buf)
+                .context("Failed to read stdin")?;
+            let filtered = compressors::system::json_cmd::filter_json(&buf).unwrap_or_else(|e| {
+                eprintln!("tok0: json filter warning: {}", e);
+                buf.clone()
+            });
+            print!("{}", filtered);
+            Ok(())
+        }
+        Commands::Proxy { args } => run_raw_proxy(&args),
+        Commands::Stats {
+            graph,
+            history,
+            format,
+            ..
+        } => {
+            let fmt = format.as_deref().unwrap_or("text");
+            run_meta(|| insights::stats::run(graph, history, fmt))
+        }
+        Commands::Status => run_meta(insights::status::run),
+        Commands::Doctor => run_meta(insights::doctor::run),
+        Commands::Rule { command } => match command {
+            RuleCommands::List => run_meta(insights::rules_cli::run_list),
+            RuleCommands::Show { name } => run_meta(|| insights::rules_cli::run_show(&name)),
+            RuleCommands::Test { name } => run_meta(|| insights::rules_cli::run_test(&name)),
+        },
+        Commands::Init {
+            global,
+            uninstall,
+            show,
+            wizard,
+        } => {
+            if wizard {
+                let _ = bridge::wizard::run()?;
+                return Ok(());
+            }
+            if show {
+                let tools = bridge::setup::detect_tools();
+                if tools.is_empty() {
+                    println!("No supported AI tools detected.");
+                } else {
+                    println!("Detected AI tools:");
+                    for tool in &tools {
+                        println!("  {:?}", tool);
+                    }
+                }
+                return Ok(());
+            }
+
+            let tools = bridge::setup::detect_tools();
+            if tools.is_empty() {
+                println!("No supported AI tools detected.");
+                return Ok(());
+            }
+
+            let home = dirs::home_dir().context("Could not determine home directory")?;
+            let cwd = std::env::current_dir().context("Could not determine current directory")?;
+
+            // Per-tool config dir. Only ClaudeCode supports per-project
+            // (non-global) installation today; all other tools always use
+            // their home directory.
+            let dir_for = |tool: &bridge::setup::ToolTarget| -> std::path::PathBuf {
+                if !global && matches!(tool, bridge::setup::ToolTarget::ClaudeCode) {
+                    cwd.join(".claude")
+                } else {
+                    bridge::setup::config_dir_for(tool, &home)
+                }
+            };
+
+            if uninstall {
+                println!("tok0 uninstall:");
+                for tool in &tools {
+                    let config_dir = dir_for(tool);
+                    match bridge::setup::uninstall_hook_at(tool, &config_dir) {
+                        Ok(result) => {
+                            if result.already_installed {
+                                println!(
+                                    "  {:?}: hook removed from {}",
+                                    tool,
+                                    result.path.display()
+                                );
+                            } else {
+                                println!("  {:?}: no hook found (already clean)", tool);
+                            }
+                        }
+                        Err(e) => {
+                            eprintln!("  {:?}: skipped ({})", tool, e);
+                        }
+                    }
+                }
+            } else {
+                println!("tok0 init:");
+                for tool in &tools {
+                    let config_dir = dir_for(tool);
+                    match bridge::setup::install_hook_at(tool, &config_dir) {
+                        Ok(result) => {
+                            if result.already_installed {
+                                println!("  {:?}: already installed", tool);
+                            } else {
+                                println!(
+                                    "  {:?}: hook installed at {}",
+                                    tool,
+                                    result.path.display()
+                                );
+                            }
+                            if let Some(hint) = bridge::setup::post_install_hint(tool) {
+                                println!("    \u{26a0}  {}", hint);
+                                println!("       File: {}", result.path.display());
+                            }
+                        }
+                        Err(e) => {
+                            eprintln!("  {:?}: skipped ({})", tool, e);
+                        }
+                    }
+                }
+                println!();
+                println!("Next: run any command through your AI tool \u{2014} tok0 compresses automatically.");
+                println!("Run `tok0 stats` to see your savings.");
+                // Optional: shell completions hint
+                let shell_env = std::env::var("SHELL").ok();
+                let _ = print_completions_hint(&mut std::io::stdout(), shell_env.as_deref(), &home);
+            }
+            Ok(())
+        }
+        Commands::Update { check } => {
+            if check {
+                let current = env!("CARGO_PKG_VERSION");
+                match engine::updater::check_for_update(current)? {
+                    Some(release) => {
+                        eprintln!(
+                            "tok0: new version {} available. Run `tok0 update` to install.",
+                            release.version
+                        );
+                    }
+                    None => {
+                        eprintln!("tok0: already up to date (v{}).", current);
+                    }
+                }
+                Ok(())
+            } else {
+                engine::updater::run_update()
+            }
+        }
+        Commands::Discover { .. } => run_meta(scanner::opportunity::run),
+        Commands::Rewrite { args } => {
+            let rewritten = bridge::rewriter::rewrite_command(&args);
+            if rewritten.is_empty() {
+                return Ok(());
+            }
+            print!("{}", rewritten);
+            Ok(())
+        }
+        Commands::Profile { args } => {
+            if args.is_empty() {
+                anyhow::bail!("Usage: tok0 profile <command> [args...]");
+            }
+            let cmd = &args[0];
+            let cmd_args: Vec<&str> = args[1..].iter().map(|s| s.as_str()).collect();
+            run_meta(|| insights::profiler::run(cmd, &cmd_args))
+        }
+        Commands::Ext { command } => match command {
+            ExtCommands::Install { url, name, commit } => {
+                let ext_name = name.unwrap_or_else(|| {
+                    url.rsplit('/')
+                        .find(|s| !s.is_empty())
+                        .unwrap_or("unknown")
+                        .trim_end_matches(".git")
+                        .to_string()
+                });
+                extensions::catalog::install_from_url(&url, &ext_name, commit.as_deref())
+            }
+            ExtCommands::List => {
+                let installed = extensions::catalog::list_installed()?;
+                if installed.is_empty() {
+                    println!("No extensions installed.");
+                } else {
+                    for name in &installed {
+                        println!("  {}", name);
+                    }
+                }
+                Ok(())
+            }
+            ExtCommands::Remove { name } => extensions::catalog::remove_extension(&name),
+        },
+        #[cfg(feature = "cloud")]
+        Commands::Telemetry { command } => match command {
+            TelemetryCommands::On => {
+                engine::config::set_telemetry_enabled(&engine::config::config_path(), true)?;
+                println!("Telemetry enabled. Anonymous usage stats will be sent once daily.");
+                Ok(())
+            }
+            TelemetryCommands::Off => {
+                engine::config::set_telemetry_enabled(&engine::config::config_path(), false)?;
+                println!("Telemetry disabled. No data will be sent.");
+                Ok(())
+            }
+            TelemetryCommands::Status => {
+                let config = engine::config::load_config()?;
+                if config.telemetry.enabled {
+                    println!("Telemetry: enabled (anonymous, once daily)");
+                } else {
+                    println!("Telemetry: disabled");
+                }
+                Ok(())
+            }
+        },
+        #[cfg(feature = "cloud")]
+        Commands::Cloud { command } => match command {
+            CloudCommands::Team => {
+                let config = engine::config::load_config()?;
+                // T1.4: API key now lives in the OS keyring. Fall back
+                // to legacy plaintext config.toml for users mid-migration.
+                let api_key = engine::config::get_api_key_from_keyring()
+                    .ok()
+                    .flatten()
+                    .or_else(|| config.cloud.api_key.clone());
+                if !config.cloud.enabled || api_key.is_none() {
+                    anyhow::bail!(
+                        "Not authenticated. Run `tok0 auth login --token <TOKEN>` first."
+                    );
+                }
+                let api_url = config
+                    .cloud
+                    .api_url
+                    .as_deref()
+                    .unwrap_or("https://api.tok0.dev");
+                let stats =
+                    engine::cloud::fetch_team_stats(api_url, api_key.as_deref().unwrap_or(""))?;
+                println!("{}", engine::cloud::format_team_stats(&stats));
+                Ok(())
+            }
+        },
+        Commands::Completions { shell } => {
+            let mut cmd = Cli::command();
+            let bin_name = cmd.get_name().to_string();
+            clap_complete::generate(shell, &mut cmd, bin_name, &mut std::io::stdout());
+            Ok(())
+        }
+        Commands::Trust => {
+            let project_dir =
+                std::env::current_dir().context("Could not determine current directory")?;
+            bridge::trust::trust_project(&project_dir)?;
+            println!("Trusted: {}", project_dir.display());
+            Ok(())
+        }
+        Commands::Untrust => {
+            let project_dir =
+                std::env::current_dir().context("Could not determine current directory")?;
+            bridge::trust::untrust_project(&project_dir)?;
+            println!("Untrusted: {}", project_dir.display());
+            Ok(())
+        }
+        Commands::Verify { path, hash } => {
+            let result = bridge::verify::check_integrity(std::path::Path::new(&path), &hash);
+            match result {
+                bridge::verify::VerifyResult::Ok => {
+                    println!("ok: hook integrity verified");
+                }
+                bridge::verify::VerifyResult::Tampered => {
+                    eprintln!("TAMPERED: hook hash does not match expected value");
+                    std::process::exit(1);
+                }
+                bridge::verify::VerifyResult::Missing => {
+                    eprintln!("MISSING: hook file not found at {}", path);
+                    std::process::exit(1);
+                }
+            }
+            Ok(())
+        }
+        #[cfg(feature = "cloud")]
+        Commands::Auth { command } => match command {
+            AuthCommands::Login { token, api_url } => {
+                eprintln!("tok0: validating token...");
+                engine::cloud::validate_token(&api_url, &token)?;
+                engine::config::set_cloud_credentials(
+                    &engine::config::config_path(),
+                    &token,
+                    &api_url,
+                )?;
+                println!("Authenticated. Cloud team reporting enabled.");
+                Ok(())
+            }
+            AuthCommands::Status => {
+                let config = engine::config::load_config()?;
+                // T1.4: token in keyring beats legacy plaintext.
+                let has_key = engine::config::get_api_key_from_keyring()
+                    .ok()
+                    .flatten()
+                    .is_some()
+                    || config.cloud.api_key.is_some();
+                if config.cloud.enabled && has_key {
+                    let url = config
+                        .cloud
+                        .api_url
+                        .as_deref()
+                        .unwrap_or("https://api.tok0.dev");
+                    println!("Cloud: authenticated");
+                    println!("  API: {}", url);
+                    if let Some(ref team) = config.cloud.team_id {
+                        println!("  Team: {}", team);
+                    }
+                } else {
+                    println!("Cloud: not authenticated");
+                    println!("  Run `tok0 auth login --token <TOKEN>` to enable team reporting.");
+                }
+                Ok(())
+            }
+            AuthCommands::Logout => {
+                engine::config::clear_cloud_credentials(&engine::config::config_path())?;
+                println!("Logged out. Cloud reporting disabled.");
+                Ok(())
+            }
+        },
+    }
+}
+
+/// Run a meta command, then check for updates (rate-limited, silent on failure).
+fn run_meta<F: FnOnce() -> Result<()>>(f: F) -> Result<()> {
+    let result = f();
+    engine::updater::maybe_print_update_hint();
+    result
+}
+
+/// Execute command through compressor pipeline with metering.
+fn run_proxy(cmd: &str, args: &[String]) -> Result<()> {
+    let str_args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+    let config = engine::config::load_config().unwrap_or_default();
+    let timeout = std::time::Duration::from_secs(config.limits.command_timeout_secs);
+    let start = std::time::Instant::now();
+    let output = engine::timeout::execute_with_timeout(cmd, &str_args, timeout)?;
+    let duration_ms = start.elapsed().as_millis() as u64;
+
+    let raw_stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+
+    // Compress stdout through dispatcher; fallback to TOML rules, then raw
+    let ext_rules = get_extension_rules();
+    let compressed =
+        engine::dispatcher::dispatch_with_rules(cmd, &str_args, &raw_stdout, ext_rules)
+            .unwrap_or_else(|| raw_stdout.to_string());
+    let compressed = engine::sanitize::sanitize_output(&compressed);
+
+    // Output first — user sees results immediately
+    if !compressed.is_empty() {
+        print!("{}", compressed);
+    }
+    if !stderr.is_empty() {
+        eprint!("{}", stderr);
+    }
+
+    // Record metrics after output (async — returns immediately; worker
+    // thread handles SQLite write off the critical path).
+    let project_path = std::env::current_dir()
+        .map(|p| p.to_string_lossy().to_string())
+        .unwrap_or_default();
+    let _ = engine::meter::record(cmd, &raw_stdout, &compressed, duration_ms, &project_path);
+
+    // Best-effort telemetry (rate-limited, silent on failure)
+    engine::telemetry::maybe_ping();
+
+    // Drain the meter worker before exit so the last event persists.
+    engine::meter::flush();
+
+    if !output.status.success() {
+        std::process::exit(output.status.code().unwrap_or(1));
+    }
+    Ok(())
+}
+
+/// Raw proxy — execute command with no filtering, tracking only.
+fn run_raw_proxy(args: &[String]) -> Result<()> {
+    if args.is_empty() {
+        anyhow::bail!("No command specified for proxy");
+    }
+    let cmd = &args[0];
+    let cmd_args: Vec<&str> = args[1..].iter().map(|s| s.as_str()).collect();
+    let output = shell::execute_command(cmd, &cmd_args)?;
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+
+    if !stdout.is_empty() {
+        print!("{}", stdout);
+    }
+    if !stderr.is_empty() {
+        eprint!("{}", stderr);
+    }
+
+    // Defensive: no-op today (raw proxy doesn't record) but guarantees
+    // the async meter worker is drained if someone wires metering into
+    // this path in the future.
+    engine::meter::flush();
+
+    if !output.status.success() {
+        std::process::exit(output.status.code().unwrap_or(1));
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::CommandFactory;
+
+    #[test]
+    fn test_completion_generation_bash() {
+        let mut cmd = Cli::command();
+        let mut buf = Vec::new();
+        clap_complete::generate(clap_complete::Shell::Bash, &mut cmd, "tok0", &mut buf);
+        assert!(!buf.is_empty());
+        let content = String::from_utf8(buf).expect("valid utf8");
+        assert!(content.contains("tok0"));
+    }
+
+    #[test]
+    fn test_completion_generation_zsh() {
+        let mut cmd = Cli::command();
+        let mut buf = Vec::new();
+        clap_complete::generate(clap_complete::Shell::Zsh, &mut cmd, "tok0", &mut buf);
+        assert!(!buf.is_empty());
+    }
+
+    #[test]
+    fn test_completion_generation_fish() {
+        let mut cmd = Cli::command();
+        let mut buf = Vec::new();
+        clap_complete::generate(clap_complete::Shell::Fish, &mut cmd, "tok0", &mut buf);
+        assert!(!buf.is_empty());
+    }
+
+    #[test]
+    fn test_detect_shell_recognises_common_shells() {
+        assert_eq!(detect_shell(Some("/bin/bash")), Some("bash"));
+        assert_eq!(detect_shell(Some("/usr/bin/zsh")), Some("zsh"));
+        assert_eq!(detect_shell(Some("/opt/homebrew/bin/fish")), Some("fish"));
+        assert_eq!(detect_shell(Some("bash")), Some("bash"));
+    }
+
+    #[test]
+    fn test_detect_shell_returns_none_for_unknown_and_missing() {
+        assert_eq!(detect_shell(None), None);
+        assert_eq!(detect_shell(Some("")), None);
+        assert_eq!(detect_shell(Some("/bin/tcsh")), None);
+        assert_eq!(detect_shell(Some("/bin/nu")), None);
+    }
+
+    #[test]
+    fn test_completions_install_path_per_shell() {
+        let home = std::path::PathBuf::from("/home/test");
+        assert_eq!(
+            completions_install_path("bash", &home),
+            Some(home.join(".local/share/bash-completion/completions/tok0"))
+        );
+        assert_eq!(
+            completions_install_path("zsh", &home),
+            Some(home.join(".zsh/completions/_tok0"))
+        );
+        assert_eq!(
+            completions_install_path("fish", &home),
+            Some(home.join(".config/fish/completions/tok0.fish"))
+        );
+        assert_eq!(completions_install_path("tcsh", &home), None);
+    }
+
+    #[test]
+    fn test_print_completions_hint_includes_command() {
+        let mut buf: Vec<u8> = Vec::new();
+        let home = std::path::PathBuf::from("/home/test");
+        print_completions_hint(&mut buf, Some("/bin/zsh"), &home).expect("write");
+        let s = String::from_utf8(buf).expect("utf8");
+        assert!(s.contains("Shell completions (zsh)"));
+        assert!(s.contains("tok0 completions zsh"));
+        // Assert on the target path via Display so the test passes on
+        // both Unix (`/`) and Windows (`\`) separators.
+        let expected = completions_install_path("zsh", &home)
+            .expect("zsh path")
+            .display()
+            .to_string();
+        assert!(
+            s.contains(&expected),
+            "expected {:?} in output: {}",
+            expected,
+            s
+        );
+    }
+
+    #[test]
+    fn test_print_completions_hint_silent_for_unknown_shell() {
+        let mut buf: Vec<u8> = Vec::new();
+        let home = std::path::PathBuf::from("/home/test");
+        print_completions_hint(&mut buf, Some("/bin/tcsh"), &home).expect("write");
+        assert!(
+            buf.is_empty(),
+            "should not print anything for unknown shell"
+        );
+    }
+
+    #[test]
+    fn test_print_completions_hint_silent_when_shell_unset() {
+        let mut buf: Vec<u8> = Vec::new();
+        let home = std::path::PathBuf::from("/home/test");
+        print_completions_hint(&mut buf, None, &home).expect("write");
+        assert!(
+            buf.is_empty(),
+            "should not print anything when SHELL is unset"
+        );
+    }
+}

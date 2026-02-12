@@ -1,0 +1,99 @@
+[package]
+name = "tok0"
+version = "0.1.2"
+edition = "2021"
+description = "High-performance CLI proxy that reduces LLM token consumption by 70-95%"
+license = "MIT"
+
+[features]
+# Cloud/team features (`tok0 auth`, `tok0 cloud`, `tok0 telemetry`) require
+# the api.tok0.dev backend. Disabled by default so unreleased-backend builds
+# don't ship broken user-facing commands. Turn on with
+# `cargo install tok0 --features cloud` once the backend is live.
+default = []
+cloud = ["dep:keyring"]
+
+# Debian/Ubuntu package metadata consumed by `cargo-deb`.
+# Build via:
+#   cargo install cargo-deb
+#   cargo deb --no-build --target x86_64-unknown-linux-gnu
+[package.metadata.deb]
+maintainer = "prxm-labs <noreply@anthropic.com>"
+copyright = "2026, prxm-labs"
+license-file = ["LICENSE", "0"]
+extended-description = """
+tok0 is a high-performance CLI proxy that compresses verbose shell command
+output before it reaches an LLM, typically saving 70-95% of tokens on
+development operations (git, cargo, npm, docker, kubectl, etc.).
+"""
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+  ["target/x86_64-unknown-linux-gnu/release/tok0", "usr/bin/", "755"],
+  ["README.md",  "usr/share/doc/tok0/README",  "644"],
+  ["CHANGELOG.md", "usr/share/doc/tok0/CHANGELOG", "644"],
+  ["completions/tok0.bash", "usr/share/bash-completion/completions/tok0", "644"],
+  ["completions/tok0.fish", "usr/share/fish/vendor_completions.d/tok0.fish", "644"],
+  ["completions/tok0.zsh",  "usr/share/zsh/site-functions/_tok0",  "644"],
+]
+
+[dependencies]
+clap = { version = "4", features = ["derive", "env"] }
+anyhow = "1.0"
+lazy_static = "1.4"
+regex = "1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+colored = "2"
+dirs = "5"
+sha2 = "0.10"
+ureq = "2"
+tempfile = "3"
+chrono = { version = "0.4", features = ["serde"] }
+flate2 = "1.0"
+quick-xml = "0.37"
+which = "8"
+walkdir = "2"
+ignore = "0.4"
+clap_complete = "4"
+zeroize = { version = "1", features = ["zeroize_derive"] }
+# Optional: OS keyring for API credentials. Used only by the `cloud`
+# feature (`tok0 auth login` writes to keyring instead of plaintext
+# config.toml). On macOS uses Keychain, on Linux uses Secret Service,
+# on Windows uses Credential Manager. See engine::config keyring helpers.
+keyring = { version = "3", optional = true, default-features = false, features = ["apple-native", "windows-native", "sync-secret-service"] }
+
+[dev-dependencies]
+insta = { version = "1.39", features = ["yaml"] }
+proptest = "1"
+criterion = { version = "0.5", default-features = false, features = ["cargo_bench_support"] }
+
+[[bench]]
+name = "vite_bench"
+harness = false
+
+[[bench]]
+name = "next_bench"
+harness = false
+
+[[bench]]
+name = "prisma_bench"
+harness = false
+
+[[bench]]
+name = "json_bench"
+harness = false
+# keyring 3.x ships its `mock` backend module unconditionally — tests
+# install it via `keyring::set_default_credential_builder(...)` so
+# cloud-feature builds don't touch the real OS Keychain / Secret
+# Service / Credential Manager. No extra feature flag needed.
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
