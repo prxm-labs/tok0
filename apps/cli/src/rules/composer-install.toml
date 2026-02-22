@@ -1,0 +1,11 @@
+[filter]
+name = "composer-install"
+commands = ["composer install", "composer update", "composer require"]
+strip_patterns = [
+  "^\\s*$",
+  "^  - Downloading ",
+  "^  - Installing ",
+  "^Loading composer",
+  "^Updating dependencies",
+]
+head_lines = 30

@@ -1,0 +1,20 @@
+[filter]
+name = "mocha"
+commands = ["mocha", "npx mocha", "yarn mocha", "pnpm mocha"]
+strip_patterns = [
+  "^\\s+✔\\s+",
+  "^\\s+✓\\s+",
+  "^\\s+─+",
+]
+head_lines = 5
+tail_lines = 8
+empty_message = "ok"
+
+[[assertions]]
+input = """  smoke
+    ✓ ok
+
+  1 passing (3ms)
+"""
+expected_contains = "1 passing"
+min_savings_pct = 30

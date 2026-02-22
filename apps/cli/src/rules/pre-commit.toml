@@ -1,0 +1,10 @@
+[filter]
+name = "pre-commit"
+commands = ["pre-commit"]
+strip_patterns = [
+  "^\\[INFO\\] Installing environment",
+  "^\\[INFO\\] Once installed this environment will be reused",
+  "^\\[INFO\\] This may take a few minutes",
+  "^\\s*$",
+]
+head_lines = 40

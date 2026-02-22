@@ -1,0 +1,44 @@
+[filter]
+name = "yarn"
+commands = ["yarn", "yarn install", "yarn add", "yarn remove", "yarn upgrade", "yarn up"]
+strip_patterns = [
+  # Yarn 1 (classic) — strip banner, step markers, deprecation noise.
+  "^yarn install v",
+  "^info ",
+  "^\\[\\d+/\\d+\\]",
+  "^\\(node:\\d+\\) ",
+  "^\\(Use `node ",
+  "^success Saved lockfile",
+  # Yarn Berry (3.x+) — strip the step framing but keep substantive
+  # diagnostics (deprecations, errors, warnings). YN0000 is the "info"
+  # code Yarn uses for the ┌/└ section markers and the trailing Done line;
+  # YN0013 announces that a package is being fetched from the registry —
+  # noise during a clean install.
+  "^➤ YN0000: ┌",
+  "^➤ YN0000: └",
+  "^➤ YN0013:",
+]
+head_lines = 8
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """yarn install v1.22.19
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Building fresh packages...
+warning left-pad@1.3.0: use String.prototype.padStart()
+✨  Done in 2.13s.
+"""
+expected_contains = "Done"
+min_savings_pct = 40
+
+[[assertions]]
+input = """➤ YN0000: ┌ Resolution step
+➤ YN0061: │ react@npm:18.2.0 is deprecated
+➤ YN0000: └ Completed in 0s 312ms
+➤ YN0000: Done with warnings in 1s 200ms
+"""
+expected_contains = "react"
+min_savings_pct = 40

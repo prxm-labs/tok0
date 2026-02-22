@@ -1,0 +1,12 @@
+[filter]
+name = "brew-install"
+commands = ["brew install", "brew upgrade"]
+strip_patterns = [
+  "^\\s*$",
+  "^==> Downloading",
+  "^==> Pouring",
+  "^Already downloaded:",
+  "^###",
+  "^==> Fetching",
+]
+head_lines = 20

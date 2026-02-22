@@ -1,0 +1,22 @@
+[filter]
+name = "webpack"
+commands = ["webpack", "npx webpack", "yarn webpack", "pnpm webpack"]
+strip_patterns = [
+  "^assets by status",
+  "^\\s*\\[hidden modules\\]",
+  "^webpack \\d+\\.\\d+\\.\\d+ compiled",
+  "^modules with warnings",
+  "^\\s+\\d+ ×",
+]
+head_lines = 8
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """asset out.js 1.2 KiB [emitted] [minimized] (name: main)
+runtime modules 274 bytes 1 module
+./src.js 21 bytes [built] [code generated]
+webpack 5.89.0 compiled successfully in 124 ms
+"""
+expected_contains = "compiled successfully"
+min_savings_pct = 30

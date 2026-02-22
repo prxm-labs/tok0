@@ -1,0 +1,28 @@
+[filter]
+name = "pnpm"
+commands = ["pnpm install", "pnpm i", "pnpm add", "pnpm update", "pnpm up"]
+strip_patterns = [
+  "^Progress: .*$",
+  "^\\s*\\d+/\\d+ resolved",
+  "^\\s*\\d+ packages? are looking for funding",
+  "^Already up to date",
+  "^Lockfile is up to date",
+  "^WARN deprecated subdependencies",
+  "^Packages: \\+\\d+",
+  "^\\++$",
+  "^\\s+│.*│\\s*$",
+  "^\\s+╭─+╮\\s*$",
+  "^\\s+╰─+╯\\s*$",
+]
+head_lines = 5
+tail_lines = 8
+empty_message = "ok"
+
+[[assertions]]
+input = """Progress: resolved 1234, downloaded 56, added 12, done
++ react 18.2.0
++ react-dom 18.2.0
+Done in 3.2s
+"""
+expected_contains = "react 18.2.0"
+min_savings_pct = 60

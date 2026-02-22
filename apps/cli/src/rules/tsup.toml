@@ -1,0 +1,23 @@
+[filter]
+name = "tsup"
+commands = ["tsup", "npx tsup", "yarn tsup", "pnpm tsup"]
+strip_patterns = [
+  "^CLI ",
+  "^ESM ",
+  "^CJS ",
+  "^DTS ",
+  "^⚡️",
+]
+head_lines = 5
+tail_lines = 8
+empty_message = "ok"
+
+[[assertions]]
+input = """CLI Building entry: src/index.ts
+CLI Using tsconfig: tsconfig.json
+ESM Build start
+ESM dist/index.mjs 30B
+ESM ⚡️ Build success in 25ms
+"""
+expected_contains = "Build success"
+min_savings_pct = 30

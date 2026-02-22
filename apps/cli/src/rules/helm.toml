@@ -1,0 +1,9 @@
+[filter]
+name = "helm"
+commands = ["helm"]
+strip_patterns = [
+  "^\\s*$",
+  "^W\\d{4}",
+]
+max_line_chars = 120
+head_lines = 40

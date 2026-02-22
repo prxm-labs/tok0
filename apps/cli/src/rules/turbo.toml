@@ -1,0 +1,14 @@
+[filter]
+name = "turbo"
+commands = ["turbo"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*cache (hit|miss|bypass)",
+  "^\\s*\\d+ packages in scope",
+  "^\\s*Tasks:\\s+\\d+",
+  "^\\s*Duration:\\s+",
+  "^\\s*Remote caching (enabled|disabled)",
+]
+max_line_chars = 150
+head_lines = 50
+empty_message = "turbo: ok"

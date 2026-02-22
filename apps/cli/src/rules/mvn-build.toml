@@ -1,0 +1,16 @@
+[filter]
+name = "mvn-build"
+commands = ["mvn compile", "mvn package", "mvn clean", "mvn install"]
+strip_patterns = [
+  "^\\[INFO\\] ---",
+  "^\\[INFO\\] Building\\s",
+  "^\\[INFO\\] Downloading\\s",
+  "^\\[INFO\\] Downloaded\\s",
+  "^\\[INFO\\]\\s*$",
+  "^\\s*$",
+  "^Downloading:",
+  "^Downloaded:",
+  "^Progress",
+]
+head_lines = 50
+empty_message = "mvn: ok"

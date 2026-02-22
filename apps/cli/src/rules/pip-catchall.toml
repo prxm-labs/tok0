@@ -1,0 +1,21 @@
+[filter]
+name = "pip-catchall"
+commands = ["pip", "pip3", "uv"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Collecting\\s+",
+  "^\\s*Downloading\\s+",
+  "^\\s*Using cached\\s+",
+  "^\\s*Installing collected",
+  "^\\s*Requirement already satisfied",
+  "^\\s*Preparing metadata",
+  "^\\s*Building wheel",
+  "^\\s*Created wheel",
+  "^\\s*Stored in directory",
+  "^WARNING: pip is configured",
+  "^\\[notice\\]",
+]
+head_lines = 20
+tail_lines = 10
+max_line_chars = 200
+empty_message = "pip: ok"

@@ -1,0 +1,14 @@
+[filter]
+name = "skopeo"
+commands = ["skopeo"]
+strip_patterns = [
+  "^\\s*$",
+  "^Getting image source signatures",
+  "^Copying blob",
+  "^Copying config",
+  "^Writing manifest",
+  "^Storing signatures",
+]
+head_lines = 30
+max_line_chars = 120
+empty_message = "skopeo: ok"

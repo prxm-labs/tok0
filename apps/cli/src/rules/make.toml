@@ -1,0 +1,10 @@
+[filter]
+name = "make"
+commands = ["make"]
+strip_patterns = [
+  "^make\\[\\d+\\]:",
+  "^\\s*$",
+  "^Nothing to be done",
+]
+head_lines = 50
+empty_message = "make: ok"

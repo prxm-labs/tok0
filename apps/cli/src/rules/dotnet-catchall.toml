@@ -1,0 +1,17 @@
+[filter]
+name = "dotnet-catchall"
+commands = ["dotnet"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Restore completed in",
+  "^\\s*Determining projects to restore",
+  "^\\s*All projects are up-to-date",
+  "^\\s*NuGet Config files used:",
+  "^\\s*Feeds used:",
+  "^\\s*https://api\\.nuget",
+  "^\\s*MSBuild version",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200
+empty_message = "dotnet: ok"

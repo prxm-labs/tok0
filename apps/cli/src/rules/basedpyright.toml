@@ -1,0 +1,12 @@
+[filter]
+name = "basedpyright"
+commands = ["basedpyright"]
+strip_patterns = [
+  "^\\s*$",
+  "^Searching for source files",
+  "^Found \\d+ source file",
+  "^Pyright \\d+\\.\\d+",
+  "^basedpyright \\d+\\.\\d+",
+]
+head_lines = 50
+empty_message = "basedpyright: ok"

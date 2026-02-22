@@ -1,0 +1,20 @@
+[filter]
+name = "parcel"
+commands = ["parcel", "npx parcel", "yarn parcel", "pnpm parcel"]
+strip_patterns = [
+  "^✨ Built in ",
+  "^Building",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """Building...
+✨ Built in 350ms
+
+dist/index.html  61 B    13ms
+dist/src.js     230 B   100ms
+"""
+expected_contains = "Built"
+min_savings_pct = 30

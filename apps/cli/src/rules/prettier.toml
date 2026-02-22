@@ -1,0 +1,19 @@
+[filter]
+name = "prettier"
+commands = ["prettier", "npx prettier", "yarn prettier", "pnpm prettier", "bunx prettier"]
+strip_patterns = [
+  "^.*\\.(js|ts|tsx|jsx|json|md|html|css|scss|yaml|yml|vue|svelte) \\d+ms \\(unchanged\\)$",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """a1.js 5ms
+a2.js 4ms (unchanged)
+a3.js 4ms (unchanged)
+a4.js 5ms
+a5.js 4ms (unchanged)
+"""
+expected_contains = "a1.js"
+min_savings_pct = 40

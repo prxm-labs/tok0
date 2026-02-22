@@ -1,0 +1,15 @@
+[filter]
+name = "kubectl-catchall"
+commands = ["kubectl", "k"]
+strip_patterns = [
+  "^\\s*$",
+  "^Warning: .* is deprecated",
+  "^W\\d{4}\\s+",
+  "^\\s*Annotations:",
+  "^\\s*kubectl\\.kubernetes\\.io/",
+  "^\\s*Last Applied Configuration:",
+]
+head_lines = 40
+tail_lines = 10
+max_line_chars = 200
+empty_message = "kubectl: ok"

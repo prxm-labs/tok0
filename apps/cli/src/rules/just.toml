@@ -1,0 +1,10 @@
+[filter]
+name = "just"
+commands = ["just"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Available recipes:",
+  "^\\s*just --list",
+]
+max_line_chars = 150
+head_lines = 50

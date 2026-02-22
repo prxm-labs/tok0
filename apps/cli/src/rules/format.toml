@@ -1,0 +1,21 @@
+[filter]
+name = "format"
+commands = ["format"]
+strip_patterns = [
+  "^[A-Za-z0-9_./\\-]+\\.(rs|ts|tsx|js|jsx|py|go|java|kt|rb|php|swift|c|cc|cpp|h|hpp|sh|md|yaml|yml|toml|json|html|css|scss):? .*reformatted$",
+  "^[A-Za-z0-9_./\\-]+\\.(rs|ts|tsx|js|jsx|py|go|java|kt|rb|php|swift|c|cc|cpp|h|hpp|sh|md|yaml|yml|toml|json|html|css|scss) \\d+ms \\(unchanged\\)$",
+  "^reformatted ",
+  "^All done!",
+]
+head_lines = 4
+tail_lines = 4
+empty_message = "format: no diffs"
+
+[[assertions]]
+input = """reformatted src/main.py
+reformatted src/utils.py
+reformatted src/api.py
+3 files reformatted
+"""
+expected_contains = "3 files"
+min_savings_pct = 50

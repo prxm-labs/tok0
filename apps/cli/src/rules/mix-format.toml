@@ -1,0 +1,5 @@
+[filter]
+name = "mix-format"
+commands = ["mix format"]
+head_lines = 20
+empty_message = "mix format: ok"

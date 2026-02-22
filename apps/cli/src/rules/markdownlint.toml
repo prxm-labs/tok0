@@ -1,0 +1,6 @@
+[filter]
+name = "markdownlint"
+commands = ["markdownlint"]
+strip_patterns = ["^\\s*$"]
+head_lines = 50
+max_line_chars = 120

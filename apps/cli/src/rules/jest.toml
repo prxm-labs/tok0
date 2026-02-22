@@ -1,0 +1,29 @@
+[filter]
+name = "jest"
+commands = ["jest", "npx jest", "yarn jest", "pnpm jest", "bun jest"]
+strip_patterns = [
+  "^PASS\\s",
+  "^  ✓ ",
+  "^Determining test suites",
+  "^Test Suites:.*passed,.*total$",
+  "^Snapshots:.*total$",
+  "^Time:",
+  "^Ran all test suites",
+]
+head_lines = 8
+tail_lines = 8
+empty_message = "ok"
+
+[[assertions]]
+input = """Determining test suites to run...
+PASS  ./smoke.test.js
+  ✓ ok (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        0.4 s
+Ran all test suites.
+"""
+expected_contains = "1 passed"
+min_savings_pct = 60

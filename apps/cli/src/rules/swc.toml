@@ -1,0 +1,15 @@
+[filter]
+name = "swc"
+commands = ["swc", "npx swc", "yarn swc", "pnpm swc"]
+strip_patterns = [
+  "^Successfully compiled",
+]
+head_lines = 4
+tail_lines = 4
+empty_message = "ok"
+
+[[assertions]]
+input = """Successfully compiled: 5 files with swc (1.30ms)
+"""
+expected_contains = "5 files"
+min_savings_pct = 30

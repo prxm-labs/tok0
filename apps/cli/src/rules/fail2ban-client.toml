@@ -1,0 +1,5 @@
+[filter]
+name = "fail2ban-client"
+commands = ["fail2ban-client"]
+strip_patterns = ["^\\s*$"]
+head_lines = 30

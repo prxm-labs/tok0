@@ -1,0 +1,20 @@
+[filter]
+name = "npx"
+commands = ["npx"]
+strip_patterns = [
+  "^npm warn ",
+  "^npm notice",
+  "^npm install ",
+  "^npm WARN ",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """npm warn exec The following package was not found locally...
+index.ts(1,7): error TS2322: Type 'string' is not assignable to type 'number'.
+Found 1 error in index.ts:1
+"""
+expected_contains = "TS2322"
+min_savings_pct = 60

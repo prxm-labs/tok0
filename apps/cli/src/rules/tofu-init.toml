@@ -1,0 +1,14 @@
+[filter]
+name = "tofu-init"
+commands = ["tofu init"]
+strip_patterns = [
+  "^- Downloading",
+  "^- Installing",
+  "^- Using previously-installed",
+  "^\\s*$",
+  "^Initializing provider",
+  "^Initializing the backend",
+  "^Initializing modules",
+]
+head_lines = 20
+empty_message = "tofu init: ok"

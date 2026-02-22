@@ -1,0 +1,6 @@
+[filter]
+name = "tofu-validate"
+commands = ["tofu validate"]
+strip_patterns = ["^\\s*$"]
+head_lines = 20
+empty_message = "tofu validate: ok"

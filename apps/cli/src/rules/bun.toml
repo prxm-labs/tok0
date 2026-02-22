@@ -1,0 +1,23 @@
+[filter]
+name = "bun"
+commands = ["bun install", "bun i", "bun add", "bun update", "bun remove", "bun run"]
+strip_patterns = [
+  "^bun install v\\d",
+  "^Resolving dependencies",
+  "^Resolved, downloaded and extracted",
+  "^Saved lockfile",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """bun install v1.0.0 (abc123)
+Resolving dependencies
+Resolved, downloaded and extracted [12]
++ react@18.2.0
+Saved lockfile
+Done in 1.2s
+"""
+expected_contains = "react@18.2.0"
+min_savings_pct = 60

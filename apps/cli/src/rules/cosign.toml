@@ -1,0 +1,21 @@
+[filter]
+name = "cosign"
+commands = ["cosign verify", "cosign sign", "cosign attest", "cosign tree", "cosign clean"]
+strip_patterns = [
+  "^The following checks were performed",
+  "^  - ",
+]
+head_lines = 8
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """Verification for cgr.dev/chainguard/static --
+The following checks were performed on each of these signatures:
+  - The cosign claims were validated
+  - Existence of the claims in the transparency log
+  - The signatures were verified against the specified public key
+{"critical":{"identity":{"docker-reference":"cgr.dev/chainguard/static"}},"optional":{}}
+"""
+expected_contains = "Verification"
+min_savings_pct = 30

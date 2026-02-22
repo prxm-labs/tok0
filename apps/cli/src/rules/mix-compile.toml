@@ -1,0 +1,10 @@
+[filter]
+name = "mix-compile"
+commands = ["mix compile"]
+strip_patterns = [
+  "^Compiling \\d+ file",
+  "^\\s*$",
+  "^Generated\\s",
+]
+head_lines = 40
+empty_message = "mix compile: ok"

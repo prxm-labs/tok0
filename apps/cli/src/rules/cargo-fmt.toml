@@ -1,0 +1,4 @@
+[filter]
+name = "cargo-fmt"
+commands = ["cargo fmt"]
+empty_message = "ok"

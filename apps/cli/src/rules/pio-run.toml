@@ -1,0 +1,16 @@
+[filter]
+name = "pio-run"
+commands = ["pio run"]
+strip_patterns = [
+  "^\\s*$",
+  "^Verbose mode",
+  "^CONFIGURATION:",
+  "^LDF:",
+  "^Library Manager:",
+  "^Compiling\\s",
+  "^Linking\\s",
+  "^Building\\s",
+  "^Checking size",
+]
+head_lines = 30
+empty_message = "pio run: ok"

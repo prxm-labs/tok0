@@ -1,0 +1,21 @@
+[filter]
+name = "npm-catchall"
+commands = ["npm", "pnpm", "yarn", "bun"]
+strip_patterns = [
+  "^\\s*$",
+  "^npm warn",
+  "^npm notice",
+  "^npm WARN",
+  "^npm http",
+  "^\\s*added \\d+ packages.*$",
+  "^\\s*up to date",
+  "^\\s*\\d+ packages are looking for funding",
+  "^\\s*run `npm fund`",
+  "^WARN\\s+",
+  "^Scope: all \\d+ workspace",
+  "^\\s*Progress:",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200
+empty_message = "ok"

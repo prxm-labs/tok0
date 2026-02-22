@@ -1,0 +1,18 @@
+[filter]
+name = "rollup"
+commands = ["rollup", "npx rollup", "yarn rollup", "pnpm rollup"]
+strip_patterns = [
+  "^src\\.js → ",
+  "^created out\\.js in",
+]
+head_lines = 4
+tail_lines = 4
+empty_message = "ok"
+
+[[assertions]]
+input = """
+src.js → out.js...
+created out.js in 28ms
+"""
+expected_contains = "created"
+min_savings_pct = 30

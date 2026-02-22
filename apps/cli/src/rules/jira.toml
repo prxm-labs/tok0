@@ -1,0 +1,9 @@
+[filter]
+name = "jira"
+commands = ["jira"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*--",
+]
+max_line_chars = 120
+head_lines = 40

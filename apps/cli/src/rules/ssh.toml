@@ -1,0 +1,14 @@
+[filter]
+name = "ssh"
+commands = ["ssh"]
+strip_patterns = [
+  "^\\s*$",
+  "^Warning: Permanently added",
+  "^Connection to .+ closed",
+  "^Authenticated to",
+  "^debug1:",
+  "^OpenSSH_",
+  "^Pseudo-terminal",
+]
+head_lines = 200
+max_line_chars = 120

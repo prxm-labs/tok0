@@ -1,0 +1,10 @@
+[filter]
+name = "ty"
+commands = ["ty"]
+strip_patterns = [
+  "^\\s*$",
+  "^Checking \\d+ file",
+  "^ty \\d+\\.\\d+",
+]
+head_lines = 50
+empty_message = "ty: ok"

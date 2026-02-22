@@ -1,0 +1,23 @@
+[filter]
+name = "deno"
+commands = ["deno task", "deno run", "deno test", "deno bench", "deno fmt", "deno lint", "deno cache"]
+strip_patterns = [
+  "^Task ",
+  "^Check ",
+  "^Download ",
+  "^Compiled ",
+  "^running \\d+ tests? from",
+]
+head_lines = 5
+tail_lines = 8
+empty_message = "ok"
+
+[[assertions]]
+input = """Task test deno test --no-check
+Check file:///tmp/x.ts
+running 1 test from ./smoke_test.ts
+ok ... (1ms)
+ok | 1 passed | 0 failed (5ms)
+"""
+expected_contains = "1 passed"
+min_savings_pct = 60

@@ -1,0 +1,5 @@
+[filter]
+name = "systemctl-status"
+commands = ["systemctl status"]
+strip_patterns = ["^\\s*$"]
+head_lines = 20

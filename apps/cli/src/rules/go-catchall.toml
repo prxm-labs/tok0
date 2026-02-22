@@ -1,0 +1,13 @@
+[filter]
+name = "go-catchall"
+commands = ["go"]
+strip_patterns = [
+  "^\\s*$",
+  "^go: downloading\\s+",
+  "^go: extracting\\s+",
+  "^go: finding\\s+",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200
+empty_message = "go: ok"

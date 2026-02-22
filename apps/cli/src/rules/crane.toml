@@ -1,0 +1,13 @@
+[filter]
+name = "crane"
+commands = ["crane manifest", "crane ls", "crane digest", "crane pull", "crane push"]
+strip_patterns = []
+head_lines = 30
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """{"schemaVersion":2,"mediaType":"application/vnd.oci.image.manifest.v1+json","config":{"mediaType":"application/vnd.oci.image.config.v1+json","size":1234,"digest":"sha256:abc"},"layers":[]}
+"""
+expected_contains = "schemaVersion"
+min_savings_pct = 0

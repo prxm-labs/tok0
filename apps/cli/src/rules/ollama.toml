@@ -1,0 +1,7 @@
+[filter]
+name = "ollama"
+commands = ["ollama run"]
+strip_patterns = [
+  "^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏\\s]*$",
+  "^\\s*$",
+]

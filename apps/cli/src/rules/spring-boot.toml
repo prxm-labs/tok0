@@ -1,0 +1,10 @@
+[filter]
+name = "spring-boot"
+commands = ["mvn spring-boot:run", "gradle bootRun"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s+:: Spring Boot ::",
+  "^\\d{4}-\\d{2}-\\d{2}T.*INFO\\s",
+  "^\\s*Hibernate:",
+]
+head_lines = 30

@@ -1,0 +1,26 @@
+[filter]
+name = "tilt"
+commands = ["tilt up", "tilt down", "tilt ci", "tilt args"]
+strip_patterns = [
+  "^Tilt started on",
+  "^Loading Tiltfile",
+  "^For full UI",
+  "running\\.\\.\\.",
+  "✓ ready",
+]
+head_lines = 10
+tail_lines = 10
+empty_message = "ok"
+
+[[assertions]]
+input = """Tilt started on http://localhost:10350/
+Loading Tiltfile
+running...
+✓ ready
+running...
+✓ ready
+running...
+✓ ready
+"""
+expected_contains = "Tilt"
+min_savings_pct = 30

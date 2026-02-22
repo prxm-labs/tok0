@@ -1,0 +1,6 @@
+[filter]
+name = "gcloud"
+commands = ["gcloud"]
+strip_patterns = ["^\\s*$"]
+max_line_chars = 120
+head_lines = 30

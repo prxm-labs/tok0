@@ -1,0 +1,10 @@
+[filter]
+name = "jj"
+commands = ["jj"]
+strip_patterns = [
+  "^\\s*$",
+  "^Hint:",
+  "^Working copy now at:",
+]
+head_lines = 30
+max_line_chars = 120

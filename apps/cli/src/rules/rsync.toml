@@ -1,0 +1,9 @@
+[filter]
+name = "rsync"
+commands = ["rsync"]
+strip_patterns = [
+  "^\\s*$",
+  "^sending incremental file list",
+  "^sent \\d",
+]
+head_lines = 20

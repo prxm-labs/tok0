@@ -1,0 +1,11 @@
+[filter]
+name = "shopify-theme"
+commands = ["shopify theme push", "shopify theme pull"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Uploading",
+  "^\\s*Downloading",
+]
+tail_lines = 5
+head_lines = 15
+empty_message = "shopify theme: ok"

@@ -1,0 +1,10 @@
+[filter]
+name = "stat"
+commands = ["stat"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Device:",
+  "^\\s*Birth:",
+]
+max_line_chars = 120
+head_lines = 20

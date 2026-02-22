@@ -1,0 +1,5 @@
+[filter]
+name = "sops"
+commands = ["sops"]
+strip_patterns = ["^\\s*$"]
+head_lines = 40

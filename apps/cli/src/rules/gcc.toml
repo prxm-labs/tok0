@@ -1,0 +1,13 @@
+[filter]
+name = "gcc"
+commands = ["gcc", "g++"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s+\\|\\s*$",
+  "^In file included from",
+  "^\\s+from\\s",
+  "^\\d+ warnings? generated",
+  "^\\d+ errors? generated",
+]
+head_lines = 50
+empty_message = "gcc: ok"

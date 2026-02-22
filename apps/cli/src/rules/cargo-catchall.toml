@@ -1,0 +1,21 @@
+[filter]
+name = "cargo-catchall"
+commands = ["cargo"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Compiling\\s+",
+  "^\\s*Downloading\\s+",
+  "^\\s*Downloaded\\s+",
+  "^\\s*Updating\\s+crates\\.io",
+  "^\\s*Packaging\\s+",
+  "^\\s*Uploading\\s+",
+  "^\\s*Verifying\\s+",
+  "^\\s*Fresh\\s+",
+  "^\\s*Locking\\s+",
+  "^\\s*Adding\\s+",
+  "^\\s*Removing\\s+",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200
+empty_message = "cargo: ok"

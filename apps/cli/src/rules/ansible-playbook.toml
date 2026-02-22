@@ -1,0 +1,9 @@
+[filter]
+name = "ansible-playbook"
+commands = ["ansible-playbook"]
+strip_patterns = [
+  "^\\s*$",
+  "^ok: \\[",
+  "^skipping: \\[",
+]
+head_lines = 60

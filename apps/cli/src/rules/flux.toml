@@ -1,0 +1,19 @@
+[filter]
+name = "flux"
+commands = ["flux get", "flux check", "flux reconcile", "flux suspend", "flux resume"]
+strip_patterns = [
+  "^► ",
+  "^✔ ",
+  "^✗ ",
+  "^Reconciliation request triggered",
+]
+head_lines = 8
+tail_lines = 10
+empty_message = "ok"
+
+[[assertions]]
+input = """NAMESPACE  NAME            REVISION                 SUSPENDED  READY  MESSAGE
+flux-system  flux-system     main@sha1:abc123         False      True   Applied revision: main@sha1:abc123
+"""
+expected_contains = "flux-system"
+min_savings_pct = 30

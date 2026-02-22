@@ -1,0 +1,12 @@
+[filter]
+name = "terraform-plan"
+commands = ["terraform plan"]
+strip_patterns = [
+  "^Refreshing state",
+  "^\\s*#.*unchanged",
+  "^\\s*$",
+  "^Acquiring state lock",
+  "^Releasing state lock",
+]
+head_lines = 80
+empty_message = "terraform plan: no changes detected"

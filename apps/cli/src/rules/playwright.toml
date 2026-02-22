@@ -1,0 +1,24 @@
+[filter]
+name = "playwright"
+commands = ["playwright test", "npx playwright test", "yarn playwright test", "pnpm playwright test"]
+strip_patterns = [
+  "^Running \\d+ test using",
+  "^\\s+✔\\s+\\d+\\s+\\[",
+  "^Trace was written to",
+  "^See ",
+  "^Slow test",
+  "^Browser .*launched",
+]
+head_lines = 5
+tail_lines = 8
+empty_message = "ok"
+
+[[assertions]]
+input = """Running 1 test using 1 worker
+  ✔  1 [chromium] › tests/smoke.spec.ts:3:1 › ok (300ms)
+  1 passed (1.5s)
+
+Trace was written to tmp/trace.zip
+"""
+expected_contains = "1 passed"
+min_savings_pct = 30

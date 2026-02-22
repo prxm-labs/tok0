@@ -1,0 +1,14 @@
+[filter]
+name = "trunk-build"
+commands = ["trunk build"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Compiling\\s",
+  "^\\s*Downloading\\s",
+  "^\\s*Fetching\\s",
+  "^\\s*Fresh\\s",
+  "^\\s*Checking\\s",
+]
+tail_lines = 10
+head_lines = 30
+empty_message = "trunk build: ok"

@@ -1,0 +1,11 @@
+[filter]
+name = "task"
+commands = ["task"]
+strip_patterns = [
+  "^\\s*$",
+  "^task: \\[.*\\] ",
+  "^task: Task .* is up to date",
+]
+max_line_chars = 150
+head_lines = 50
+empty_message = "task: ok"

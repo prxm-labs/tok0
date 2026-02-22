@@ -1,0 +1,21 @@
+[filter]
+name = "docker-catchall"
+commands = ["docker", "podman"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Sending build context",
+  "^\\s*Step \\d+/\\d+ :",
+  "^\\s*---> [0-9a-f]{12}",
+  "^\\s*Removing intermediate container",
+  "^\\s*Successfully tagged",
+  "^\\s*\\[\\+\\]\\s+Running",
+  "^\\s*Pulling from",
+  "^\\s*Digest: sha256:",
+  "^\\s*Status: Downloaded",
+  "^\\s*Status: Image is up to date",
+  "^[0-9a-f]{64}$",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200
+empty_message = "docker: ok"

@@ -1,0 +1,12 @@
+[filter]
+name = "tofu-plan"
+commands = ["tofu plan"]
+strip_patterns = [
+  "^Refreshing state",
+  "^\\s*#.*unchanged",
+  "^\\s*$",
+  "^Acquiring state lock",
+  "^Releasing state lock",
+]
+head_lines = 80
+empty_message = "tofu plan: no changes detected"

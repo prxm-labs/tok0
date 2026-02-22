@@ -1,0 +1,29 @@
+[filter]
+name = "cypress"
+commands = ["cypress run", "npx cypress run", "yarn cypress run", "pnpm cypress run"]
+strip_patterns = [
+  "^\\s+\\(.*\\)\\s+System$",
+  "^\\s+│",
+  "^\\s+─+",
+  "^\\s+┌─",
+  "^\\s+└─",
+  "^Running:",
+  "^\\s+\\(Run Starting\\)",
+  "^\\s+\\(Run Finishing\\)",
+  "^\\s+Browser:",
+  "^\\s+Cypress:",
+  "^\\s+Node Version:",
+  "^DevTools listening on",
+]
+head_lines = 5
+tail_lines = 10
+empty_message = "ok"
+
+[[assertions]]
+input = """  (Run Starting)
+  smoke
+    ✓ ok (50ms)
+  1 passing (60ms)
+"""
+expected_contains = "1 passing"
+min_savings_pct = 30

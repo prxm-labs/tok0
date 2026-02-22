@@ -1,0 +1,23 @@
+[filter]
+name = "buildah"
+commands = ["buildah bud", "buildah build", "buildah from", "buildah commit", "buildah pull"]
+strip_patterns = [
+  "^STEP \\d+/\\d+:",
+  "^--> ",
+  "^Getting image source signatures",
+  "^Copying blob ",
+  "^Copying config ",
+  "^Writing manifest to image destination",
+]
+head_lines = 6
+tail_lines = 8
+empty_message = "ok"
+
+[[assertions]]
+input = """STEP 1/2: FROM alpine:3.19
+STEP 2/2: RUN echo hi
+COMMIT demo
+--> abc123def456
+"""
+expected_contains = "abc123def456"
+min_savings_pct = 30

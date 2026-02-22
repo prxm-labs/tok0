@@ -1,0 +1,30 @@
+[filter]
+name = "skaffold"
+commands = ["skaffold dev", "skaffold run", "skaffold build", "skaffold deploy", "skaffold delete"]
+strip_patterns = [
+  "^Listing files to watch",
+  "^Generating tags",
+  "^Checking cache",
+  "^Tags used in deployment",
+  "^Starting deploy",
+  "^Waiting for deployments to stabilize",
+  "^Watching for changes",
+  "^Cleaning up",
+  "^Pruning images",
+  "waiting for rollout to finish",
+  "Found Locally",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """Listing files to watch...
+Generating tags...
+Checking cache...
+Tags used in deployment:
+ - demo -> demo:latest@sha256:abc
+Starting deploy...
+"""
+expected_contains = "demo"
+min_savings_pct = 30

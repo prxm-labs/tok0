@@ -1,0 +1,10 @@
+[filter]
+name = "yadm"
+commands = ["yadm"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*\\(use \"git ",
+  "^\\s*\\(use \"yadm ",
+]
+max_line_chars = 120
+head_lines = 40

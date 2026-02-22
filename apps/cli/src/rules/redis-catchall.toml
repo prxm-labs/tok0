@@ -1,0 +1,10 @@
+[filter]
+name = "redis-catchall"
+commands = ["redis-cli"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*#\\s+(Server|Clients|Memory|Persistence|Stats|Replication|CPU|Modules|Keyspace|Errorstats|Latencystats|Debug)",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200

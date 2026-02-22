@@ -1,0 +1,10 @@
+[filter]
+name = "iptables"
+commands = ["iptables"]
+strip_patterns = [
+  "^\\s*$",
+  "^Chain DOCKER",
+  "^Chain BR-",
+]
+head_lines = 50
+max_line_chars = 120

@@ -1,0 +1,18 @@
+[filter]
+name = "terraform-catchall"
+commands = ["terraform", "tf", "tofu"]
+strip_patterns = [
+  "^\\s*$",
+  "^Initializing the backend",
+  "^Initializing provider plugins",
+  "^- Finding\\s+",
+  "^- Installing\\s+",
+  "^- Installed\\s+",
+  "^Terraform has been successfully initialized",
+  "^Partner and community providers are signed",
+  "^\\s*You may now begin working",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200
+empty_message = "terraform: ok"

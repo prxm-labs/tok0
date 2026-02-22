@@ -1,0 +1,12 @@
+[filter]
+name = "biome"
+commands = ["biome"]
+strip_patterns = [
+  "^\\s*$",
+  "^Checked \\d+ file",
+  "^Fixed \\d+ file",
+  "^The following command",
+  "^Run it with",
+]
+head_lines = 50
+empty_message = "biome: ok"

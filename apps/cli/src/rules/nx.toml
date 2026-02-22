@@ -1,0 +1,14 @@
+[filter]
+name = "nx"
+commands = ["nx", "pnpm nx"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*>\\s*NX\\s+Running target",
+  "^\\s*>\\s*NX\\s+Nx read the output",
+  "^\\s*>\\s*NX\\s+View logs",
+  "^\\s*———————",
+  "^\\s*—————————",
+  "^\\s+Nx \\(powered by",
+]
+max_line_chars = 150
+head_lines = 60

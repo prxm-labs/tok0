@@ -1,0 +1,14 @@
+[filter]
+name = "mise"
+commands = ["mise run", "mise exec", "mise install", "mise upgrade"]
+strip_patterns = [
+  "^\\s*$",
+  "^mise\\s+(trust|install|upgrade).*✓",
+  "^mise\\s+Installing\\s",
+  "^mise\\s+Downloading\\s",
+  "^mise\\s+Extracting\\s",
+  "^mise\\s+\\w+@[\\d.]+ installed",
+]
+max_line_chars = 150
+head_lines = 50
+empty_message = "mise: ok"

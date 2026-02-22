@@ -1,0 +1,9 @@
+[filter]
+name = "swift-build"
+commands = ["swift build"]
+strip_patterns = [
+  "^\\s*$",
+  "^Compiling ",
+  "^Linking ",
+]
+head_lines = 40

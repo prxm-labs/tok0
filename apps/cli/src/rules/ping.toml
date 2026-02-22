@@ -1,0 +1,11 @@
+[filter]
+name = "ping"
+commands = ["ping"]
+strip_patterns = [
+  "^PING ",
+  "^Pinging ",
+  "^\\d+ bytes from ",
+  "^Reply from .+: bytes=",
+  "^\\s*$",
+]
+tail_lines = 4

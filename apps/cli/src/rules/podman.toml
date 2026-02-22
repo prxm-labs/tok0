@@ -1,0 +1,26 @@
+[filter]
+name = "podman"
+commands = ["podman ps", "podman build", "podman pull", "podman push", "podman run", "podman images", "podman logs"]
+strip_patterns = [
+  "^STEP \\d+/\\d+:",
+  "^--> ",
+  "^Trying to pull ",
+  "^Getting image source signatures",
+  "^Copying blob ",
+  "^Copying config ",
+  "^Writing manifest to image destination",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """STEP 1/2: FROM alpine:3.19
+STEP 2/2: RUN echo hi
+COMMIT demo
+--> abc123
+Successfully tagged localhost/demo:latest
+abc123def456
+"""
+expected_contains = "Successfully tagged"
+min_savings_pct = 30

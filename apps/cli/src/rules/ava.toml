@@ -1,0 +1,20 @@
+[filter]
+name = "ava"
+commands = ["ava", "npx ava", "yarn ava", "pnpm ava"]
+strip_patterns = [
+  "^\\s+✔\\s+",
+  "^\\s+✖\\s+",
+  "^\\s+─+",
+]
+head_lines = 4
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """
+  ✔ ok
+
+  1 test passed
+"""
+expected_contains = "1 test passed"
+min_savings_pct = 30

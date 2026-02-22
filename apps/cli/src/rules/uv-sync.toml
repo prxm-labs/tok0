@@ -1,0 +1,10 @@
+[filter]
+name = "uv-sync"
+commands = ["uv sync", "uv pip install"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s+Downloading ",
+  "^\\s+Using cached ",
+  "^\\s+Preparing ",
+]
+head_lines = 20

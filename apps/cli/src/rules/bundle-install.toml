@@ -1,0 +1,10 @@
+[filter]
+name = "bundle-install"
+commands = ["bundle install", "bundle update"]
+strip_patterns = [
+  "^Using ",
+  "^\\s*$",
+  "^Fetching gem metadata",
+  "^Resolving dependencies",
+]
+head_lines = 30

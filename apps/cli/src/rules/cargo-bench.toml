@@ -1,0 +1,11 @@
+[filter]
+name = "cargo-bench"
+commands = ["cargo bench"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*Compiling\\s",
+  "^\\s*Downloading\\s",
+  "^\\s*Fresh\\s",
+  "^\\s*Running\\s",
+]
+head_lines = 40

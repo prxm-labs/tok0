@@ -1,0 +1,5 @@
+[filter]
+name = "tofu-fmt"
+commands = ["tofu fmt"]
+head_lines = 30
+empty_message = "tofu fmt: ok (no changes)"

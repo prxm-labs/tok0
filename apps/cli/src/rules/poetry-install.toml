@@ -1,0 +1,11 @@
+[filter]
+name = "poetry-install"
+commands = ["poetry install", "poetry lock", "poetry update"]
+strip_patterns = [
+  "^\\s*$",
+  "^  [-•] Downloading ",
+  "^  [-•] Installing .* \\(",
+  "^Creating virtualenv",
+  "^Using virtualenv",
+]
+head_lines = 30

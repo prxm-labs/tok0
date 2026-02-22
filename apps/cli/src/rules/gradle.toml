@@ -1,0 +1,19 @@
+[filter]
+name = "gradle"
+commands = ["gradle", "gradlew", "./gradlew"]
+strip_patterns = [
+  "^\\s*$",
+  "^> Configuring project",
+  "^> Resolving dependencies",
+  "^> Transform ",
+  "^Download(ing)?\\s+http",
+  "^\\s*<-+>\\s*$",
+  "^> Task :.*UP-TO-DATE$",
+  "^> Task :.*NO-SOURCE$",
+  "^> Task :.*FROM-CACHE$",
+  "^Starting a Gradle Daemon",
+  "^Daemon will be stopped",
+]
+max_line_chars = 150
+head_lines = 50
+empty_message = "gradle: ok"

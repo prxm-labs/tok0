@@ -1,0 +1,10 @@
+[filter]
+name = "dotnet-build"
+commands = ["dotnet build"]
+strip_patterns = [
+  "^\\s*$",
+  "^Microsoft \\(R\\)",
+  "^Copyright \\(C\\)",
+  "^  Determining projects",
+]
+head_lines = 40

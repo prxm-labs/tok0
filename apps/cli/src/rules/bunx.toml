@@ -1,0 +1,23 @@
+[filter]
+name = "bunx"
+commands = ["bunx"]
+strip_patterns = [
+  "^bunx \\(",
+  "^Resolving dependencies",
+  "^Resolved, downloaded and extracted",
+  "^Saved lockfile",
+  "^Installing",
+  "^\\[bunx\\]",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """bunx (cached)
+Checking formatting...
+sample.js
+Code style issues found in 1 file. Run prettier --write to fix.
+"""
+expected_contains = "Code style issues found"
+min_savings_pct = 60

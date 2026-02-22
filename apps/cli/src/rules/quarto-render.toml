@@ -1,0 +1,14 @@
+[filter]
+name = "quarto-render"
+commands = ["quarto render"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*processing file:",
+  "^\\s*\\d+/\\d+\\s",
+  "^\\s*running",
+  "^\\s*Rendering",
+  "^pandoc ",
+  "^  Validating",
+  "^  Resolving",
+]
+head_lines = 20

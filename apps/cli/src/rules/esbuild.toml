@@ -1,0 +1,14 @@
+[filter]
+name = "esbuild"
+commands = ["esbuild", "npx esbuild", "yarn esbuild", "pnpm esbuild"]
+strip_patterns = []
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """  out.js  120b
+⚡ Done in 8ms
+"""
+expected_contains = "Done"
+min_savings_pct = 30

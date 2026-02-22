@@ -1,0 +1,5 @@
+[filter]
+name = "shellcheck"
+commands = ["shellcheck"]
+strip_patterns = ["^\\s*$"]
+head_lines = 50

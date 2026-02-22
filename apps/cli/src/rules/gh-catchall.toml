@@ -1,0 +1,12 @@
+[filter]
+name = "gh-catchall"
+commands = ["gh"]
+strip_patterns = [
+  "^\\s*$",
+  "^To get started with GitHub CLI",
+  "^\\s*gh auth login",
+  "^\\s*Tip:",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200

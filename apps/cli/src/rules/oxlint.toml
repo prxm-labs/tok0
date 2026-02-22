@@ -1,0 +1,10 @@
+[filter]
+name = "oxlint"
+commands = ["oxlint"]
+strip_patterns = [
+  "^\\s*$",
+  "^Finished in \\d+",
+  "^Found \\d+ warning",
+]
+head_lines = 50
+empty_message = "oxlint: ok"

@@ -1,0 +1,27 @@
+[filter]
+name = "argocd"
+commands = ["argocd app", "argocd cluster", "argocd repo", "argocd login"]
+strip_patterns = [
+  "^Time:",
+  "^URL:",
+  "^Repo:",
+  "^Targeted Cluster:",
+  "^Project:",
+  "^Server:",
+  "^Namespace:",
+  "^SyncWindow:",
+  "^Sync Policy:",
+  "^Path:",
+  "^Target:",
+]
+head_lines = 5
+tail_lines = 5
+empty_message = "ok"
+
+[[assertions]]
+input = """NAME             STATUS  HEALTH    REPO
+demo-app         Synced  Healthy   github.com/foo/bar
+billing-svc      OutOfSync Degraded  github.com/foo/billing
+"""
+expected_contains = "demo-app"
+min_savings_pct = 30

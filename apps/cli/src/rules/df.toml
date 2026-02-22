@@ -1,0 +1,5 @@
+[filter]
+name = "df"
+commands = ["df"]
+max_line_chars = 80
+head_lines = 20

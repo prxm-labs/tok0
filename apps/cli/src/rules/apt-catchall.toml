@@ -1,0 +1,18 @@
+[filter]
+name = "apt-catchall"
+commands = ["apt", "apt-get"]
+strip_patterns = [
+  "^\\s*$",
+  "^Hit:\\d+\\s+",
+  "^Get:\\d+\\s+",
+  "^Ign:\\d+\\s+",
+  "^Reading package lists",
+  "^Building dependency tree",
+  "^Reading state information",
+  "^Fetched\\s+",
+  "^\\d+ packages can be upgraded",
+]
+head_lines = 20
+tail_lines = 10
+max_line_chars = 200
+empty_message = "apt: ok"
