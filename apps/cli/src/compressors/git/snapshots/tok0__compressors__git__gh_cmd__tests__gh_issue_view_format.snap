@@ -1,0 +1,11 @@
+---
+source: src/compressors/git/gh_cmd.rs
+expression: output
+---
+title: bug: WebSocket connections drop silently under high load ca…
+state: OPEN
+number: 389
+url: https://github.com/owner/repo/issues/389
+labels: bug, critical, backend
+assignees: alee, mjones
+milestone: v2.8.0

@@ -1,0 +1,26 @@
+---
+source: src/compressors/git/git_cmd.rs
+expression: output
+---
+branch: feat/core-compressors
+
+staged (8):
+  new file: src/compressors/system/ls_cmd.rs
+  new file: src/compressors/system/find_cmd.rs
+  new file: src/compressors/system/grep_cmd.rs
+  new file: src/compressors/system/diff_cmd.rs
+  new file: src/compressors/system/read_cmd.rs
+  new file: src/compressors/system/smart_cmd.rs
+  modified: src/main.rs
+  modified: Cargo.toml
+
+unstaged (3):
+  modified: src/engine/config.rs
+  modified: src/engine/shell.rs
+  modified: src/engine/meter.rs
+
+untracked (4):
+  tests/fixtures/system/ls_raw.txt
+  tests/fixtures/system/find_raw.txt
+  tests/fixtures/system/grep_raw.txt
+  src/compressors/system/snapshots/

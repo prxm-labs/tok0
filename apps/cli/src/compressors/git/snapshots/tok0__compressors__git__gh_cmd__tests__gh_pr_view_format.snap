@@ -1,0 +1,12 @@
+---
+source: src/compressors/git/gh_cmd.rs
+expression: output
+---
+title: feat: implement distributed rate limiting with redis sentin…
+state: OPEN
+number: 142
+url: https://github.com/owner/repo/pull/142
+labels: enhancement, backend, needs-review
+assignees: jsmith
+reviewers: alee (REQUESTED), mjones (APPROVED), kchen (CHANGES_REQUESTED)
+milestone: v2.8.0

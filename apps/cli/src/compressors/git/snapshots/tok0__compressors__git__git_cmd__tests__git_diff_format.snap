@@ -1,0 +1,8 @@
+---
+source: src/compressors/git/git_cmd.rs
+expression: output
+---
+3 files changed, +33 -0
+  src/engine/config.rs (+10 -0, 2 hunks)
+  src/engine/shell.rs (+9 -0, 2 hunks)
+  src/engine/meter.rs (+14 -0, 1 hunks)

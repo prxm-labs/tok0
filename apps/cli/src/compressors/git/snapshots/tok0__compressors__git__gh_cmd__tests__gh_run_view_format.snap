@@ -1,0 +1,17 @@
+---
+source: src/compressors/git/gh_cmd.rs
+expression: output
+---
+✓ main · build-and-test · 8432109876
+✓ lint (ubuntu-latest) (45s)
+✓ test (ubuntu-latest, stable) (1m32s)
+✓ test (ubuntu-latest, nightly) (1m28s)
+X build (ubuntu-latest) (2m14s)
+  X Build release binary (cargo build --release)
+  X Upload release artifacts (actions/upload-artifact@v4)
+✓ security-scan (ubuntu-latest) (1m05s)
+✓ docker-build (ubuntu-latest) (3m22s)
+
+ANNOTATIONS
+X Build release binary - Process completed with exit code 101.
+X Upload release artifacts - Previous step failed with exit code 101, skipping artifact upload.

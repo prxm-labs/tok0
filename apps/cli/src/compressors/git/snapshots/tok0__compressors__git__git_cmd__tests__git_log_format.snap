@@ -1,0 +1,15 @@
+---
+source: src/compressors/git/git_cmd.rs
+expression: output
+---
+10 commits
+  a1b2c3d feat: add core system compressors (ls, find, grep, diff, read, smart)
+  b2c3d4e feat: SQLite tracking system with project-scoped analytics
+  c3d4e5f feat: bootstrap tok0 project with config, shell utils, and CLI routing
+  d4e5f67 chore: initial project setup with .gitignore and docs
+  e5f6789 docs: add implementation plan for token squasher
+  f678901 feat: add bridge adapter architecture design
+  0789012 feat: add TOML rule engine specification
+  1890123 feat: add telemetry and privacy design
+  2901234 feat: add cloud team dashboard specification
+  3012345 chore: add Rust development guidelines and TDD skill

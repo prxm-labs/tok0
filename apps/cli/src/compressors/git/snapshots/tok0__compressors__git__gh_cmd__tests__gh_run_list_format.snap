@@ -1,0 +1,14 @@
+---
+source: src/compressors/git/gh_cmd.rs
+expression: output
+---
+✓ CI passed (build-and-test)
+✓ CI passed (build-and-test)
+X CI failed (build-and-test)
+✓ CI passed (lint-and-format)
+✓ Deployment succeeded (deploy-staging)
+X CI failed (build-and-test)
+✓ CI passed (build-and-test)
+✓ Security scan passed (codeql-analysis)
+- CI in progress (build-and-test)
+✓ CI passed (build-and-test)
