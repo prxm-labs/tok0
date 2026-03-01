@@ -1,0 +1,5 @@
+---
+source: src/compressors/rust/cargo_cmd.rs
+expression: output
+---
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s

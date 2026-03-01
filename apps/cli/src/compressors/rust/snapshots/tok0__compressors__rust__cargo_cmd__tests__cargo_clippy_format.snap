@@ -1,0 +1,146 @@
+---
+source: src/compressors/rust/cargo_cmd.rs
+expression: output
+---
+warning: unused variable: `deleted`
+   --> src/engine/meter.rs:309:13
+warning: calls to `push` immediately after creation
+  --> src/compressors/system/smart_cmd.rs:84:9
+warning: this function has too many arguments (9/7)
+  --> src/engine/meter.rs:64:5
+warning: `tok0` (lib) generated 1 warning
+warning: `tok0` (lib test) generated 3 warnings (1 duplicate)
+warning: function `run_edge_cases` is never used
+  --> tests/common/mod.rs:28:8
+warning: calls to `push` immediately after creation
+  --> tests/efficiency_test.rs:86:5
+warning: calling `push_str()` using a single-character string literal
+   --> tests/efficiency_test.rs:177:9
+warning: calling `push_str()` using a single-character string literal
+   --> tests/efficiency_test.rs:182:9
+warning: calling `push_str()` using a single-character string literal
+   --> tests/efficiency_test.rs:188:9
+warning: this expression creates a reference which is immediately dereferenced by the compiler
+   --> tests/efficiency_test.rs:223:45
+warning: this expression creates a reference which is immediately dereferenced by the compiler
+   --> tests/efficiency_test.rs:224:45
+warning: `tok0` (test "efficiency_test") generated 7 warnings (run `cargo clippy --fix --test "efficiency_test"` to apply 5 suggestions)
+warning: function `count_tokens` is never used
+ --> tests/common/mod.rs:2:8
+warning: function `assert_savings` is never used
+ --> tests/common/mod.rs:7:8
+warning: redundant closure
+   --> tests/edge_cases_test.rs:142:28
+warning: redundant closure
+   --> tests/edge_cases_test.rs:279:28
+warning: calls to `push` immediately after creation
+   --> tests/edge_cases_test.rs:396:5
+warning: redundant closure
+   --> tests/edge_cases_test.rs:579:28
+warning: redundant closure
+   --> tests/edge_cases_test.rs:584:28
+warning: redundant closure
+   --> tests/edge_cases_test.rs:589:28
+warning: redundant closure
+   --> tests/edge_cases_test.rs:594:28
+warning: redundant closure
+   --> tests/edge_cases_test.rs:599:28
+warning: `tok0` (test "edge_cases_test") generated 10 warnings (run `cargo clippy --fix --test "edge_cases_test"` to apply 7 suggestions)
+warning: function `filter_git_log` is never used
+  --> src/compressors/git/git_cmd.rs:19:8
+warning: function `filter_git_status` is never used
+  --> src/compressors/git/git_cmd.rs:62:8
+warning: function `filter_git_diff` is never used
+   --> src/compressors/git/git_cmd.rs:126:8
+warning: function `filter_git_simple` is never used
+   --> src/compressors/git/git_cmd.rs:178:8
+warning: function `filter_df` is never used
+  --> src/compressors/system/df_cmd.rs:16:8
+warning: function `filter_diff` is never used
+  --> src/compressors/system/diff_cmd.rs:15:8
+warning: struct `FileDiff` is never constructed
+   --> src/compressors/system/diff_cmd.rs:101:8
+warning: function `parse_size` is never used
+  --> src/compressors/system/du_cmd.rs:12:4
+warning: function `filter_du` is never used
+  --> src/compressors/system/du_cmd.rs:32:8
+warning: function `filter_env` is never used
+  --> src/compressors/system/env_cmd.rs:19:8
+warning: function `filter_find` is never used
+  --> src/compressors/system/find_cmd.rs:11:8
+warning: function `filter_grep` is never used
+  --> src/compressors/system/grep_cmd.rs:11:8
+warning: function `filter_ls` is never used
+  --> src/compressors/system/ls_cmd.rs:14:8
+warning: function `format_size` is never used
+  --> src/compressors/system/ls_cmd.rs:65:4
+warning: function `filter_read` is never used
+ --> src/compressors/system/read_cmd.rs:4:8
+warning: function `filter_smart` is never used
+  --> src/compressors/system/smart_cmd.rs:13:8
+warning: function `filter_wc` is never used
+  --> src/compressors/system/wc_cmd.rs:15:8
+warning: multiple fields are never read
+  --> src/engine/config.rs:8:9
+warning: field `exclude_commands` is never read
+  --> src/engine/config.rs:44:9
+warning: fields `colors`, `emoji`, and `max_width` are never read
+  --> src/engine/config.rs:49:9
+warning: fields `grep_max_results`, `grep_max_per_file`, `status_max_files`, `passthrough_max_chars`, and `command_timeout_secs` are never read
+  --> src/engine/config.rs:66:9
+warning: field `enabled` is never read
+  --> src/engine/config.rs:87:9
+warning: fields `auto_check` and `check_interval_hours` are never read
+  --> src/engine/config.rs:98:9
+warning: fields `enabled`, `api_url`, `team_id`, and `api_key` are never read
+   --> src/engine/config.rs:113:9
+warning: function `load_config` is never used
+   --> src/engine/config.rs:119:8
+warning: function `config_path` is never used
+   --> src/engine/config.rs:130:8
+warning: function `db_path` is never used
+   --> src/engine/config.rs:137:8
+warning: struct `Tracker` is never constructed
+ --> src/engine/meter.rs:5:12
+warning: struct `Summary` is never constructed
+  --> src/engine/meter.rs:10:12
+warning: struct `DailyStats` is never constructed
+  --> src/engine/meter.rs:19:12
+warning: struct `RecentCommand` is never constructed
+  --> src/engine/meter.rs:27:12
+warning: associated items `new`, `record`, `get_summary`, `get_daily`, `get_recent`, and `cleanup` are never used
+   --> src/engine/meter.rs:36:12
+warning: function `record` is never used
+   --> src/engine/meter.rs:185:8
+warning: function `redact_paths` is never used
+  --> src/engine/sanitize.rs:27:8
+warning: function `redact_secrets` is never used
+  --> src/engine/sanitize.rs:36:8
+warning: function `sanitize_output` is never used
+  --> src/engine/sanitize.rs:62:8
+warning: function `strip_ansi` is never used
+  --> src/engine/shell.rs:11:8
+warning: function `count_tokens` is never used
+  --> src/engine/shell.rs:20:8
+warning: function `truncate_line` is never used
+  --> src/engine/shell.rs:33:8
+warning: function `head_tail` is never used
+  --> src/engine/shell.rs:42:8
+warning: function `hard_cap` is never used
+  --> src/engine/shell.rs:62:8
+warning: function `execute_with_timeout` is never used
+ --> src/engine/timeout.rs:7:8
+warning: fields `hooks`, `telemetry`, and `update` are never read
+  --> src/engine/config.rs:10:9
+warning: fields `emoji` and `max_width` are never read
+  --> src/engine/config.rs:50:9
+warning: fields `grep_max_per_file`, `status_max_files`, and `passthrough_max_chars` are never read
+  --> src/engine/config.rs:67:9
+warning: fields `api_url`, `team_id`, and `api_key` are never read
+   --> src/engine/config.rs:114:9
+warning: fields `date` and `avg_savings_pct` are never read
+  --> src/engine/meter.rs:20:9
+warning: fields `timestamp`, `command`, `input_tokens`, `output_tokens`, and `savings_pct` are never read
+  --> src/engine/meter.rs:28:9
+warning: `tok0` (bin "tok0") generated 43 warnings (1 duplicate)
+warning: `tok0` (bin "tok0" test) generated 15 warnings (9 duplicates)
