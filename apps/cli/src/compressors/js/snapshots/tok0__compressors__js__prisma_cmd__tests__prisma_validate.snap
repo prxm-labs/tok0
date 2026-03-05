@@ -1,0 +1,5 @@
+---
+source: src/compressors/js/prisma_cmd.rs
+expression: out
+---
+The schema at schema.prisma is valid 🚀

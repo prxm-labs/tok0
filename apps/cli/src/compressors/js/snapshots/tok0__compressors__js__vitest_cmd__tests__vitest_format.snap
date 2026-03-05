@@ -1,0 +1,31 @@
+---
+source: src/compressors/js/vitest_cmd.rs
+expression: output
+---
+ ✗ src/api/client.test.ts (2)
+   ✗ retries on 503 (18ms)
+     → AssertionError: expected 3 but got 1
+
+     - Expected
+     + Received
+
+     - 3
+     + 1
+
+      at src/api/client.test.ts:42:18
+
+ ✗ src/components/Button.test.tsx (1)
+   ✗ shows loading spinner during async action (22ms)
+     → AssertionError: expected element to be visible
+
+     - Expected  - 1
+     + Received  + 1
+
+     - <span class="spinner" style="display: block">
+     + <span class="spinner" style="display: none">
+
+      at src/components/Button.test.tsx:67:24
+
+Tests: 2 failed, 18 passed, 20 total
+Test Files: 2 failed, 4 passed, 6 total
+Duration: 1.42s

@@ -1,0 +1,13 @@
+---
+source: src/compressors/js/npm_cmd.rs
+expression: output
+---
+npm warn peer React@18.2.0 is not supported by peer deps in react-scripts@5.0.1. Using the closest match.
+npm warn peer React@18.2.0 does not meet peer requirement >=16 <18 in some-library@2.1.0
+added 1432 packages, and audited 1433 packages in 34s
+8 vulnerabilities (3 low, 3 moderate, 2 high)
+  To address issues that do not require attention, run:
+    npm audit fix
+  To address all issues (including breaking changes), run:
+    npm audit fix --force
+Run `npm audit` for details.

@@ -1,0 +1,44 @@
+---
+source: src/compressors/js/next_cmd.rs
+expression: out
+---
+  ▲ Next.js 14.2.0
+  - Local:        http://localhost:3000
+  - Network:      http://192.168.1.1:3000
+ ✓ Ready in 2.3s
+ ○ Compiling /page ...
+ ✓ Compiled /page in 350ms (516 modules)
+ ○ Compiling /about ...
+ ✓ Compiled /about in 220ms (320 modules)
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page

@@ -1,0 +1,9 @@
+---
+source: src/compressors/js/vite_cmd.rs
+assertion_line: 146
+expression: out
+---
+vite v5.4.21 building for production...
+dist/index.html                0.08 kB │ gzip: 0.09 kB
+dist/assets/index-acHfQCvx.js  0.73 kB │ gzip: 0.41 kB
+✓ built in 52ms

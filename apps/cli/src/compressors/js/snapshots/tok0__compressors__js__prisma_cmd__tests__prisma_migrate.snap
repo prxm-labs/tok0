@@ -1,0 +1,9 @@
+---
+source: src/compressors/js/prisma_cmd.rs
+expression: out
+---
+Applying migration `20260427215712_init`
+The following migration(s) have been created and applied from new schema changes:
+migrations/
+    └─ migration.sql
+Your database is now in sync with your schema.

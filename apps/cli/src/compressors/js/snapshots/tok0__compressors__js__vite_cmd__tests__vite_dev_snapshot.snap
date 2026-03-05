@@ -1,0 +1,8 @@
+---
+source: src/compressors/js/vite_cmd.rs
+assertion_line: 154
+expression: out
+---
+  VITE v5.4.21  ready in 134 ms
+  ➜  Local:   http://localhost:5193/
+  ➜  Network: use --host to expose

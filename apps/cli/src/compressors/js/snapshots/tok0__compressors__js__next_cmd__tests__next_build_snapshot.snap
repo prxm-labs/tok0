@@ -1,0 +1,10 @@
+---
+source: src/compressors/js/next_cmd.rs
+expression: out
+---
+▲ Next.js 16.2.4 (Turbopack)
+✓ Compiled successfully in 1316ms
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+○  (Static)  prerendered as static content

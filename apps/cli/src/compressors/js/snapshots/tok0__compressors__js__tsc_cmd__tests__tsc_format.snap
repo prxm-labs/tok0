@@ -1,0 +1,21 @@
+---
+source: src/compressors/js/tsc_cmd.rs
+expression: output
+---
+src/components/Button.tsx (3 errors)
+  12:TS2322: Type 'string' is not assignable to type 'number'.
+  28:TS2339: Property 'variant' does not exist on type 'ButtonProps'.
+  45:TS7006: Parameter 'event' implicitly has an 'any' type.
+src/components/Modal.tsx (4 errors)
+  8:TS2305: Module '"react"' has no exported member 'FC'.
+  19:TS2345: Argument of type 'null' is not assignable to parameter of type 'HTMLElement'.
+  34:TS2532: Object is possibly 'undefined'.
+  ...1 more
+src/services/api.ts (3 errors)
+  6:TS2307: Cannot find module './config' or its corresponding type declarations.
+  22:TS2741: Property 'headers' is missing in type '{ body: string; }' but required in type 'RequestInit'.
+  39:TS2322: Type 'Response | undefined' is not assignable to type 'Response'.
+src/store/slices/auth.ts (2 errors)
+  11:TS2339: Property 'dispatch' does not exist on type 'Store<{}, AnyAction>'.
+  27:TS2322: Type 'Reducer<State, AnyAction>' is not assignable to type 'Reducer<never, AnyAction>'.
+Found 12 errors.

@@ -1,0 +1,5 @@
+---
+source: src/compressors/js/prisma_cmd.rs
+expression: out
+---
+✔ Generated Prisma Client (v5.22.0) to ./node_modules/@prisma/client in 47ms
