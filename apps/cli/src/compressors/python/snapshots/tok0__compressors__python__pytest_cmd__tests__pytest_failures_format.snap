@@ -1,0 +1,8 @@
+---
+source: src/compressors/python/pytest_cmd.rs
+expression: output
+---
+FAILED tests/test_models.py::TestUserModel::test_user_model_validation - AssertionError: assert False
+FAILED tests/test_api.py::test_api_create_resource - AssertionError: assert 422 == 201
+FAILED tests/test_api.py::test_api_delete_missing_resource - AssertionError: assert 500 == 404
+========================= 27 passed, 3 failed in 3.61s =========================

@@ -1,0 +1,14 @@
+---
+source: src/compressors/python/ruff_cmd.rs
+expression: output
+---
+F401 src/main.py:5: `os` imported but unused (+3 more)
+E501 src/main.py:12: Line too long (92 > 79 characters) (+2 more)
+E741 src/main.py:18: Ambiguous variable name: `l`
+F841 src/main.py:24: Local variable `result` is assigned to but never used (+1 more)
+E711 src/main.py:31: Comparison to `None` (use `is` or `is not`) (+1 more)
+B006 src/utils/helpers.py:17: Do not use mutable data structures for argument defaults
+E302 src/utils/helpers.py:28: Expected 2 blank lines, got 1
+E303 src/api/client.py:15: Too many blank lines (3)
+B007 src/api/client.py:22: Loop control variable `i` not used in loop body
+Found 15 errors (8 fixable).

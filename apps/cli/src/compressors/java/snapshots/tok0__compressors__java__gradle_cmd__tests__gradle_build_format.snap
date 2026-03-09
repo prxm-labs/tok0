@@ -1,0 +1,33 @@
+---
+source: src/compressors/java/gradle_cmd.rs
+expression: output
+---
+> Task :myapp-common:compileJava
+> Task :myapp-common:classes
+> Task :myapp-common:jar
+> Task :myapp-security:compileJava
+> Task :myapp-security:classes
+> Task :myapp-security:jar
+> Task :myapp-messaging:compileJava
+> Task :myapp-messaging:classes
+> Task :myapp-messaging:jar
+> Task :myapp-core:compileJava
+> Task :myapp-core:classes
+> Task :myapp-core:jar
+> Task :myapp-persistence:compileJava
+> Task :myapp-persistence:classes
+> Task :myapp-persistence:jar
+> Task :myapp-api:compileJava
+> Task :myapp-api:classes
+> Task :myapp-api:jar
+> Task :myapp-core:compileTestJava
+> Task :myapp-core:testClasses
+> Task :myapp-core:test
+> Task :myapp-api:compileTestJava
+> Task :myapp-api:testClasses
+> Task :myapp-api:test
+> Task :myapp-api:check
+> Task :myapp-api:assemble
+> Task :myapp-api:build
+BUILD SUCCESSFUL in 12s
+7 actionable tasks: 5 executed, 2 up-to-date

@@ -1,0 +1,12 @@
+---
+source: src/compressors/go/go_cmd.rs
+expression: output
+---
+pkg/handler/handler.go:23:14: undefined: middleware.AuthMiddleware
+pkg/handler/handler.go:45:6: cannot use req.Body (variable of type io.ReadCloser) as type io.Reader in argument to json.NewDecoder
+pkg/handler/handler.go:67:9: too many arguments in call to w.WriteHeader
+	have (int, string)
+	want (int)
+pkg/db/connection.go:18:2: imported and not used: "database/sql"
+pkg/db/connection.go:34:15: cannot use cfg.DSN (variable of type string) as type *url.URL in argument to sql.Open
+cmd/server/main.go:42:16: cannot use port (variable of type int) as type string in argument to net.Listen

@@ -1,0 +1,21 @@
+---
+source: src/compressors/go/go_cmd.rs
+expression: output
+---
+pkg/handler/handler.go:15:2: "net/http" imported and not used (goimports)
+pkg/handler/handler.go:23:14: undefined: middleware.AuthMiddleware (typecheck)
+pkg/handler/auth.go:34:6: exported function AuthHandler returns unexported type *authResult, which can be annoying to use (golint)
+pkg/handler/auth.go:67:5: ineffectual assignment to err (ineffassign)
+pkg/handler/auth.go:89:9: Error return value of `w.Write` is not checked (errcheck)
+pkg/user/service.go:12:1: package comment should be of the form "Package user ..." (golint)
+pkg/user/service.go:45:15: cognitive complexity 24 of function `CreateUser` is high (> 15) (gocognit)
+pkg/user/service.go:78:6: exported type UserService should have comment or be unexported (golint)
+pkg/user/service.go:112:9: G304: Potential file inclusion via variable (gosec)
+pkg/user/repo.go:23:2: shadow: declaration of "err" shadows declaration at line 19 (govet)
+pkg/user/repo.go:56:14: unnecessary conversion (unconvert)
+pkg/db/connection.go:18:2: "database/sql" imported and not used (goimports)
+pkg/db/connection.go:34:8: variable 'conn' is not used (unused)
+pkg/db/connection.go:67:5: SA1006: Printf with dynamic first argument and no further arguments (staticcheck)
+pkg/db/query.go:89:12: undefined: QueryBuilder (typecheck)
+pkg/config/config.go:34:2: fieldalignment: struct with 56 pointer bytes could be 48 (govet)
+pkg/config/config.go:78:9: string `"production"` has 3 occurrences, make it a constant (goconst)

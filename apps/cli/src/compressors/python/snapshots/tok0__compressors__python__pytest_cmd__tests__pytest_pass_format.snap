@@ -1,0 +1,5 @@
+---
+source: src/compressors/python/pytest_cmd.rs
+expression: output
+---
+============================== 24 passed, 2 warnings in 1.83s ==============================

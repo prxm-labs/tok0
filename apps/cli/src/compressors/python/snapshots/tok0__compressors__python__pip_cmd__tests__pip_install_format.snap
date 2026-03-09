@@ -1,0 +1,6 @@
+---
+source: src/compressors/python/pip_cmd.rs
+expression: output
+---
+Installing collected packages: urllib3, pluggy, packaging, MarkupSafe, itsdangerous, iniconfig, idna, greenlet, click, charset-normalizer, certifi, annotated-types, werkzeug, requests, pydantic-core, jinja2, sqlalchemy, pytest, pydantic, flask
+Successfully installed MarkupSafe-2.1.3 annotated-types-0.6.0 certifi-2023.11.17 charset-normalizer-3.3.2 click-8.1.7 flask-3.0.0 greenlet-3.0.3 idna-3.6 iniconfig-2.0.0 itsdangerous-2.1.2 jinja2-3.1.2 packaging-23.2 pluggy-1.3.0 pydantic-2.5.2 pydantic-core-2.14.5 pytest-7.4.3 requests-2.31.0 sqlalchemy-2.0.23 urllib3-2.1.0 werkzeug-3.0.1

@@ -1,0 +1,20 @@
+---
+source: src/compressors/go/go_cmd.rs
+expression: output
+---
+ok  	github.com/user/project/pkg/config	(cached)
+ok  	github.com/user/project/pkg/logger	(cached)
+ok  	github.com/user/project/pkg/logger	0.003s
+ok  	github.com/user/project/pkg/config	0.004s
+ok  	github.com/user/project/pkg/user	0.006s
+--- FAIL: TestHandlerAuth (0.01s)
+    handler_test.go:87: expected status 200, got 401
+    handler_test.go:88: response body: {"error":"unauthorized","code":401}
+FAIL	github.com/user/project/pkg/handler	0.013s
+--- FAIL: TestDBTransaction (0.03s)
+    db_test.go:142: transaction rollback failed: connection reset by peer
+    db_test.go:143: expected 3 rows, got 0
+ok  	github.com/user/project/pkg/db	0.037s
+ok  	github.com/user/project/pkg/cache	0.009s
+ok  	github.com/user/project/pkg/metrics	0.002s
+FAIL

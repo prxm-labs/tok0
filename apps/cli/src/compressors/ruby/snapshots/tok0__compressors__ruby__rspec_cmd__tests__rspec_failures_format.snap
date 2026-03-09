@@ -1,0 +1,27 @@
+---
+source: src/compressors/ruby/rspec_cmd.rs
+expression: output
+---
+Failures:
+
+  1) OrderService#create_order with valid items charges the customer credit card
+     Failure/Error: expect(charge.amount).to eq(99.99)
+
+       expected: 99.99
+            got: 89.99
+
+       (compared using ==)
+
+     # ./spec/services/order_service_spec.rb:47:in `block (5 levels) in <top (required)>'
+
+  2) UserAuthentication with expired token raises TokenExpiredError
+     Failure/Error: expect { service.login(token: expired_token) }.to raise_error(TokenExpiredError)
+       expected TokenExpiredError but nothing was raised
+
+     # ./spec/services/user_authentication_spec.rb:33:in `block (4 levels) in <top (required)>'
+
+Finished in 2.84521 seconds (files took 1.803 seconds to load)
+70 examples, 2 failures
+Failed examples:
+rspec ./spec/services/order_service_spec.rb:44 # OrderService#create_order with valid items charges the customer credit card
+rspec ./spec/services/user_authentication_spec.rb:30 # UserAuthentication with expired token raises TokenExpiredError
