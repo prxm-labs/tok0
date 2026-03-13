@@ -1,0 +1,51 @@
+---
+source: src/compressors/cloud/docker_cmd.rs
+expression: out
+---
+2024-01-15T10:00:01.123Z Starting application server...
+2024-01-15T10:00:01.234Z Loading configuration from /app/config/production.yml
+2024-01-15T10:00:01.345Z Connecting to database at postgres://db-primary:5432/myapp
+2024-01-15T10:00:01.456Z Database connection pool initialized (min=5, max=20)
+2024-01-15T10:00:01.567Z Connecting to Redis at redis://cache:6379
+2024-01-15T10:00:01.678Z Redis connection established
+2024-01-15T10:00:01.789Z Loading middleware: cors, helmet, compression, rate-limit
+2024-01-15T10:00:01.890Z Loading routes: /api/v1/users, /api/v1/orders, /api/v1/products
+2024-01-15T10:00:01.901Z Loading routes: /api/v1/payments, /api/v1/webhooks, /api/v1/admin
+2024-01-15T10:00:02.012Z Health check endpoint registered at /health
+2024-01-15T10:00:02.123Z Metrics endpoint registered at /metrics
+2024-01-15T10:00:02.234Z Server listening on port 3000
+2024-01-15T10:00:02.345Z Worker threads spawned: 4
+2024-01-15T10:00:02.456Z Background job scheduler started
+2024-01-15T10:00:02.567Z Cron job registered: cleanup-sessions (every 1h)
+2024-01-15T10:00:02.678Z Cron job registered: sync-inventory (every 15m)
+2024-01-15T10:00:02.789Z Cron job registered: send-reports (daily at 00:00)
+2024-01-15T10:00:02.890Z Application startup complete in 1.77s
+2024-01-15T10:00:03.001Z [info] Incoming request: GET /health from 10.0.0.1
+2024-01-15T10:00:03.012Z [info] Response: 200 OK (2ms)
+... (16 lines omitted)
+2024-01-15T10:00:30.678Z [warn] Order ORD-2024-00100 already cancelled
+... (21 lines omitted)
+2024-01-15T10:01:05.890Z Error: Payment gateway timeout after 30000ms
+2024-01-15T10:01:05.901Z [error] Failed to process refund for ORD-2024-00099: gateway_timeout
+... (28 lines omitted)
+2024-01-15T10:01:55.910Z fatal: database connection pool exhausted (20/20 connections in use)
+2024-01-15T10:01:55.921Z PANIC: unable to acquire database connection within 5000ms timeout
+2024-01-15T10:01:56.032Z [error] Request failed: POST /api/v1/orders - pool_exhausted
+2024-01-15T10:01:56.143Z [info] Response: 503 Service Unavailable (5012ms)
+2024-01-15T10:01:56.254Z [info] Alert sent to ops-channel: database pool exhausted
+2024-01-15T10:02:00.365Z [info] Incoming request: GET /health from 10.0.0.1
+2024-01-15T10:02:00.476Z [warn] Health check degraded: database pool usage at 95%
+2024-01-15T10:02:00.587Z [info] Response: 503 Service Unavailable (2ms)
+2024-01-15T10:02:05.698Z [info] Database pool recovered: 8/20 connections available
+2024-01-15T10:02:05.809Z [info] Health check restored to healthy status
+2024-01-15T10:02:10.920Z [info] Incoming request: GET /health from 10.0.0.1
+2024-01-15T10:02:10.931Z [info] Response: 200 OK (1ms)
+2024-01-15T10:02:15.042Z [info] Incoming request: POST /api/v1/orders from 192.168.1.60
+2024-01-15T10:02:15.153Z [info] Order created: ORD-2024-00144
+2024-01-15T10:02:15.264Z [info] Payment processing initiated for ORD-2024-00144
+2024-01-15T10:02:15.375Z [info] Response: 201 Created (333ms)
+2024-01-15T10:02:20.486Z [info] Incoming request: GET /api/v1/products from 192.168.1.61
+2024-01-15T10:02:20.597Z [info] Cache hit for products listing
+2024-01-15T10:02:20.608Z [info] Response: 200 OK (11ms)
+2024-01-15T10:02:25.719Z [info] Incoming request: GET /metrics from 10.0.0.2
+2024-01-15T10:02:25.830Z [info] Response: 200 OK (4ms)

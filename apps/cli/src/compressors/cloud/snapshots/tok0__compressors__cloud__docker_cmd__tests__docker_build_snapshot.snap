@@ -1,0 +1,22 @@
+---
+source: src/compressors/cloud/docker_cmd.rs
+expression: out
+---
+  FROM node:18-alpine AS builder
+    18-alpine: Pulling from library/node
+  WORKDIR /app
+  COPY package*.json ./
+  RUN npm ci --only=production
+    added 421 packages in 34s
+  COPY . .
+  RUN npm run build
+    > myapp@2.14.1 build
+    > tsc --project tsconfig.build.json && node scripts/bundle.js
+    TypeScript compilation succeeded (0 errors, 0 warnings)
+    Bundle created: dist/server.js (1.2MB)
+    Bundle created: dist/worker.js (892KB)
+  FROM node:18-alpine AS runtime
+  COPY --from=builder /app/dist ./dist
+Successfully built c3d4e5f6a7b8
+Successfully tagged myapp/backend:v2.14.1-release
+Successfully tagged myapp/backend:latest

@@ -1,0 +1,10 @@
+---
+source: src/compressors/system/df_cmd.rs
+expression: output
+---
+Filesystem                                                              Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk3s7s1                                                         228Gi    10Gi    12Gi    47%    426k  128M    0%   /
+/dev/disk3s1                                                           228Gi   184Gi    12Gi    94%    2.3M  128M    2%   /System/Volumes/Data
+/dev/disk3s5                                                           228Gi   920Ki    12Gi     1%     111  128M    0%   /Volumes/Data
+map auto_home                                                            0Bi     0Bi     0Bi   100%       0     0     -   /System/Volumes/Data/home
+# (8 virtual/internal mounts omitted)

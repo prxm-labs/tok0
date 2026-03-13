@@ -1,0 +1,44 @@
+---
+source: src/compressors/cloud/kubectl_cmd.rs
+expression: output
+---
+Name: api-server-7d9f8b6c4-xk2pq
+Namespace: production
+Node: gke-cluster-pool-1-abc123/10.128.0.45
+Status: Running
+IP: 10.244.2.15
+Controlled By: ReplicaSet/api-server-7d9f8b6c4
+  istio-init:
+  State: Terminated
+  Reason: Completed
+  Exit Code: 0
+  Ready: True
+  Restart Count: 0
+  api-server:
+  State: Running
+  Ready: True
+  Restart Count: 0
+  Limits:
+  cpu: 500m
+  memory: 512Mi
+  Requests:
+  cpu: 250m
+  memory: 256Mi
+  Liveness: http-get http://:8080/healthz delay=30s timeout=5s period=10s #success=1 #failure=3
+  Readiness: http-get http://:8080/readyz delay=5s timeout=3s period=5s #success=1 #failure=3
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  3d    default-scheduler  Successfully assigned production/api-server-7d9f8b6c4-xk2pq to gke-cluster-pool-1-abc123
+  Normal  Pulled     3d    kubelet            Container image "docker.io/istio/proxyv2:1.20.0" already present on machine
+  Normal  Created    3d    kubelet            Created container istio-init
+  Normal  Started    3d    kubelet            Started container istio-init
+  Normal  Pulled     3d    kubelet            Container image "registry.example.com/api-server:v2.3.1" already present on machine
+  Normal  Created    3d    kubelet            Created container api-server
+  Normal  Started    3d    kubelet            Started container api-server

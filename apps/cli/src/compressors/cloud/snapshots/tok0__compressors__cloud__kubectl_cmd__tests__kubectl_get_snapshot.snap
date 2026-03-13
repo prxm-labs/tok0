@@ -1,0 +1,19 @@
+---
+source: src/compressors/cloud/kubectl_cmd.rs
+expression: out
+---
+NAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE
+kubernetes ClusterIP 10.96.0.1 <none> 443/TCP 30d
+api-server LoadBalancer 10.96.45.12 34.120.55.100 80:31080/TCP,443:31443/TCP 3d
+api-server-internal ClusterIP 10.96.45.13 <none> 8080/TCP 3d
+worker-service ClusterIP 10.96.78.34 <none> 9090/TCP 2d
+postgres-headless ClusterIP None <none> 5432/TCP 7d
+postgres-primary ClusterIP 10.96.102.56 <none> 5432/TCP 7d
+redis-cache ClusterIP 10.96.88.91 <none> 6379/TCP 5d
+nginx-ingress LoadBalancer 10.96.120.10 34.120.55.200 80:30080/TCP,443:30443/TCP 4d
+prometheus-server ClusterIP 10.96.55.77 <none> 9090/TCP 6d
+grafana NodePort 10.96.66.88 <none> 3000:30300/TCP 6d
+cert-manager ClusterIP 10.96.33.44 <none> 9402/TCP 10d
+cert-manager-webhook ClusterIP 10.96.33.45 <none> 443/TCP 10d
+kube-dns ClusterIP 10.96.0.10 <none> 53/UDP,53/TCP,9153/TCP 30d
+metrics-server ClusterIP 10.96.22.11 <none> 443/TCP 15d

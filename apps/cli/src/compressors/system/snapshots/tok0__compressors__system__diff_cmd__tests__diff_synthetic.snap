@@ -1,0 +1,15 @@
+---
+source: src/compressors/system/diff_cmd.rs
+expression: output
+---
+2 files changed, +5 -1
+
+src/main.rs  (+3 -1, 1 hunks)
+  +use clap::Parser;
+  -    println!("hello");
+  +    let cli = Cli::parse();
+  ... +1 more changes
+
+src/lib.rs  (+2 -0, 1 hunks)
+  +pub mod engine;
+  +pub mod compressors;

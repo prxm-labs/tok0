@@ -1,0 +1,15 @@
+---
+source: src/compressors/cloud/docker_cmd.rs
+expression: out
+---
+myapp-web-1 web up
+myapp-worker-1 worker up
+myapp-db-1 db up
+myapp-redis-1 redis up
+myapp-nginx-1 nginx up
+myapp-mailhog-1 mailhog up
+myapp-prometheus-1 prometheus up
+myapp-grafana-1 grafana up
+myapp-elasticsearch-1 elasticsearch:8.11.3 2 hours ago 0.0.0.0:9200->9200/tcp,
+myapp-migrator-1 migrator exited(0)
+myapp-seeddb-1 seeddb exited(0)

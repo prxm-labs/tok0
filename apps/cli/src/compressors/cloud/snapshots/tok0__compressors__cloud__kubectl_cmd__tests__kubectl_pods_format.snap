@@ -1,0 +1,17 @@
+---
+source: src/compressors/cloud/kubectl_cmd.rs
+expression: output
+---
+NAME READY STATUS AGE
+api-server-7d9f8b6c4-xk2pq 2/2 Running 3d
+api-server-7d9f8b6c4-mw7rn 2/2 Running 3d
+api-server-7d9f8b6c4-tz9vb 2/2 Running 3d
+worker-deployment-5c8b7d9f6-jq4lx 1/1 Running 2d
+worker-deployment-5c8b7d9f6-np8wz 1/1 Running 2d
+postgres-statefulset-0 1/1 Running 7d
+postgres-statefulset-1 1/1 Running 7d
+redis-cache-6f4d8c9b7-rv3sk 1/1 Running 5d
+nginx-ingress-controller-7b8c9d6f5-hm6qt 1/1 Running 4d
+prometheus-server-9d7f6b8c4-wk5px 2/2 Running 6d
+grafana-dashboard-4c8b7d9f3-yl2mn 1/1 Running 6d
+cert-manager-5f9d8c7b6-qr7jt 1/1 Running 10d

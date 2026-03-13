@@ -1,0 +1,16 @@
+---
+source: src/compressors/system/du_cmd.rs
+expression: output
+---
+top 10 of 30 entries (sorted by size):
+      1.5G  media/recordings/demo_screencasts/high_quality_mp4
+      701M  target/debug/incremental/long_build_artifact_path
+      6.8M  .git/refs/remotes/origin/long_branch_name_here
+      2.1M  node_modules/.cache/babel/transform/output
+      512K  dist/static/chunks/vendor/react_and_dependencies
+      256K  assets/images/screenshots/documentation/figures
+      216K  docs/api/generated/html/reference
+      136K  src/compressors/javascript/node_modules_cache
+      128K  coverage/lcov-report/src/compressors/full_trace
+       92K  migrations/database/schema/v3_to_v4_upgrade_path
+  ... and 20 more entries

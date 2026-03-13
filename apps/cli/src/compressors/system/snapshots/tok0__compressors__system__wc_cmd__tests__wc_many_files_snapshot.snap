@@ -1,0 +1,24 @@
+---
+source: src/compressors/system/wc_cmd.rs
+expression: output
+---
+total: 63750 lines across 50 files
+
+by extension:
+  .sh               7500 lines  (5 files)
+  .yaml             7250 lines  (5 files)
+  .json             7000 lines  (5 files)
+  .toml             6750 lines  (5 files)
+  .md               6500 lines  (5 files)
+  .go               6250 lines  (5 files)
+  .py               6000 lines  (5 files)
+  .js               5750 lines  (5 files)
+  .ts               5500 lines  (5 files)
+  .rs               5250 lines  (5 files)
+
+top files:
+      2500  src/some_long_module_name_49/another_directory/file_49.sh
+      2450  src/some_long_module_name_48/another_directory/file_48.yaml
+      2400  src/some_long_module_name_47/another_directory/file_47.json
+      2350  src/some_long_module_name_46/another_directory/file_46.toml
+      2300  src/some_long_module_name_45/another_directory/file_45.md

@@ -1,0 +1,135 @@
+---
+source: src/compressors/system/grep_cmd.rs
+expression: output
+---
+127 matches across 12 files
+
+src/compressors/git/git_cmd.rs  (19 matches)
+  19:pub fn filter_git_log(input: &str) -> String {
+  62:pub fn filter_git_status(input: &str) -> String {
+  126:pub fn filter_git_diff(input: &str) -> String {
+  178:pub fn filter_git_simple(input: &str, subcommand: &str) -> String {
+  190:fn count_tokens(s: &str) -> usize {
+  195:fn test_git_log_format() {
+  202:fn test_git_log_savings() {
+  218:fn test_git_log_empty() {
+  223:fn test_git_log_malformed() {
+  229:fn test_git_status_format() {
+  ... +9 more
+
+src/compressors/system/diff_cmd.rs  (8 matches)
+  15:pub fn filter_diff(input: &str) -> String {
+  115:fn count_tokens(s: &str) -> usize {
+  120:fn test_diff_synthetic() {
+  129:fn main() {
+  147:fn test_diff_savings() {
+  180:fn test_diff_empty() {
+  185:fn test_diff_malformed() {
+  191:fn test_diff_unicode() {
+
+src/compressors/system/find_cmd.rs  (7 matches)
+  11:pub fn filter_find(input: &str) -> String {
+  57:fn count_tokens(s: &str) -> usize {
+  62:fn test_find_output_format() {
+  69:fn test_find_savings() {
+  87:fn test_find_empty() {
+  92:fn test_find_small_list() {
+  98:fn test_find_unicode() {
+
+src/compressors/system/grep_cmd.rs  (8 matches)
+  11:pub fn filter_grep(input: &str, max_results: usize, max_per_file: usize) -> String {
+  60:fn count_tokens(s: &str) -> usize {
+  65:fn test_grep_output_format() {
+  72:fn test_grep_savings() {
+  90:fn test_grep_empty() {
+  95:fn test_grep_small_results() {
+  96:let input = "src/main.rs:1:fn main() {";
+  101:fn test_grep_unicode() {
+
+src/compressors/system/ls_cmd.rs  (10 matches)
+  14:pub fn filter_ls(input: &str, path: &str) -> String {
+  65:fn format_size(bytes: u64) -> String {
+  82:fn count_tokens(s: &str) -> usize {
+  87:fn test_ls_output_format() {
+  94:fn test_ls_savings() {
+  112:fn test_ls_empty() {
+  117:fn test_ls_malformed() {
+  123:fn test_ls_unicode() {
+  130:fn test_ls_ansi() {
+  138:fn test_format_size() {
+
+src/compressors/system/read_cmd.rs  (7 matches)
+  4:pub fn filter_read(input: &str, path: &str) -> String {
+  58:fn count_tokens(s: &str) -> usize {
+  63:fn test_read_small_file() {
+  72:fn test_read_large_file() {
+  90:fn test_read_empty() {
+  96:fn test_read_unicode() {
+  103:fn test_read_long_lines() {
+
+src/compressors/system/smart_cmd.rs  (12 matches)
+  13:pub fn filter_smart(input: &str) -> String {
+  72:fn count_tokens(s: &str) -> usize {
+  77:fn test_smart_small_file() {
+  78:let input = "fn main() {\n    println!(\"hello\");\n}";
+  83:fn test_smart_large_file() {
+  89:lines.push("pub fn main() {".to_string());
+  95:lines.push("pub fn helper() {".to_string());
+  103:assert!(output.contains("pub fn main"));
+  104:assert!(output.contains("pub fn helper"));
+  115:fn test_smart_empty() {
+  ... +2 more
+
+src/engine/config.rs  (13 matches)
+  32:fn default() -> Self {
+  55:fn default() -> Self {
+  74:fn default() -> Self {
+  91:fn default() -> Self {
+  103:fn default() -> Self {
+  119:pub fn load_config() -> Result<Tok0Config> {
+  130:pub fn config_path() -> PathBuf {
+  137:pub fn db_path() -> PathBuf {
+  152:fn test_default_config() {
+  161:fn test_parse_minimal_toml() {
+  ... +3 more
+
+src/engine/meter.rs  (16 matches)
+  36:pub fn new(db_path: &Path) -> Result<Self> {
+  64:pub fn record(
+  94:pub fn get_summary(&self) -> Result<Summary> {
+  118:pub fn get_daily(&self, days: u32) -> Result<Vec<DailyStats>> {
+  147:pub fn get_recent(&self, limit: u32) -> Result<Vec<RecentCommand>> {
+  171:pub fn cleanup(&self, retention_days: u32) -> Result<u64> {
+  185:pub fn record(
+  223:fn make_tracker() -> (Tracker, NamedTempFile) {
+  230:fn test_record_and_query() {
+  254:fn test_multiple_records() {
+  ... +6 more
+
+src/engine/shell.rs  (16 matches)
+  11:pub fn strip_ansi(input: &str) -> std::borrow::Cow<str> {
+  20:pub fn count_tokens(text: &str) -> usize {
+  25:pub fn execute_command(cmd: &str, args: &[&str]) -> Result<Output> {
+  33:pub fn truncate_line(line: &str, max_chars: usize) -> String {
+  42:pub fn head_tail(input: &str, head: usize, tail: usize) -> String {
+  62:pub fn hard_cap(input: &str, max_chars: usize) -> String {
+  75:fn test_strip_ansi_with_codes() {
+  81:fn test_strip_ansi_without_codes() {
+  90:fn test_strip_ansi_empty() {
+  95:fn test_count_tokens() {
+  ... +6 more
+
+src/engine/timeout.rs  (7 matches)
+  7:pub fn execute_with_timeout(cmd: &str, args: &[&str], timeout: Duration) -> Result<Output> {
+  49:fn test_command_completes_within_timeout() {
+  58:fn test_command_timeout() {
+  71:fn test_command_not_found() {
+  77:fn test_command_with_args() {
+  86:fn test_command_exit_code_propagation() {
+  100:fn test_short_timeout_fast_command() {
+
+src/main.rs  (4 matches)
+  109:fn main() {
+  117:fn run(cli: Cli) -> Result<()> {
+  148:fn run_proxy(cmd: &str, args: &[String]) -> Result<()> {
+  170:fn run_raw_proxy(args: &[String]) -> Result<()> {

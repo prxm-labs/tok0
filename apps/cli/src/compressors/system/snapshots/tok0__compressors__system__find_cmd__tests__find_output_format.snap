@@ -1,0 +1,11 @@
+---
+source: src/compressors/system/find_cmd.rs
+expression: output
+---
+116 files found
+
+.rs (116):
+  ./tests/common/mod.rs
+  ./refs/legacy/build.rs
+  ./refs/legacy/src/learn/detector.rs
+  ... +113 more

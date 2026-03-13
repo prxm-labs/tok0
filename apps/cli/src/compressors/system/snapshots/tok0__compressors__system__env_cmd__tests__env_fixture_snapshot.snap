@@ -1,0 +1,48 @@
+---
+source: src/compressors/system/env_cmd.rs
+expression: output
+---
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL=1
+APPLICATION_INSIGHTS_NO_STATSBEAT=true
+BUN_INSTALL=/Users/user/.bun
+CLAUDECODE=1
+CLAUDE_AGENT_SDK_VERSION=0.2.92
+CLAUDE_CODE_ENABLE_SDK_FILE_CHECKPOINTING=true
+CLAUDE_CODE_ENTRYPOINT=claude-vscode
+CLAUDE_CODE_EXECPATH=/Users/user/.vscode/extensions/anthropic.claude-code-2.1.92-darwin-arm64/resources/native-binary/claude
+COMMAND_MODE=unix2003
+CONDA_DEFAULT_ENV=base
+CONDA_EXE=/Users/user/miniconda3/bin/conda
+CONDA_PREFIX=/Users/user/miniconda3
+CONDA_PYTHON_EXE=/Users/user/miniconda3/bin/python
+CONDA_SHLVL=1
+COREPACK_ENABLE_AUTO_PIN=0
+DENO_INSTALL=/Users/user/.deno
+GIT_EDITOR=true
+HOME=/Users/user
+HOMEBREW_CELLAR=/opt/homebrew/Cellar
+HOMEBREW_PREFIX=/opt/homebrew
+HOMEBREW_REPOSITORY=/opt/homebrew
+INFOPATH=/opt/homebrew/share/info:
+LESS=-R
+LOGNAME=user
+LSCOLORS=Gxfxcxdxbxegedabagacad
+LS_COLORS=di=1;36:ln=35:so=32:pi=33:ex=31:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;43
+MallocNanoZone=0
+NoDefaultCurrentDirectoryInExePath=1
+PAGER=less
+PATH=/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13/bin:/Users/user/.local/bin:/opt/homebrew/opt/node@24/bin:/Users/user/.local/bin:/Users/user/.wasmer/bin:/Users/user/.bun/bin:/Users/user/.docker/bin:/Users/user/.deno/bin:/Users/user/Library/Application Support/edgedb/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/usr/local/go/bin:/Users/user/.local/bin:/opt/homebrew/opt/node@24/bin:/Users/user/.wasmer/bin:/Users/user/miniconda3/bin:/Users/user/miniconda3/condabin:/Users/user/.bun/bin:/Users/user/.docker/bin:/Users/user/Library/pnpm:/Users/user/.deno/bin:/Users/user/Library/Application Support/edgedb/bin:/Users/user/.cargo/bin:/Users/user/.orbstack/bin:/Users/user/.orbstack/bin
+PNPM_HOME=/Users/user/Library/pnpm
+PWD=/Users/user/Desktop/projects/tok0
+SECURITYSESSIONID=186b3
+SHELL=/bin/zsh
+SHLVL=2
+SSH_AUTH_SOCK=/private/tmp/com.apple.launchd.lETFYaRJby/Listeners
+TMPDIR=/var/folders/2j/k85w_80s7kg8xjqbcqkypvlh0000gn/T/
+USER=user
+VIRTUAL_ENV=/opt/homebrew/opt/python@3.13/Frameworks/Python.framework/Versions/3.13
+WASMER_CACHE_DIR=/Users/user/.wasmer/cache
+WASMER_DIR=/Users/user/.wasmer
+ZSH=/Users/user/.oh-my-zsh
+_=/usr/bin/env
+# (23 internal/tooling vars omitted)

@@ -1,0 +1,11 @@
+---
+source: src/compressors/system/du_cmd.rs
+expression: output
+---
+top 5 of 8 entries (sorted by size):
+      701M  target
+      6.8M  refs
+      216K  docs
+      136K  src
+       48K  Cargo.lock
+  ... and 3 more entries

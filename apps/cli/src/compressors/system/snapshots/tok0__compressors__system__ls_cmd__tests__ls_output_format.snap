@@ -1,0 +1,17 @@
+---
+source: src/compressors/system/ls_cmd.rs
+expression: output
+---
+.  (9 dirs, 3 files)
+  .claude/
+  .git/
+  .github/
+  .gitignore (465B)
+  Cargo.lock (47.2K)
+  Cargo.toml (761B)
+  docs/
+  refs/
+  scripts/
+  src/
+  target/
+  tests/

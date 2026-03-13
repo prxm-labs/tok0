@@ -1,0 +1,17 @@
+---
+source: src/compressors/cloud/terraform_cmd.rs
+expression: output
+---
+  # aws_instance.main will be created
+  + resource "aws_instance" "main" {
+      + ami                          = "ami-0c55b159cbfafe1f0"
+      + get_password_data            = false
+      + instance_type                = "t3.micro"
+      + key_name                     = "my-key-pair"
+      + subnet_id                    = "subnet-0b1c2d3e4f5a67890"
+  # aws_security_group.main will be created
+  + resource "aws_security_group" "main" {
+      + description            = "Main security group"
+      + name                   = "main-sg"
+      + revoke_rules_on_delete = false
+Plan: 2 to add, 0 to change, 0 to destroy.

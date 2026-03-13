@@ -1,0 +1,8 @@
+---
+source: src/compressors/cloud/aws_cmd.rs
+expression: output
+---
+INSTANCE_ID          TYPE       STATE    PUBLIC_IP      NAME
+i-0a1b2c3d4e5f67890  t3.medium  running  54.201.123.45  web-server-prod-1
+i-0b2c3d4e5f678901   m5.large   running  52.88.234.67   app-server-prod-1
+i-0c3d4e5f67890123   t3.small   stopped  -              dev-bastion

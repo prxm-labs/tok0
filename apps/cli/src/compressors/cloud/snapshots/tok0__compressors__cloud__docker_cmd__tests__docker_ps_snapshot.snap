@@ -1,0 +1,14 @@
+---
+source: src/compressors/cloud/docker_cmd.rs
+expression: out
+---
+a1b2c3d4e5f6 nginx up web-proxy
+b2c3d4e5f6a7 postgres up db-primary
+c3d4e5f6a7b8 redis up cache
+d4e5f6a7b8c9 myapp/backend up api-server
+f6a7b8c9d0e1 grafana/grafana up monitoring-grafana
+a7b8c9d0e1f2 prom/prometheus up monitoring-prometheus
+c9d0e1f2a3b4 elasticsearch up search-engine
+d0e1f2a3b4c5 infra/nginx-proxy up internal-proxy
+b4c5d6e7f8a9 jaegertracing/all-in-one up tracing
+c5d6e7f8a9b0 vault up secrets-vault

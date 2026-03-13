@@ -1,0 +1,50 @@
+---
+source: src/compressors/cloud/kubectl_cmd.rs
+expression: out
+---
+2026-04-06T10:30:10.123Z INFO  api-server starting on port 8080
+2026-04-06T10:30:10.125Z INFO  loading configuration from /etc/config/app.yaml
+2026-04-06T10:30:10.130Z INFO  connecting to database at postgres-primary:5432
+2026-04-06T10:30:10.245Z INFO  database connection pool established (min=5, max=20)
+2026-04-06T10:30:10.250Z INFO  connecting to redis at redis-cache:6379
+2026-04-06T10:30:10.312Z INFO  redis connection established
+2026-04-06T10:30:10.315Z INFO  registering health check endpoints
+2026-04-06T10:30:10.316Z INFO  registering metrics endpoint at /metrics
+2026-04-06T10:30:10.320Z INFO  loading middleware: cors, auth, rate-limit, tracing
+2026-04-06T10:30:10.325Z INFO  route registration complete (42 routes)
+2026-04-06T10:30:10.326Z INFO  server ready, accepting connections
+2026-04-06T10:30:10.400Z INFO  GET /healthz 200 1ms
+2026-04-06T10:30:10.500Z INFO  GET /readyz 200 2ms
+2026-04-06T10:30:15.100Z INFO  GET /api/v1/users 200 15ms
+2026-04-06T10:30:15.200Z INFO  GET /api/v1/users/123 200 8ms
+2026-04-06T10:30:15.300Z INFO  POST /api/v1/orders 201 45ms
+2026-04-06T10:30:15.400Z INFO  GET /api/v1/products 200 12ms
+2026-04-06T10:30:15.500Z INFO  GET /api/v1/products/456 200 6ms
+2026-04-06T10:30:15.600Z INFO  PUT /api/v1/users/123 200 22ms
+2026-04-06T10:30:15.700Z INFO  GET /api/v1/orders/789 200 10ms
+[... 53 lines omitted, 5 errors/warnings kept ...]
+2026-04-06T10:30:18.100Z WARN  slow query detected: GET /api/v1/reports/weekly took 1200ms
+2026-04-06T10:30:19.300Z ERROR database connection timeout after 5000ms - retrying (attempt 1/3)
+2026-04-06T10:30:19.700Z ERROR database connection timeout after 5000ms - retrying (attempt 2/3)
+2026-04-06T10:30:20.100Z WARN  rate limit approaching for client 10.244.1.30 (95/100 requests)
+2026-04-06T10:30:22.200Z ERROR connection pool exhausted - waiting for available connection
+2026-04-06T10:30:22.400Z INFO  POST /api/v1/orders 201 41ms
+2026-04-06T10:30:22.500Z INFO  GET /api/v1/products 200 9ms
+2026-04-06T10:30:22.600Z WARN  certificate expiry warning: TLS cert expires in 7 days
+2026-04-06T10:30:22.700Z INFO  GET /api/v1/users/129 200 7ms
+2026-04-06T10:30:22.800Z INFO  GET /api/v1/categories 200 5ms
+2026-04-06T10:30:22.900Z INFO  POST /api/v1/webhooks/process 200 28ms
+2026-04-06T10:30:23.100Z INFO  GET /api/v1/dashboard/stats 200 118ms
+2026-04-06T10:30:23.200Z INFO  GET /api/v1/users 200 13ms
+2026-04-06T10:30:23.300Z INFO  PUT /api/v1/products/457 200 17ms
+2026-04-06T10:30:23.400Z INFO  GET /api/v1/transactions 200 32ms
+2026-04-06T10:30:23.500Z INFO  POST /api/v1/auth/login 200 14ms
+2026-04-06T10:30:23.600Z INFO  GET /api/v1/orders 200 21ms
+2026-04-06T10:30:23.700Z INFO  DELETE /api/v1/orders/793 204 9ms
+2026-04-06T10:30:23.800Z INFO  GET /api/v1/settings 200 6ms
+2026-04-06T10:30:23.900Z INFO  GET /api/v1/users 200 15ms
+2026-04-06T10:30:24.100Z INFO  POST /api/v1/orders 201 43ms
+2026-04-06T10:30:24.200Z INFO  GET /api/v1/products 200 11ms
+2026-04-06T10:30:24.300Z INFO  GET /api/v1/users/130 200 8ms
+2026-04-06T10:30:24.400Z INFO  GET /readyz 200 2ms
+2026-04-06T10:30:24.500Z INFO  GET /api/v1/search?q=tool 200 78ms

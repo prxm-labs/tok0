@@ -1,0 +1,21 @@
+---
+source: src/compressors/cloud/docker_cmd.rs
+expression: out
+---
+myapp/backend:v2.14.1-release 245MB
+myapp/backend:latest 245MB
+myapp/worker:v2.14.1-release 198MB
+nginx:1.25.3-alpine 42.6MB
+postgres:15.4-bookworm 412MB
+redis:7.2.3-alpine 32.4MB
+grafana/grafana:10.2.2 387MB
+prom/prometheus:v2.48.0 245MB
+myproject/data-pipeline:sha-abc1234 1.23GB
+elasticsearch:8.11.3 1.35GB
+infra/nginx-proxy:stable 55.8MB
+alpine:3.18 7.34MB
+busybox:1.36 4.26MB
+jaegertracing/all-in-one:1.51 67.2MB
+vault:1.15.4 198MB
+myproject/repo/api-gateway:v3.2.1-rc1 156MB
+myorg/infra/log-shipper:2024.01.15 89.3MB
