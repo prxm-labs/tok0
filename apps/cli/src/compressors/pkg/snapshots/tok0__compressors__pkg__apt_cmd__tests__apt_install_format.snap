@@ -1,0 +1,7 @@
+---
+source: src/compressors/pkg/apt_cmd.rs
+expression: output
+---
+The following NEW packages will be installed:
+  curl libssl3 libssl-dev zlib1g-dev libffi-dev
+0 upgraded, 5 newly installed, 0 to remove and 12 not upgraded.

@@ -1,0 +1,23 @@
+---
+source: src/compressors/lint/lint_cmd.rs
+expression: output
+---
+/home/user/project/src/components/Button.tsx  [4 errors, 3 warnings]
+  12:5   error    'React' must be in scope when using JSX  react/react-in-jsx-scope
+  45:3   error    Expected '===' and instead saw '=='       eqeqeq
+  89:1   error    Missing semicolon                         semi
+  115:3  error    'undefined' is not allowed                no-undefined
+/home/user/project/src/utils/helpers.ts  [5 errors, 3 warnings]
+  5:1   error    'lodash' should be listed in the project's dependencies  import/no-extraneous-dependencies
+  18:22  error    Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  41:14  error    Do not use 'Number' as a type                            @typescript-eslint/ban-types
+  72:9   error    'data' is assigned a value but never used                no-unused-vars
+  94:5   error    Unexpected use of 'debugger'                             no-debugger
+/home/user/project/src/api/client.ts  [5 errors, 3 warnings]
+  8:1   error    Unexpected use of 'alert'                                no-alert
+  31:17  error    Avoid using global variable 'window' directly            no-restricted-globals
+  47:3   error    Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  79:1   error    'fetch' is not defined                                   no-undef
+  108:6  error    Unexpected trailing comma                                comma-dangle
+✖ 24 problems (15 errors, 9 warnings)
+15 errors and 3 warnings potentially fixable with the `--fix` option.

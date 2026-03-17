@@ -1,0 +1,5 @@
+---
+source: src/compressors/pkg/brew_cmd.rs
+expression: output
+---
+31 installed: autoconf, automake, bat, cmake, coreutils, curl, fzf, gh, git, go, httpie, jq, libidn2, libtool, lz4, ncurses, node, openssl@3, pcre2, pkg-config, postgresql@16, python@3.12, readline, ripgrep, rust, sqlite, tree, vim, wget, xz, zsh-autosuggestions

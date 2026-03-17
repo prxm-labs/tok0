@@ -1,0 +1,7 @@
+---
+source: src/compressors/build/make_cmd.rs
+expression: output
+---
+src/util.c:45: warning: unused variable 'x'
+src/hash.c:112: warning: implicit declaration of function 'memset'
+12 compiled, 2 warnings, 0 errors

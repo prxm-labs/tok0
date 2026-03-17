@@ -1,0 +1,12 @@
+---
+source: src/compressors/pkg/brew_cmd.rs
+expression: output
+---
+==> Caveats
+wget has been installed as:
+  /opt/homebrew/bin/wget
+To use the OpenSSL backend, set the following environment variable:
+  export OPENSSL_NO_VENDOR=1
+If you need to have wget first in your PATH, run:
+  echo 'export PATH="/opt/homebrew/opt/wget/bin:$PATH"' >> ~/.zshrc
+🍺  /opt/homebrew/Cellar/wget/1.21.4_1: 89 files, 4.2MB

@@ -1,0 +1,30 @@
+---
+source: src/compressors/lint/lint_cmd.rs
+expression: output
+---
+src/components/Button.tsx (5 errors)
+  12:TS2322: Type 'string' is not assignable to type 'number'.
+  23:TS2339: Property 'onClick' does not exist on type 'ButtonProps'.
+  45:TS7006: Parameter 'event' implicitly has an 'any' type.
+  ...2 more
+src/components/Modal.tsx (6 errors)
+  8:TS2305: Module '"react"' has no exported member 'FC'.
+  15:TS2345: Argument of type 'null' is not assignable to parameter of type 'HTMLElement'.
+  27:TS2532: Object is possibly 'undefined'.
+  ...3 more
+src/utils/helpers.ts (5 errors)
+  5:TS7016: Could not find a declaration file for module 'lodash'. Try `npm install @types/lodash`.
+  19:TS2304: Cannot find name 'NodeJS'.
+  33:TS2365: Operator '+' cannot be applied to types 'string' and 'number'.
+  ...2 more
+src/api/client.ts (5 errors)
+  10:TS2307: Cannot find module './config' or its corresponding type declarations.
+  24:TS2741: Property 'headers' is missing in type '{ body: string; }' but required in type 'RequestInit'.
+  41:TS2322: Type 'Response | undefined' is not assignable to type 'Response'.
+  ...2 more
+src/store/index.ts (5 errors)
+  3:TS2305: Module '"redux"' has no exported member 'createStore'.
+  17:TS2339: Property 'dispatch' does not exist on type 'Store<{}, AnyAction>'.
+  29:TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  ...2 more
+Found 26 errors.

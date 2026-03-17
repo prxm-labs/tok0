@@ -1,0 +1,12 @@
+---
+source: src/compressors/lint/lint_cmd.rs
+expression: output
+---
+scripts/deploy.sh:5: SC1091: Not following: ./config.sh was not specified as input (see shellcheck -x).
+scripts/deploy.sh:12: SC2086: Double quote to prevent globbing and word splitting.
+scripts/deploy.sh:12: SC2039: In POSIX sh, == in place of = is undefined.
+scripts/build.sh:8: SC2086: Double quote to prevent globbing and word splitting.
+scripts/build.sh:15: SC2086: Double quote to prevent globbing and word splitting.
+scripts/build.sh:15: SC2086: Double quote to prevent globbing and word splitting.
+scripts/setup.sh:3: SC2148: Tips depend on target shell and yours is unknown. Add a shebang or a 'shell' directive.
+scripts/setup.sh:19: SC2086: Double quote to prevent globbing and word splitting.

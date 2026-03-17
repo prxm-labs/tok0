@@ -1,0 +1,8 @@
+---
+source: src/compressors/dotnet/dotnet_cmd.rs
+expression: output
+---
+  Passed!  - Failed:   0, Passed:  25, Skipped:   2, Total:  27, Duration: 843 ms - MyApp.Core.Tests.dll (net8.0)
+  Passed!  - Failed:   0, Passed:  18, Skipped:   0, Total:  18, Duration: 412 ms - MyApp.Api.Tests.dll (net8.0)
+  Passed!  - Failed:   0, Passed:  22, Skipped:   1, Total:  23, Duration: 555 ms - MyApp.Services.Tests.dll (net8.0)
+  Passed!  - Failed:   0, Passed:  14, Skipped:   1, Total:  15, Duration: 621 ms - MyApp.Integration.Tests.dll (net8.0)
