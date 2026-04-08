@@ -1,0 +1,10 @@
+gcc -c -o obj/util.o src/util.c
+gcc -c -o obj/parser.o src/parser.c
+gcc -c -o obj/main.o src/main.c
+src/main.c:12:5: error: use of undeclared identifier 'foo'
+    foo(argc, argv);
+    ^
+src/main.c:18:3: error: expected ';' after return statement
+    return 0
+          ^
+make: *** [obj/main.o] Error 1

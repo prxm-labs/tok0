@@ -1,0 +1,28 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.3, pytest-8.1.1, pluggy-1.4.0
+rootdir: /Users/dev/myproject
+configfile: pyproject.toml
+plugins: anyio-4.3.0, cov-5.0.0, mock-3.14.0
+collected 24 items
+
+tests/test_auth.py ....                                                  [ 16%]
+tests/test_models.py .......                                             [ 45%]
+tests/test_api.py .........                                              [ 83%]
+tests/test_utils.py ....                                                 [100%]
+
+/Users/dev/myproject/tests/test_api.py:45: PytestUnraisableExceptionWarning: Exception ignored in: <generator object>
+  warnings.warn(pytest.PytestUnraisableExceptionWarning)
+
+/Users/dev/myproject/tests/test_models.py:88: DeprecationWarning: datetime.utcnow() is deprecated
+  warnings.warn(DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+============================== warnings summary ==============================
+tests/test_api.py:45
+  /Users/dev/myproject/tests/test_api.py:45: PytestUnraisableExceptionWarning
+
+tests/test_models.py:88
+  /Users/dev/myproject/tests/test_models.py:88: DeprecationWarning
+
+============================== 24 passed, 2 warnings in 1.83s ==============================

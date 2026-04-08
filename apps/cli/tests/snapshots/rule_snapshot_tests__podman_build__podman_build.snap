@@ -1,0 +1,14 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.19/main/x86_64/APKINDEX.tar.gz
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.19/community/x86_64/APKINDEX.tar.gz
+(1/8) Installing ca-certificates (20240226-r0)
+(2/8) Installing brotli-libs (1.1.0-r1)
+(3/8) Installing libunistring (1.1-r2)
+OK: 12 MiB in 23 packages
+built
+COMMIT localhost/demo:latest
+Successfully tagged localhost/demo:latest
+d4e5f6a7b8c9aabbccddeeff00112233445566778899aabbccddeeff0011

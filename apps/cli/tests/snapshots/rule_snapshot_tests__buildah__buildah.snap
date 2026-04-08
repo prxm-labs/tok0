@@ -1,0 +1,13 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.19/main/x86_64/APKINDEX.tar.gz
+(1/4) Installing ca-certificates (20240226-r0)
+(2/4) Installing libcurl (8.5.0-r0)
+(3/4) Installing curl (8.5.0-r0)
+OK: 8 MiB in 18 packages
+done
+COMMIT demo
+Successfully tagged localhost/demo:latest
+c3d4e5f6a7b8aabbccddeeff00112233445566778899aabbccddeeff00112233

@@ -1,0 +1,9 @@
+vite v5.4.21 dev server output
+
+Hybrid: real first 6 lines captured from `vite --port 5193` (kill after 4s)
+plus 25 synthetic HMR lines appended (real HMR output requires file edits
+during a live session and is hard to script). The synthetic HMR lines
+follow the canonical vite format `HH:MM:SS AM [vite] hmr update /<path>`
+seen in actual dev usage.
+
+Captured 2026-04-26 against vite 5.4.21.

@@ -1,0 +1,8 @@
+---
+source: tests/rule_snapshot_tests.rs
+assertion_line: 102
+expression: out
+---
+Checking formatting...
+[warn] sample.js
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.

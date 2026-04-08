@@ -1,0 +1,68 @@
+
+> appy@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.0
+  - Local:        http://localhost:3000
+  - Network:      http://192.168.1.1:3000
+
+ ✓ Ready in 2.3s
+ ○ Compiling /page ...
+ ✓ Compiled /page in 350ms (516 modules)
+ ○ Compiling /page ...
+ ○ Compiling /page ...
+ ○ Compiling /about ...
+ ✓ Compiled /about in 220ms (320 modules)
+ ○ Compiling /about ...
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /page
+ ● [hot reload] /about
+ ● [hot reload] /about
+ ● [hot reload] /about
+ ● [hot reload] /about

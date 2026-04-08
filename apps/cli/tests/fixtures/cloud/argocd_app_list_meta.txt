@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (argocd not installed in sandbox)
+parent_git_sha: 34415cc045301f1a51653bc07b050b0df6093cd0
+command: argocd app list
+notes: Synthetic ~16-line table representative of `argocd app list` output (NAME, CLUSTER, NAMESPACE, PROJECT, STATUS, HEALTH, SYNCPOLICY, CONDITIONS, REPO, PATH, TARGET columns).

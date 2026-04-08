@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (gcloud not installed in sandbox)
+parent_git_sha: b1b9198
+command: gcloud compute instances list --format='table(name,zone,machine_type,preemptible,internal_ip,external_ip,status)'
+notes: Synthetic ~15-row gcloud compute instances list table with NAME, ZONE, MACHINE_TYPE, PREEMPTIBLE, INTERNAL_IP, EXTERNAL_IP, STATUS columns. Mix of RUNNING, TERMINATED, STOPPING states across multiple zones (us-central1-a/b/c, us-east1-b/c, us-west1-a). Preemptible flag set on a few rows; some rows lack EXTERNAL_IP to mimic real terminated/stopping rows.

@@ -1,0 +1,328 @@
+    Checking tok0 v0.1.0 (/Users/user/Desktop/projects/tok0)
+warning: this `map_or` can be simplified
+   --> src/compressors/build/make_cmd.rs:129:11
+    |
+129 |     while output_lines.first().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+    = note: `#[warn(clippy::unnecessary_map_or)]` on by default
+help: use is_some_and instead
+    |
+129 -     while output_lines.first().map_or(false, |l| l.is_empty()) {
+129 +     while output_lines.first().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/build/make_cmd.rs:132:11
+    |
+132 |     while output_lines.last().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+132 -     while output_lines.last().map_or(false, |l| l.is_empty()) {
+132 +     while output_lines.last().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: redundant closure
+  --> src/compressors/cloud/aws_cmd.rs:81:27
+   |
+81 |                 .and_then(|t| extract_name_tag(t))
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^ help: replace the closure with the function itself: `extract_name_tag`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#redundant_closure
+   = note: `#[warn(clippy::redundant_closure)]` on by default
+
+warning: this `map_or` can be simplified
+   --> src/compressors/dotnet/dotnet_cmd.rs:113:11
+    |
+113 |     while output_lines.first().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+113 -     while output_lines.first().map_or(false, |l| l.is_empty()) {
+113 +     while output_lines.first().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/dotnet/dotnet_cmd.rs:116:11
+    |
+116 |     while output_lines.last().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+116 -     while output_lines.last().map_or(false, |l| l.is_empty()) {
+116 +     while output_lines.last().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+  --> src/compressors/go/go_cmd.rs:91:11
+   |
+91 |       while output_lines
+   |  ___________^
+92 | |         .last()
+93 | |         .map_or(false, |l: &&str| l.trim().is_empty())
+   | |______________________________________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+   |
+93 -         .map_or(false, |l: &&str| l.trim().is_empty())
+93 +         .is_some_and(|l: &&str| l.trim().is_empty())
+   |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/go/go_cmd.rs:147:11
+    |
+147 |       while output_lines
+    |  ___________^
+148 | |         .last()
+149 | |         .map_or(false, |l: &&str| l.trim().is_empty())
+    | |______________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+149 -         .map_or(false, |l: &&str| l.trim().is_empty())
+149 +         .is_some_and(|l: &&str| l.trim().is_empty())
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/go/go_cmd.rs:191:11
+    |
+191 |       while output_lines
+    |  ___________^
+192 | |         .last()
+193 | |         .map_or(false, |l: &&str| l.trim().is_empty())
+    | |______________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+193 -         .map_or(false, |l: &&str| l.trim().is_empty())
+193 +         .is_some_and(|l: &&str| l.trim().is_empty())
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/java/gradle_cmd.rs:138:11
+    |
+138 |     while output_lines.first().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+138 -     while output_lines.first().map_or(false, |l| l.is_empty()) {
+138 +     while output_lines.first().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/java/gradle_cmd.rs:141:11
+    |
+141 |     while output_lines.last().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+141 -     while output_lines.last().map_or(false, |l| l.is_empty()) {
+141 +     while output_lines.last().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: useless use of `format!`
+   --> src/compressors/lint/lint_cmd.rs:118:26
+    |
+118 |         let mut header = format!("{}", file);
+    |                          ^^^^^^^^^^^^^^^^^^^ help: consider using `.to_string()`: `file.to_string()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#useless_format
+    = note: `#[warn(clippy::useless_format)]` on by default
+
+error: regex syntax error: look-around, including look-ahead and look-behind, is not supported
+  --> src/compressors/pkg/brew_cmd.rs:25:38
+   |
+25 |         Regex::new(r"^==> Installing (?!.*dependency:)(\S+)$").unwrap();
+   |                                      ^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#invalid_regex
+   = note: `#[deny(clippy::invalid_regex)]` on by default
+
+warning: this `map_or` can be simplified
+   --> src/compressors/ruby/rspec_cmd.rs:105:11
+    |
+105 |     while output_lines.first().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+105 -     while output_lines.first().map_or(false, |l| l.is_empty()) {
+105 +     while output_lines.first().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/ruby/rspec_cmd.rs:108:11
+    |
+108 |     while output_lines.last().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+108 -     while output_lines.last().map_or(false, |l| l.is_empty()) {
+108 +     while output_lines.last().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+  --> src/compressors/rust/cargo_cmd.rs:59:20
+   |
+59 |                 && output_lines.last().map_or(true, |l: &&str| !l.is_empty())
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_none_or instead
+   |
+59 -                 && output_lines.last().map_or(true, |l: &&str| !l.is_empty())
+59 +                 && output_lines.last().is_none_or(|l: &&str| !l.is_empty())
+   |
+
+warning: this `map_or` can be simplified
+  --> src/compressors/rust/cargo_cmd.rs:96:11
+   |
+96 |     while output_lines.first().map_or(false, |l| l.is_empty()) {
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+   |
+96 -     while output_lines.first().map_or(false, |l| l.is_empty()) {
+96 +     while output_lines.first().is_some_and(|l| l.is_empty()) {
+   |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/rust/cargo_cmd.rs:100:11
+    |
+100 |     while output_lines.last().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+100 -     while output_lines.last().map_or(false, |l| l.is_empty()) {
+100 +     while output_lines.last().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/rust/cargo_cmd.rs:167:11
+    |
+167 |     while output_lines.first().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+167 -     while output_lines.first().map_or(false, |l| l.is_empty()) {
+167 +     while output_lines.first().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/rust/cargo_cmd.rs:170:11
+    |
+170 |     while output_lines.last().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+170 -     while output_lines.last().map_or(false, |l| l.is_empty()) {
+170 +     while output_lines.last().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: doc list item without indentation
+   --> src/compressors/rust/cargo_cmd.rs:187:5
+    |
+187 | /// Strip: code context lines (`  |`), source excerpts, URL help links.
+    |     ^
+    |
+    = help: if this is supposed to be its own paragraph, add a blank line
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#doc_lazy_continuation
+    = note: `#[warn(clippy::doc_lazy_continuation)]` on by default
+help: indent this line
+    |
+187 | ///     Strip: code context lines (`  |`), source excerpts, URL help links.
+    |     ++++
+
+warning: this `map_or` can be simplified
+   --> src/compressors/rust/cargo_cmd.rs:231:11
+    |
+231 |     while output_lines.first().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+231 -     while output_lines.first().map_or(false, |l| l.is_empty()) {
+231 +     while output_lines.first().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/compressors/rust/cargo_cmd.rs:234:11
+    |
+234 |     while output_lines.last().map_or(false, |l| l.is_empty()) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_map_or
+help: use is_some_and instead
+    |
+234 -     while output_lines.last().map_or(false, |l| l.is_empty()) {
+234 +     while output_lines.last().is_some_and(|l| l.is_empty()) {
+    |
+
+warning: this function has too many arguments (9/7)
+  --> src/engine/meter.rs:64:5
+   |
+64 | /     pub fn record(
+65 | |         &self,
+66 | |         command: &str,
+67 | |         full_command: &str,
+...  |
+73 | |         project_path: &str,
+74 | |     ) -> Result<()> {
+   | |___________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#too_many_arguments
+   = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: unused variable: `deleted`
+   --> src/engine/meter.rs:309:13
+    |
+309 |         let deleted = tracker.cleanup(0).expect("cleanup");
+    |             ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_deleted`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: `tok0` (lib) generated 22 warnings
+error: could not compile `tok0` (lib) due to 1 previous error; 22 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+warning: calls to `push` immediately after creation
+  --> src/compressors/system/smart_cmd.rs:84:9
+   |
+84 | /         let mut lines = Vec::new();
+85 | |         lines.push("use anyhow::Result;".to_string());
+86 | |         lines.push("use std::io;".to_string());
+87 | |         lines.push("".to_string());
+88 | |         lines.push("// This is a comment".to_string());
+89 | |         lines.push("pub fn main() {".to_string());
+   | |__________________________________________________^ help: consider using the `vec![]` macro: `let mut lines = vec![..];`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#vec_init_then_push
+   = note: `#[warn(clippy::vec_init_then_push)]` on by default
+
+warning: `tok0` (lib test) generated 24 warnings (22 duplicates)
+error: could not compile `tok0` (lib test) due to 1 previous error; 24 warnings emitted

@@ -1,0 +1,12 @@
+NAME                  IMAGE                          COMMAND                  SERVICE        CREATED         STATUS                   PORTS
+myapp-web-1           myapp/backend:v2.14.1          "node dist/server.js"    web            2 hours ago     Up 2 hours               0.0.0.0:3000->3000/tcp
+myapp-worker-1        myapp/worker:v2.14.1           "node dist/worker.js"    worker         2 hours ago     Up 2 hours
+myapp-db-1            postgres:15.4-bookworm         "docker-entrypoint.s…"   db             2 hours ago     Up 2 hours (healthy)     0.0.0.0:5432->5432/tcp
+myapp-redis-1         redis:7.2.3-alpine             "docker-entrypoint.s…"   redis          2 hours ago     Up 2 hours (healthy)     0.0.0.0:6379->6379/tcp
+myapp-nginx-1         nginx:1.25.3-alpine            "/docker-entrypoint.…"   nginx          2 hours ago     Up 2 hours               0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp
+myapp-mailhog-1       mailhog/mailhog:latest         "MailHog"                mailhog        2 hours ago     Up 2 hours               0.0.0.0:1025->1025/tcp, 0.0.0.0:8025->8025/tcp
+myapp-prometheus-1    prom/prometheus:v2.48.0         "/bin/prometheus --c…"   prometheus     2 hours ago     Up 2 hours               0.0.0.0:9090->9090/tcp
+myapp-grafana-1       grafana/grafana:10.2.2          "/run.sh"                grafana        2 hours ago     Up 2 hours               0.0.0.0:3100->3000/tcp
+myapp-elasticsearch-1 elasticsearch:8.11.3            "/bin/tini -- /usr/l…"   elasticsearch  2 hours ago     Up 2 hours               0.0.0.0:9200->9200/tcp, 0.0.0.0:9300->9300/tcp
+myapp-migrator-1      myapp/migrator:v2.14.0          "node run-migrations…"   migrator       2 hours ago     Exited (0) 1 hour ago
+myapp-seeddb-1        myapp/migrator:v2.14.0          "node seed-data.js"      seeddb         2 hours ago     Exited (0) 1 hour ago

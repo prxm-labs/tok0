@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (cosign not installed in sandbox)
+parent_git_sha: ed95463
+command: cosign verify cgr.dev/chainguard/static --certificate-identity-regexp '.*' --certificate-oidc-issuer-regexp '.*'
+notes: Synthetic ~12-line `cosign verify` output: "Verification for ..." header, "The following checks were performed:" + 4 bullet items prefixed by "  - ", then a JSON line with critical/optional/subject keys. Strip patterns target the bullet preamble + bullet lines themselves, leaving the verification subject + JSON payload (which is the audit-trail signal an LLM cares about).

@@ -1,0 +1,10 @@
+npm warn exec The following package was not found and will be installed: typescript@5.6.3
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.9.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.9.0
+npm notice To update run: npm install -g npm@11.9.0
+npm notice
+npm install in progress...
+npm WARN deprecated some-pkg@1.0.0: This package is deprecated.
+index.ts(1,7): error TS2322: Type 'string' is not assignable to type 'number'.
+Found 1 error in index.ts:1

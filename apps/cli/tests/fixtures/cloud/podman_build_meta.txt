@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (podman not installed in sandbox)
+parent_git_sha: 31e778946c77ea08aa6e468717fd915513597841
+command: podman build -t demo .
+notes: Synthetic ~30-line `podman build` output covering the full lifecycle: STEP 1/N markers, image-pull (Trying to pull, Getting image source signatures, Copying blob/config, Writing manifest), --> layer-cache lines, intermediate apk-package install lines (which the rule should not strip — they are signal in build failures), final COMMIT/Successfully tagged/image SHA. Real capture would require an installed `podman` binary plus a podman machine on macOS.

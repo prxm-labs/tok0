@@ -1,0 +1,72 @@
+src/compressors/lint/lint_cmd.rs:48:pub fn filter_eslint(input: &str) -> String {
+src/compressors/lint/lint_cmd.rs:160:pub fn filter_tsc(input: &str) -> String {
+src/compressors/lint/lint_cmd.rs:238:pub fn filter_ruff(input: &str) -> String {
+src/compressors/lint/lint_cmd.rs:314:pub fn filter_shellcheck(input: &str) -> String {
+src/compressors/go/go_cmd.rs:47:pub fn filter_go_test(input: &str) -> String {
+src/compressors/go/go_cmd.rs:113:pub fn filter_go_build(input: &str) -> String {
+src/compressors/go/go_cmd.rs:168:pub fn filter_golangci_lint(input: &str) -> String {
+src/compressors/python/pip_cmd.rs:34:pub fn filter_pip_install(input: &str) -> String {
+src/compressors/python/pytest_cmd.rs:49:pub fn filter_pytest(input: &str) -> String {
+src/compressors/python/ruff_cmd.rs:20:pub fn filter_ruff(input: &str) -> String {
+src/compressors/js/npm_cmd.rs:43:pub fn filter_npm_install(input: &str) -> String {
+src/compressors/js/npm_cmd.rs:91:pub fn filter_npm_test(input: &str) -> String {
+src/compressors/js/tsc_cmd.rs:21:pub fn filter_tsc(input: &str) -> String {
+src/compressors/js/vitest_cmd.rs:28:pub fn filter_vitest(input: &str) -> String {
+src/compressors/rust/cargo_cmd.rs:45:pub fn filter_cargo_test(input: &str) -> String {
+src/compressors/rust/cargo_cmd.rs:108:pub fn filter_cargo_build(input: &str) -> String {
+src/compressors/rust/cargo_cmd.rs:188:pub fn filter_cargo_clippy(input: &str) -> String {
+src/compressors/java/gradle_cmd.rs:48:pub fn filter_gradle(input: &str) -> String {
+src/compressors/dotnet/dotnet_cmd.rs:44:pub fn filter_dotnet_test(input: &str) -> String {
+src/compressors/system/ls_cmd.rs:14:pub fn filter_ls(input: &str, path: &str) -> String {
+src/compressors/system/du_cmd.rs:32:pub fn filter_du(input: &str, top_n: usize) -> String {
+src/compressors/system/find_cmd.rs:11:pub fn filter_find(input: &str) -> String {
+src/compressors/system/smart_cmd.rs:13:pub fn filter_smart(input: &str) -> String {
+src/compressors/system/smart_cmd.rs:89:        lines.push("pub fn main() {".to_string());
+src/compressors/system/smart_cmd.rs:95:        lines.push("pub fn helper() {".to_string());
+src/compressors/system/smart_cmd.rs:103:        assert!(output.contains("pub fn main"));
+src/compressors/system/smart_cmd.rs:104:        assert!(output.contains("pub fn helper"));
+src/compressors/system/grep_cmd.rs:11:pub fn filter_grep(input: &str, max_results: usize, max_per_file: usize) -> String {
+src/compressors/system/df_cmd.rs:16:pub fn filter_df(input: &str) -> String {
+src/compressors/system/diff_cmd.rs:15:pub fn filter_diff(input: &str) -> String {
+src/compressors/system/wc_cmd.rs:15:pub fn filter_wc(input: &str) -> String {
+src/compressors/system/read_cmd.rs:4:pub fn filter_read(input: &str, path: &str) -> String {
+src/compressors/system/env_cmd.rs:19:pub fn filter_env(input: &str, filter_pattern: Option<&str>) -> String {
+src/compressors/cloud/aws_cmd.rs:34:pub fn filter_aws_json(input: &str) -> String {
+src/compressors/cloud/terraform_cmd.rs:77:pub fn filter_terraform_plan(input: &str) -> String {
+src/compressors/cloud/terraform_cmd.rs:182:pub fn filter_terraform_apply(input: &str) -> String {
+src/compressors/cloud/docker_cmd.rs:108:pub fn filter_docker_ps(input: &str) -> String {
+src/compressors/cloud/docker_cmd.rs:164:pub fn filter_docker_build(input: &str) -> String {
+src/compressors/cloud/kubectl_cmd.rs:25:pub fn filter_kubectl_pods(input: &str) -> String {
+src/compressors/db/db_cmd.rs:38:pub fn filter_psql(input: &str) -> String {
+src/compressors/db/db_cmd.rs:84:pub fn filter_redis_info(input: &str) -> String {
+src/compressors/build/make_cmd.rs:43:pub fn filter_make(input: &str) -> String {
+src/compressors/ruby/rspec_cmd.rs:42:pub fn filter_rspec(input: &str) -> String {
+src/compressors/git/git_cmd.rs:19:pub fn filter_git_log(input: &str) -> String {
+src/compressors/git/git_cmd.rs:62:pub fn filter_git_status(input: &str) -> String {
+src/compressors/git/git_cmd.rs:126:pub fn filter_git_diff(input: &str) -> String {
+src/compressors/git/git_cmd.rs:178:pub fn filter_git_simple(input: &str, subcommand: &str) -> String {
+src/compressors/git/gh_cmd.rs:36:pub fn filter_gh_pr_list(input: &str) -> String {
+src/compressors/git/gh_cmd.rs:67:pub fn filter_gh_run_list(input: &str) -> String {
+src/compressors/pkg/apt_cmd.rs:48:pub fn filter_apt_install(input: &str) -> String {
+src/compressors/pkg/brew_cmd.rs:41:pub fn filter_brew_install(input: &str) -> String {
+src/compressors/pkg/brew_cmd.rs:101:pub fn filter_brew_list(input: &str) -> String {
+src/engine/timeout.rs:7:pub fn execute_with_timeout(cmd: &str, args: &[&str], timeout: Duration) -> Result<Output> {
+src/engine/shell.rs:11:pub fn strip_ansi(input: &str) -> std::borrow::Cow<str> {
+src/engine/shell.rs:20:pub fn count_tokens(text: &str) -> usize {
+src/engine/shell.rs:25:pub fn execute_command(cmd: &str, args: &[&str]) -> Result<Output> {
+src/engine/shell.rs:33:pub fn truncate_line(line: &str, max_chars: usize) -> String {
+src/engine/shell.rs:42:pub fn head_tail(input: &str, head: usize, tail: usize) -> String {
+src/engine/shell.rs:62:pub fn hard_cap(input: &str, max_chars: usize) -> String {
+src/engine/config.rs:119:pub fn load_config() -> Result<Tok0Config> {
+src/engine/config.rs:130:pub fn config_path() -> PathBuf {
+src/engine/config.rs:137:pub fn db_path() -> PathBuf {
+src/engine/meter.rs:36:    pub fn new(db_path: &Path) -> Result<Self> {
+src/engine/meter.rs:64:    pub fn record(
+src/engine/meter.rs:94:    pub fn get_summary(&self) -> Result<Summary> {
+src/engine/meter.rs:118:    pub fn get_daily(&self, days: u32) -> Result<Vec<DailyStats>> {
+src/engine/meter.rs:147:    pub fn get_recent(&self, limit: u32) -> Result<Vec<RecentCommand>> {
+src/engine/meter.rs:171:    pub fn cleanup(&self, retention_days: u32) -> Result<u64> {
+src/engine/meter.rs:185:pub fn record(
+src/engine/sanitize.rs:27:pub fn redact_paths(input: &str) -> Cow<str> {
+src/engine/sanitize.rs:36:pub fn redact_secrets(input: &str) -> Cow<str> {
+src/engine/sanitize.rs:62:pub fn sanitize_output(input: &str) -> String {

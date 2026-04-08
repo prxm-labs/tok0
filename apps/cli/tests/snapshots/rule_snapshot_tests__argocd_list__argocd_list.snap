@@ -1,0 +1,14 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+NAME             CLUSTER                         NAMESPACE  PROJECT  STATUS     HEALTH    SYNCPOLICY  CONDITIONS  REPO                                       PATH         TARGET
+demo-app         https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/bar.git             infra/dev    HEAD
+billing-svc      https://kubernetes.default.svc  argocd     default  OutOfSync  Degraded  Manual      <none>      https://github.com/foo/billing.git         infra/dev    HEAD
+api-gw           https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/gw.git              infra/dev    HEAD
+auth-svc         https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/auth.git            infra/dev    HEAD
+cron-runner      https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/cron.git            infra/dev    HEAD
+metrics-shipper  https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/metrics.git         infra/dev    HEAD
+ingest-edge      https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/ingest.git          infra/dev    HEAD
+recommender      https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/recommender.git     infra/dev    HEAD
+billing-cron     https://kubernetes.default.svc  argocd     default  Synced     Healthy   Auto-Prune  <none>      https://github.com/foo/billing-cron.git    infra/dev    HEAD

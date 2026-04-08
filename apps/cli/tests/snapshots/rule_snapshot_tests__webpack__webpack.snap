@@ -1,0 +1,6 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+asset out.js 18 bytes [emitted] [minimized] (name: main)
+./src.js 19 bytes [built] [code generated]

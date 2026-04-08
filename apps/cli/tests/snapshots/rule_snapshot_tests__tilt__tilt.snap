@@ -1,0 +1,16 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+v0.33.10, built 2026-04-15
+
+(space) to open the browser
+(s) to stream logs (--stream=true)
+(t) to open legacy terminal mode (--legacy=true)
+(ctrl-c) to exit
+
+Successfully loaded Tiltfile (132.4ms)
+
+api               │ http://localhost:8080
+web               │ http://localhost:3000
+worker            │ ready

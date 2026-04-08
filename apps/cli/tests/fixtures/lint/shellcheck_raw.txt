@@ -1,0 +1,31 @@
+In scripts/deploy.sh line 5:
+  source ./config.sh
+  ^-- SC1091: Not following: ./config.sh was not specified as input (see shellcheck -x).
+
+In scripts/deploy.sh line 12:
+  if [ $DEPLOY_ENV == "production" ]; then
+     ^-- SC2086: Double quote to prevent globbing and word splitting.
+
+In scripts/deploy.sh line 12:
+  if [ $DEPLOY_ENV == "production" ]; then
+               ^-- SC2039: In POSIX sh, == in place of = is undefined.
+
+In scripts/build.sh line 8:
+  cd $BUILD_DIR && make
+     ^-- SC2086: Double quote to prevent globbing and word splitting.
+
+In scripts/build.sh line 15:
+  rm -rf $OUTPUT/$VERSION/*
+         ^-- SC2086: Double quote to prevent globbing and word splitting.
+
+In scripts/build.sh line 15:
+  rm -rf $OUTPUT/$VERSION/*
+                 ^-- SC2086: Double quote to prevent globbing and word splitting.
+
+In scripts/setup.sh line 3:
+  #!/bin/sh
+  ^-- SC2148: Tips depend on target shell and yours is unknown. Add a shebang or a 'shell' directive.
+
+In scripts/setup.sh line 19:
+  echo "Done $1 $2 $3"
+             ^-- SC2086: Double quote to prevent globbing and word splitting.

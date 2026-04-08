@@ -1,0 +1,2 @@
+Prisma schema loaded from schema.prisma
+The schema at schema.prisma is valid 🚀

@@ -1,0 +1,4 @@
+synthetic
+captured: 2026-04-28
+origin: python3 oneliner generating 10000 items
+git_sha: b1af0d477abfc99e8e787821f1da3d0d48525395

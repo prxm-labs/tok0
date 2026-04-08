@@ -1,0 +1,840 @@
+warning: function `count_tokens` is never used
+ --> tests/common/mod.rs:2:8
+  |
+2 | pub fn count_tokens(text: &str) -> usize {
+  |        ^^^^^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` on by default
+
+warning: function `assert_savings` is never used
+ --> tests/common/mod.rs:7:8
+  |
+7 | pub fn assert_savings(input: &str, output: &str, min_pct: f64, label: &str) {
+  |        ^^^^^^^^^^^^^^
+
+warning: unused variable: `deleted`
+   --> src/engine/meter.rs:309:13
+    |
+309 |         let deleted = tracker.cleanup(0).expect("cleanup");
+    |             ^^^^^^^ help: if this is intentional, prefix it with an underscore: `_deleted`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: fields `hooks`, `telemetry`, and `update` are never read
+  --> src/engine/config.rs:10:9
+   |
+6  | pub struct Tok0Config {
+   |            ---------- fields in this struct
+...
+10 |     pub hooks: HooksConfig,
+   |         ^^^^^
+...
+16 |     pub telemetry: TelemetryConfig,
+   |         ^^^^^^^^^
+17 |     #[serde(default)]
+18 |     pub update: UpdateConfig,
+   |         ^^^^^^
+   |
+   = note: `Tok0Config` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` on by default
+
+warning: field `exclude_commands` is never read
+  --> src/engine/config.rs:44:9
+   |
+42 | pub struct HooksConfig {
+   |            ----------- field in this struct
+43 |     #[serde(default)]
+44 |     pub exclude_commands: Vec<String>,
+   |         ^^^^^^^^^^^^^^^^
+   |
+   = note: `HooksConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `emoji` and `max_width` are never read
+  --> src/engine/config.rs:50:9
+   |
+48 | pub struct DisplayConfig {
+   |            ------------- fields in this struct
+49 |     pub colors: bool,
+50 |     pub emoji: bool,
+   |         ^^^^^
+51 |     pub max_width: usize,
+   |         ^^^^^^^^^
+   |
+   = note: `DisplayConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `grep_max_per_file`, `status_max_files`, and `passthrough_max_chars` are never read
+  --> src/engine/config.rs:67:9
+   |
+65 | pub struct LimitsConfig {
+   |            ------------ fields in this struct
+66 |     pub grep_max_results: usize,
+67 |     pub grep_max_per_file: usize,
+   |         ^^^^^^^^^^^^^^^^^
+68 |     pub status_max_files: usize,
+   |         ^^^^^^^^^^^^^^^^
+69 |     pub passthrough_max_chars: usize,
+   |         ^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `LimitsConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: field `enabled` is never read
+  --> src/engine/config.rs:87:9
+   |
+86 | pub struct TelemetryConfig {
+   |            --------------- field in this struct
+87 |     pub enabled: bool,
+   |         ^^^^^^^
+   |
+   = note: `TelemetryConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `auto_check` and `check_interval_hours` are never read
+  --> src/engine/config.rs:98:9
+   |
+97 | pub struct UpdateConfig {
+   |            ------------ fields in this struct
+98 |     pub auto_check: bool,
+   |         ^^^^^^^^^^
+99 |     pub check_interval_hours: u64,
+   |         ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `UpdateConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `api_url`, `team_id`, and `api_key` are never read
+   --> src/engine/config.rs:114:9
+    |
+112 | pub struct CloudConfig {
+    |            ----------- fields in this struct
+113 |     pub enabled: bool,
+114 |     pub api_url: Option<String>,
+    |         ^^^^^^^
+115 |     pub team_id: Option<String>,
+    |         ^^^^^^^
+116 |     pub api_key: Option<String>,
+    |         ^^^^^^^
+    |
+    = note: `CloudConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: function `load_config` is never used
+   --> src/engine/config.rs:119:8
+    |
+119 | pub fn load_config() -> Result<Tok0Config> {
+    |        ^^^^^^^^^^^
+
+warning: function `db_path` is never used
+   --> src/engine/config.rs:137:8
+    |
+137 | pub fn db_path() -> PathBuf {
+    |        ^^^^^^^
+
+warning: fields `date` and `avg_savings_pct` are never read
+  --> src/engine/meter.rs:20:9
+   |
+19 | pub struct DailyStats {
+   |            ---------- fields in this struct
+20 |     pub date: String,
+   |         ^^^^
+...
+23 |     pub avg_savings_pct: f64,
+   |         ^^^^^^^^^^^^^^^
+   |
+   = note: `DailyStats` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `timestamp`, `command`, `input_tokens`, `output_tokens`, and `savings_pct` are never read
+  --> src/engine/meter.rs:28:9
+   |
+27 | pub struct RecentCommand {
+   |            ------------- fields in this struct
+28 |     pub timestamp: String,
+   |         ^^^^^^^^^
+29 |     pub command: String,
+   |         ^^^^^^^
+30 |     pub input_tokens: u64,
+   |         ^^^^^^^^^^^^
+31 |     pub output_tokens: u64,
+   |         ^^^^^^^^^^^^^
+32 |     pub savings_pct: f64,
+   |         ^^^^^^^^^^^
+   |
+   = note: `RecentCommand` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: function `record` is never used
+   --> src/engine/meter.rs:185:8
+    |
+185 | pub fn record(
+    |        ^^^^^^
+
+warning: function `filter_git_log` is never used
+  --> src/compressors/git/git_cmd.rs:19:8
+   |
+19 | pub fn filter_git_log(input: &str) -> String {
+   |        ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: function `filter_git_status` is never used
+  --> src/compressors/git/git_cmd.rs:62:8
+   |
+62 | pub fn filter_git_status(input: &str) -> String {
+   |        ^^^^^^^^^^^^^^^^^
+
+warning: function `filter_git_diff` is never used
+   --> src/compressors/git/git_cmd.rs:126:8
+    |
+126 | pub fn filter_git_diff(input: &str) -> String {
+    |        ^^^^^^^^^^^^^^^
+
+warning: function `filter_git_simple` is never used
+   --> src/compressors/git/git_cmd.rs:178:8
+    |
+178 | pub fn filter_git_simple(input: &str, subcommand: &str) -> String {
+    |        ^^^^^^^^^^^^^^^^^
+
+warning: function `filter_df` is never used
+  --> src/compressors/system/df_cmd.rs:16:8
+   |
+16 | pub fn filter_df(input: &str) -> String {
+   |        ^^^^^^^^^
+
+warning: function `filter_diff` is never used
+  --> src/compressors/system/diff_cmd.rs:15:8
+   |
+15 | pub fn filter_diff(input: &str) -> String {
+   |        ^^^^^^^^^^^
+
+warning: struct `FileDiff` is never constructed
+   --> src/compressors/system/diff_cmd.rs:101:8
+    |
+101 | struct FileDiff {
+    |        ^^^^^^^^
+
+warning: function `parse_size` is never used
+  --> src/compressors/system/du_cmd.rs:12:4
+   |
+12 | fn parse_size(s: &str) -> f64 {
+   |    ^^^^^^^^^^
+
+warning: function `filter_du` is never used
+  --> src/compressors/system/du_cmd.rs:32:8
+   |
+32 | pub fn filter_du(input: &str, top_n: usize) -> String {
+   |        ^^^^^^^^^
+
+warning: function `filter_env` is never used
+  --> src/compressors/system/env_cmd.rs:19:8
+   |
+19 | pub fn filter_env(input: &str, filter_pattern: Option<&str>) -> String {
+   |        ^^^^^^^^^^
+
+warning: function `filter_find` is never used
+  --> src/compressors/system/find_cmd.rs:11:8
+   |
+11 | pub fn filter_find(input: &str) -> String {
+   |        ^^^^^^^^^^^
+
+warning: function `filter_grep` is never used
+  --> src/compressors/system/grep_cmd.rs:11:8
+   |
+11 | pub fn filter_grep(input: &str, max_results: usize, max_per_file: usize) -> String {
+   |        ^^^^^^^^^^^
+
+warning: function `filter_ls` is never used
+  --> src/compressors/system/ls_cmd.rs:14:8
+   |
+14 | pub fn filter_ls(input: &str, path: &str) -> String {
+   |        ^^^^^^^^^
+
+warning: function `format_size` is never used
+  --> src/compressors/system/ls_cmd.rs:65:4
+   |
+65 | fn format_size(bytes: u64) -> String {
+   |    ^^^^^^^^^^^
+
+warning: function `filter_read` is never used
+ --> src/compressors/system/read_cmd.rs:4:8
+  |
+4 | pub fn filter_read(input: &str, path: &str) -> String {
+  |        ^^^^^^^^^^^
+
+warning: function `filter_smart` is never used
+  --> src/compressors/system/smart_cmd.rs:13:8
+   |
+13 | pub fn filter_smart(input: &str) -> String {
+   |        ^^^^^^^^^^^^
+
+warning: function `filter_wc` is never used
+  --> src/compressors/system/wc_cmd.rs:15:8
+   |
+15 | pub fn filter_wc(input: &str) -> String {
+   |        ^^^^^^^^^
+
+warning: multiple fields are never read
+  --> src/engine/config.rs:8:9
+   |
+6  | pub struct Tok0Config {
+   |            ---------- fields in this struct
+7  |     #[serde(default)]
+8  |     pub tracking: TrackingConfig,
+   |         ^^^^^^^^
+9  |     #[serde(default)]
+10 |     pub hooks: HooksConfig,
+   |         ^^^^^
+11 |     #[serde(default)]
+12 |     pub display: DisplayConfig,
+   |         ^^^^^^^
+13 |     #[serde(default)]
+14 |     pub limits: LimitsConfig,
+   |         ^^^^^^
+15 |     #[serde(default)]
+16 |     pub telemetry: TelemetryConfig,
+   |         ^^^^^^^^^
+17 |     #[serde(default)]
+18 |     pub update: UpdateConfig,
+   |         ^^^^^^
+19 |     #[serde(default)]
+20 |     pub cloud: CloudConfig,
+   |         ^^^^^
+   |
+   = note: `Tok0Config` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `colors`, `emoji`, and `max_width` are never read
+  --> src/engine/config.rs:49:9
+   |
+48 | pub struct DisplayConfig {
+   |            ------------- fields in this struct
+49 |     pub colors: bool,
+   |         ^^^^^^
+50 |     pub emoji: bool,
+   |         ^^^^^
+51 |     pub max_width: usize,
+   |         ^^^^^^^^^
+   |
+   = note: `DisplayConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `grep_max_results`, `grep_max_per_file`, `status_max_files`, `passthrough_max_chars`, and `command_timeout_secs` are never read
+  --> src/engine/config.rs:66:9
+   |
+65 | pub struct LimitsConfig {
+   |            ------------ fields in this struct
+66 |     pub grep_max_results: usize,
+   |         ^^^^^^^^^^^^^^^^
+67 |     pub grep_max_per_file: usize,
+   |         ^^^^^^^^^^^^^^^^^
+68 |     pub status_max_files: usize,
+   |         ^^^^^^^^^^^^^^^^
+69 |     pub passthrough_max_chars: usize,
+   |         ^^^^^^^^^^^^^^^^^^^^^
+70 |     pub command_timeout_secs: u64,
+   |         ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `LimitsConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `enabled`, `api_url`, `team_id`, and `api_key` are never read
+   --> src/engine/config.rs:113:9
+    |
+112 | pub struct CloudConfig {
+    |            ----------- fields in this struct
+113 |     pub enabled: bool,
+    |         ^^^^^^^
+114 |     pub api_url: Option<String>,
+    |         ^^^^^^^
+115 |     pub team_id: Option<String>,
+    |         ^^^^^^^
+116 |     pub api_key: Option<String>,
+    |         ^^^^^^^
+    |
+    = note: `CloudConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: function `config_path` is never used
+   --> src/engine/config.rs:130:8
+    |
+130 | pub fn config_path() -> PathBuf {
+    |        ^^^^^^^^^^^
+
+warning: struct `Tracker` is never constructed
+ --> src/engine/meter.rs:5:12
+  |
+5 | pub struct Tracker {
+  |            ^^^^^^^
+
+warning: struct `Summary` is never constructed
+  --> src/engine/meter.rs:10:12
+   |
+10 | pub struct Summary {
+   |            ^^^^^^^
+   |
+   = note: `Summary` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: struct `DailyStats` is never constructed
+  --> src/engine/meter.rs:19:12
+   |
+19 | pub struct DailyStats {
+   |            ^^^^^^^^^^
+   |
+   = note: `DailyStats` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: struct `RecentCommand` is never constructed
+  --> src/engine/meter.rs:27:12
+   |
+27 | pub struct RecentCommand {
+   |            ^^^^^^^^^^^^^
+   |
+   = note: `RecentCommand` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: associated items `new`, `record`, `get_summary`, `get_daily`, `get_recent`, and `cleanup` are never used
+   --> src/engine/meter.rs:36:12
+    |
+35  | impl Tracker {
+    | ------------ associated items in this implementation
+36  |     pub fn new(db_path: &Path) -> Result<Self> {
+    |            ^^^
+...
+64  |     pub fn record(
+    |            ^^^^^^
+...
+94  |     pub fn get_summary(&self) -> Result<Summary> {
+    |            ^^^^^^^^^^^
+...
+118 |     pub fn get_daily(&self, days: u32) -> Result<Vec<DailyStats>> {
+    |            ^^^^^^^^^
+...
+147 |     pub fn get_recent(&self, limit: u32) -> Result<Vec<RecentCommand>> {
+    |            ^^^^^^^^^^
+...
+171 |     pub fn cleanup(&self, retention_days: u32) -> Result<u64> {
+    |            ^^^^^^^
+
+warning: function `redact_paths` is never used
+  --> src/engine/sanitize.rs:27:8
+   |
+27 | pub fn redact_paths(input: &str) -> Cow<str> {
+   |        ^^^^^^^^^^^^
+
+warning: function `redact_secrets` is never used
+  --> src/engine/sanitize.rs:36:8
+   |
+36 | pub fn redact_secrets(input: &str) -> Cow<str> {
+   |        ^^^^^^^^^^^^^^
+
+warning: function `sanitize_output` is never used
+  --> src/engine/sanitize.rs:62:8
+   |
+62 | pub fn sanitize_output(input: &str) -> String {
+   |        ^^^^^^^^^^^^^^^
+
+warning: function `strip_ansi` is never used
+  --> src/engine/shell.rs:11:8
+   |
+11 | pub fn strip_ansi(input: &str) -> std::borrow::Cow<str> {
+   |        ^^^^^^^^^^
+
+warning: function `count_tokens` is never used
+  --> src/engine/shell.rs:20:8
+   |
+20 | pub fn count_tokens(text: &str) -> usize {
+   |        ^^^^^^^^^^^^
+
+warning: function `truncate_line` is never used
+  --> src/engine/shell.rs:33:8
+   |
+33 | pub fn truncate_line(line: &str, max_chars: usize) -> String {
+   |        ^^^^^^^^^^^^^
+
+warning: function `head_tail` is never used
+  --> src/engine/shell.rs:42:8
+   |
+42 | pub fn head_tail(input: &str, head: usize, tail: usize) -> String {
+   |        ^^^^^^^^^
+
+warning: function `hard_cap` is never used
+  --> src/engine/shell.rs:62:8
+   |
+62 | pub fn hard_cap(input: &str, max_chars: usize) -> String {
+   |        ^^^^^^^^
+
+warning: function `execute_with_timeout` is never used
+ --> src/engine/timeout.rs:7:8
+  |
+7 | pub fn execute_with_timeout(cmd: &str, args: &[&str], timeout: Duration) -> Result<Output> {
+  |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: function `run_edge_cases` is never used
+  --> tests/common/mod.rs:28:8
+   |
+28 | pub fn run_edge_cases<F: Fn(&str) -> String>(filter: F, name: &str) {
+   |        ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: `tok0` (test "edge_cases_test") generated 2 warnings
+warning: `tok0` (lib test) generated 1 warning
+warning: `tok0` (bin "tok0" test) generated 13 warnings (1 duplicate)
+warning: `tok0` (bin "tok0") generated 42 warnings (6 duplicates)
+warning: `tok0` (test "efficiency_test") generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.26s
+     Running unittests src/lib.rs (target/debug/deps/tok0-e8de2c38b4717f3f)
+
+running 120 tests
+test compressors::git::git_cmd::tests::test_git_diff_empty ... ok
+test compressors::git::git_cmd::tests::test_git_log_empty ... ok
+test compressors::git::git_cmd::tests::test_git_commit_ok ... ok
+test compressors::git::git_cmd::tests::test_git_push_ok ... ok
+test compressors::git::git_cmd::tests::test_git_status_empty ... ok
+test compressors::git::git_cmd::tests::test_git_simple_unicode ... ok
+test compressors::git::git_cmd::tests::test_git_log_malformed ... ok
+test compressors::system::df_cmd::tests::test_df_empty ... ok
+test compressors::git::git_cmd::tests::test_git_status_clean ... ok
+test compressors::git::git_cmd::tests::test_git_log_savings ... ok
+test compressors::git::git_cmd::tests::test_git_diff_savings ... ok
+test compressors::git::git_cmd::tests::test_git_status_savings ... ok
+test compressors::system::df_cmd::tests::test_df_fallback_when_all_filtered ... ok
+test compressors::system::df_cmd::tests::test_df_keeps_header ... ok
+test compressors::system::diff_cmd::tests::test_diff_empty ... ok
+test compressors::system::df_cmd::tests::test_df_snap_mounts_removed ... ok
+test compressors::system::df_cmd::tests::test_df_linux_tmpfs_removed ... ok
+test compressors::system::df_cmd::tests::test_df_savings ... ok
+test compressors::system::diff_cmd::tests::test_diff_malformed ... ok
+test compressors::system::diff_cmd::tests::test_diff_savings ... ok
+test compressors::system::diff_cmd::tests::test_diff_unicode ... ok
+test compressors::system::du_cmd::tests::test_du_empty ... ok
+test compressors::system::du_cmd::tests::test_du_passthrough_unparseable ... ok
+test compressors::system::du_cmd::tests::test_du_rest_summary ... ok
+test compressors::system::du_cmd::tests::test_du_savings ... ok
+test compressors::system::du_cmd::tests::test_du_single_entry ... ok
+test compressors::system::du_cmd::tests::test_du_sorted_descending ... ok
+test compressors::system::du_cmd::tests::test_parse_size ... ok
+test compressors::system::env_cmd::tests::test_env_empty ... ok
+test compressors::git::git_cmd::tests::test_git_log_format ... ok
+test compressors::system::du_cmd::tests::test_du_many_entries_snapshot ... ok
+test compressors::git::git_cmd::tests::test_git_status_format ... ok
+test compressors::git::git_cmd::tests::test_git_diff_format ... ok
+test compressors::system::df_cmd::tests::test_df_macos_fixture_snapshot ... ok
+test compressors::system::diff_cmd::tests::test_diff_synthetic ... ok
+test compressors::system::du_cmd::tests::test_du_fixture_snapshot ... ok
+test compressors::system::env_cmd::tests::test_env_filter_pattern ... ok
+test compressors::system::env_cmd::tests::test_env_passthrough_unparseable ... ok
+test compressors::system::env_cmd::tests::test_env_filter_pattern_no_match ... ok
+test compressors::system::env_cmd::tests::test_env_redacts_paths ... ok
+test compressors::system::env_cmd::tests::test_env_sorted ... ok
+test compressors::system::env_cmd::tests::test_env_redacts_api_key ... ok
+test compressors::system::env_cmd::tests::test_env_multiline_value_skipped_gracefully ... ok
+test compressors::system::find_cmd::tests::test_find_empty ... ok
+test compressors::system::find_cmd::tests::test_find_small_list ... ok
+test compressors::system::find_cmd::tests::test_find_output_format ... ok
+test compressors::system::find_cmd::tests::test_find_unicode ... ok
+test compressors::system::grep_cmd::tests::test_grep_empty ... ok
+test compressors::system::find_cmd::tests::test_find_savings ... ok
+test compressors::system::grep_cmd::tests::test_grep_small_results ... ok
+test compressors::system::grep_cmd::tests::test_grep_unicode ... ok
+test compressors::system::ls_cmd::tests::test_format_size ... ok
+test compressors::system::env_cmd::tests::test_env_fixture_snapshot ... ok
+test compressors::system::ls_cmd::tests::test_ls_empty ... ok
+test compressors::system::env_cmd::tests::test_env_noisy_vars_omitted ... ok
+test compressors::system::env_cmd::tests::test_env_savings ... ok
+test compressors::system::read_cmd::tests::test_read_empty ... ok
+test compressors::system::read_cmd::tests::test_read_large_file ... ok
+test compressors::system::read_cmd::tests::test_read_long_lines ... ok
+test compressors::system::read_cmd::tests::test_read_small_file ... ok
+test compressors::system::read_cmd::tests::test_read_unicode ... ok
+test compressors::system::smart_cmd::tests::test_smart_empty ... ok
+test compressors::system::grep_cmd::tests::test_grep_output_format ... ok
+test compressors::system::smart_cmd::tests::test_smart_small_file ... ok
+test compressors::system::smart_cmd::tests::test_smart_unicode ... ok
+test compressors::system::grep_cmd::tests::test_grep_savings ... ok
+test compressors::system::wc_cmd::tests::test_wc_empty ... ok
+test compressors::system::wc_cmd::tests::test_wc_few_files ... ok
+test compressors::system::ls_cmd::tests::test_ls_ansi ... ok
+test compressors::system::ls_cmd::tests::test_ls_malformed ... ok
+test compressors::system::smart_cmd::tests::test_smart_large_file ... ok
+test compressors::system::wc_cmd::tests::test_wc_groups_by_extension ... ok
+test compressors::system::wc_cmd::tests::test_wc_many_files_savings ... ok
+test compressors::system::ls_cmd::tests::test_ls_unicode ... ok
+test compressors::system::ls_cmd::tests::test_ls_savings ... ok
+test compressors::system::ls_cmd::tests::test_ls_output_format ... ok
+test compressors::system::wc_cmd::tests::test_wc_single_file ... ok
+test engine::config::tests::test_config_path_not_empty ... ok
+test compressors::system::wc_cmd::tests::test_wc_passthrough_unparseable ... ok
+test engine::config::tests::test_default_config ... ok
+test compressors::system::wc_cmd::tests::test_wc_many_files_snapshot ... ok
+test engine::config::tests::test_parse_empty_toml ... ok
+test engine::config::tests::test_parse_minimal_toml ... ok
+test engine::meter::tests::test_savings_calculation ... ok
+test engine::config::tests::test_parse_full_toml ... ok
+test engine::sanitize::tests::test_no_paths_zero_copy ... ok
+test engine::sanitize::tests::test_no_secrets_zero_copy ... ok
+test engine::sanitize::tests::test_password_in_env ... ok
+test engine::sanitize::tests::test_redact_api_key ... ok
+test engine::sanitize::tests::test_redact_aws_key ... ok
+test engine::sanitize::tests::test_redact_bearer_token ... ok
+test engine::sanitize::tests::test_redact_github_pat ... ok
+test engine::sanitize::tests::test_redact_home_paths ... ok
+test engine::sanitize::tests::test_redact_linux_paths ... ok
+test engine::sanitize::tests::test_redact_private_key ... ok
+test engine::sanitize::tests::test_sanitize_combined ... ok
+test engine::sanitize::tests::test_token_in_url ... ok
+test engine::shell::tests::test_count_tokens ... ok
+test engine::shell::tests::test_hard_cap_long ... ok
+test engine::shell::tests::test_hard_cap_short ... ok
+test engine::shell::tests::test_head_tail_large_input ... ok
+test engine::shell::tests::test_head_tail_small_input ... ok
+test engine::shell::tests::test_strip_ansi_empty ... ok
+test engine::shell::tests::test_strip_ansi_with_codes ... ok
+test engine::shell::tests::test_strip_ansi_without_codes ... ok
+test engine::shell::tests::test_truncate_line_long ... ok
+test engine::shell::tests::test_truncate_line_short ... ok
+test engine::meter::tests::test_empty_summary ... ok
+test engine::meter::tests::test_record_and_query ... ok
+test engine::meter::tests::test_cleanup_old_records ... ok
+test engine::meter::tests::test_get_daily ... ok
+test engine::meter::tests::test_wal_mode_active ... ok
+test engine::meter::tests::test_multiple_records ... ok
+test engine::meter::tests::test_get_recent ... ok
+test engine::timeout::tests::test_command_not_found ... ok
+test engine::timeout::tests::test_command_completes_within_timeout ... ok
+test engine::timeout::tests::test_command_with_args ... ok
+test engine::timeout::tests::test_short_timeout_fast_command ... ok
+test engine::timeout::tests::test_command_exit_code_propagation ... ok
+test engine::timeout::tests::test_command_timeout ... ok
+
+test result: ok. 120 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running unittests src/main.rs (target/debug/deps/tok0-06a3fd265d49445a)
+
+running 120 tests
+test compressors::git::git_cmd::tests::test_git_diff_empty ... ok
+test compressors::git::git_cmd::tests::test_git_commit_ok ... ok
+test compressors::git::git_cmd::tests::test_git_log_empty ... ok
+test compressors::git::git_cmd::tests::test_git_push_ok ... ok
+test compressors::git::git_cmd::tests::test_git_simple_unicode ... ok
+test compressors::git::git_cmd::tests::test_git_status_empty ... ok
+test compressors::git::git_cmd::tests::test_git_log_malformed ... ok
+test compressors::system::df_cmd::tests::test_df_empty ... ok
+test compressors::git::git_cmd::tests::test_git_status_clean ... ok
+test compressors::git::git_cmd::tests::test_git_diff_savings ... ok
+test compressors::git::git_cmd::tests::test_git_log_savings ... ok
+test compressors::git::git_cmd::tests::test_git_status_savings ... ok
+test compressors::system::df_cmd::tests::test_df_fallback_when_all_filtered ... ok
+test compressors::system::df_cmd::tests::test_df_keeps_header ... ok
+test compressors::system::df_cmd::tests::test_df_linux_tmpfs_removed ... ok
+test compressors::system::df_cmd::tests::test_df_snap_mounts_removed ... ok
+test compressors::system::diff_cmd::tests::test_diff_empty ... ok
+test compressors::system::df_cmd::tests::test_df_savings ... ok
+test compressors::system::diff_cmd::tests::test_diff_malformed ... ok
+test compressors::system::diff_cmd::tests::test_diff_unicode ... ok
+test compressors::system::diff_cmd::tests::test_diff_savings ... ok
+test compressors::system::du_cmd::tests::test_du_empty ... ok
+test compressors::system::du_cmd::tests::test_du_passthrough_unparseable ... ok
+test compressors::system::du_cmd::tests::test_du_rest_summary ... ok
+test compressors::system::du_cmd::tests::test_du_savings ... ok
+test compressors::system::du_cmd::tests::test_du_single_entry ... ok
+test compressors::system::du_cmd::tests::test_du_sorted_descending ... ok
+test compressors::system::du_cmd::tests::test_parse_size ... ok
+test compressors::system::env_cmd::tests::test_env_empty ... ok
+test compressors::system::diff_cmd::tests::test_diff_synthetic ... ok
+test compressors::system::df_cmd::tests::test_df_macos_fixture_snapshot ... ok
+test compressors::system::du_cmd::tests::test_du_many_entries_snapshot ... ok
+test compressors::git::git_cmd::tests::test_git_log_format ... ok
+test compressors::git::git_cmd::tests::test_git_diff_format ... ok
+test compressors::git::git_cmd::tests::test_git_status_format ... ok
+test compressors::system::env_cmd::tests::test_env_passthrough_unparseable ... ok
+test compressors::system::du_cmd::tests::test_du_fixture_snapshot ... ok
+test compressors::system::env_cmd::tests::test_env_filter_pattern_no_match ... ok
+test compressors::system::env_cmd::tests::test_env_multiline_value_skipped_gracefully ... ok
+test compressors::system::env_cmd::tests::test_env_redacts_paths ... ok
+test compressors::system::env_cmd::tests::test_env_filter_pattern ... ok
+test compressors::system::find_cmd::tests::test_find_empty ... ok
+test compressors::system::env_cmd::tests::test_env_redacts_api_key ... ok
+test compressors::system::find_cmd::tests::test_find_small_list ... ok
+test compressors::system::find_cmd::tests::test_find_unicode ... ok
+test compressors::system::grep_cmd::tests::test_grep_empty ... ok
+test compressors::system::env_cmd::tests::test_env_sorted ... ok
+test compressors::system::grep_cmd::tests::test_grep_small_results ... ok
+test compressors::system::grep_cmd::tests::test_grep_unicode ... ok
+test compressors::system::ls_cmd::tests::test_format_size ... ok
+test compressors::system::find_cmd::tests::test_find_savings ... ok
+test compressors::system::find_cmd::tests::test_find_output_format ... ok
+test compressors::system::ls_cmd::tests::test_ls_empty ... ok
+test compressors::system::env_cmd::tests::test_env_savings ... ok
+test compressors::system::env_cmd::tests::test_env_noisy_vars_omitted ... ok
+test compressors::system::env_cmd::tests::test_env_fixture_snapshot ... ok
+test compressors::system::read_cmd::tests::test_read_empty ... ok
+test compressors::system::read_cmd::tests::test_read_large_file ... ok
+test compressors::system::read_cmd::tests::test_read_long_lines ... ok
+test compressors::system::read_cmd::tests::test_read_small_file ... ok
+test compressors::system::read_cmd::tests::test_read_unicode ... ok
+test compressors::system::smart_cmd::tests::test_smart_empty ... ok
+test compressors::system::grep_cmd::tests::test_grep_output_format ... ok
+test compressors::system::smart_cmd::tests::test_smart_small_file ... ok
+test compressors::system::smart_cmd::tests::test_smart_unicode ... ok
+test compressors::system::wc_cmd::tests::test_wc_empty ... ok
+test compressors::system::grep_cmd::tests::test_grep_savings ... ok
+test compressors::system::ls_cmd::tests::test_ls_malformed ... ok
+test compressors::system::ls_cmd::tests::test_ls_unicode ... ok
+test compressors::system::ls_cmd::tests::test_ls_output_format ... ok
+test compressors::system::ls_cmd::tests::test_ls_savings ... ok
+test compressors::system::ls_cmd::tests::test_ls_ansi ... ok
+test engine::config::tests::test_config_path_not_empty ... ok
+test compressors::system::wc_cmd::tests::test_wc_passthrough_unparseable ... ok
+test compressors::system::wc_cmd::tests::test_wc_single_file ... ok
+test compressors::system::wc_cmd::tests::test_wc_few_files ... ok
+test engine::config::tests::test_default_config ... ok
+test compressors::system::smart_cmd::tests::test_smart_large_file ... ok
+test compressors::system::wc_cmd::tests::test_wc_groups_by_extension ... ok
+test compressors::system::wc_cmd::tests::test_wc_many_files_snapshot ... ok
+test engine::config::tests::test_parse_empty_toml ... ok
+test compressors::system::wc_cmd::tests::test_wc_many_files_savings ... ok
+test engine::config::tests::test_parse_minimal_toml ... ok
+test engine::meter::tests::test_savings_calculation ... ok
+test engine::config::tests::test_parse_full_toml ... ok
+test engine::sanitize::tests::test_no_paths_zero_copy ... ok
+test engine::sanitize::tests::test_no_secrets_zero_copy ... ok
+test engine::sanitize::tests::test_password_in_env ... ok
+test engine::sanitize::tests::test_redact_api_key ... ok
+test engine::sanitize::tests::test_redact_aws_key ... ok
+test engine::sanitize::tests::test_redact_bearer_token ... ok
+test engine::sanitize::tests::test_redact_github_pat ... ok
+test engine::sanitize::tests::test_redact_home_paths ... ok
+test engine::sanitize::tests::test_redact_linux_paths ... ok
+test engine::sanitize::tests::test_redact_private_key ... ok
+test engine::sanitize::tests::test_sanitize_combined ... ok
+test engine::sanitize::tests::test_token_in_url ... ok
+test engine::shell::tests::test_count_tokens ... ok
+test engine::shell::tests::test_hard_cap_long ... ok
+test engine::shell::tests::test_hard_cap_short ... ok
+test engine::shell::tests::test_head_tail_large_input ... ok
+test engine::shell::tests::test_head_tail_small_input ... ok
+test engine::shell::tests::test_strip_ansi_empty ... ok
+test engine::shell::tests::test_strip_ansi_with_codes ... ok
+test engine::shell::tests::test_strip_ansi_without_codes ... ok
+test engine::shell::tests::test_truncate_line_long ... ok
+test engine::shell::tests::test_truncate_line_short ... ok
+test engine::meter::tests::test_empty_summary ... ok
+test engine::meter::tests::test_wal_mode_active ... ok
+test engine::meter::tests::test_record_and_query ... ok
+test engine::meter::tests::test_cleanup_old_records ... ok
+test engine::meter::tests::test_get_daily ... ok
+test engine::meter::tests::test_multiple_records ... ok
+test engine::meter::tests::test_get_recent ... ok
+test engine::timeout::tests::test_command_not_found ... ok
+test engine::timeout::tests::test_command_completes_within_timeout ... ok
+test engine::timeout::tests::test_command_exit_code_propagation ... ok
+test engine::timeout::tests::test_short_timeout_fast_command ... ok
+test engine::timeout::tests::test_command_with_args ... ok
+test engine::timeout::tests::test_command_timeout ... ok
+
+test result: ok. 120 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/edge_cases_test.rs (target/debug/deps/edge_cases_test-3e685f41a0d13aef)
+
+running 81 tests
+test diff_empty ... ok
+test diff_no_changes ... ok
+test diff_additions_only ... ok
+test diff_deletions_only ... ok
+test diff_single_file_one_hunk ... ok
+test find_empty ... ok
+test diff_multiple_hunks ... ok
+test diff_many_files ... ok
+test find_exactly_10_files ... ok
+test find_single_result ... ok
+test find_11_files_triggers_grouping ... ok
+test find_mixed_extensions ... ok
+test find_no_extension_files ... ok
+test git_diff_empty ... ok
+test find_deeply_nested ... ok
+test git_log_empty ... ok
+test find_edge_case_battery ... ok
+test git_diff_no_hunks ... ok
+test git_diff_single_file_minimal ... ok
+test diff_edge_case_battery_full ... ok
+test git_log_malformed_no_panic ... ok
+test git_simple_add_empty ... ok
+test git_simple_commit_empty ... ok
+test git_simple_pull_empty ... ok
+test git_log_short_hash_7_chars ... ok
+test git_log_multi_line_body_ignored ... ok
+test git_simple_push_empty ... ok
+test git_simple_with_verbose_output ... ok
+test diff_edge_case_battery ... ok
+test git_log_single_commit ... ok
+test git_status_empty ... ok
+test git_log_merge_commit ... ok
+test git_diff_edge_case_battery ... ok
+test git_status_clean_repo ... ok
+test git_log_edge_case_battery ... ok
+test git_status_only_staged ... ok
+test git_status_detached_head ... ok
+test git_status_only_unstaged ... ok
+test grep_empty ... ok
+test grep_non_standard_format ... ok
+test grep_exactly_at_limit ... ok
+test grep_single_match ... ok
+test git_status_many_untracked_truncated ... ok
+test git_status_only_untracked ... ok
+test ls_empty ... ok
+test git_status_edge_case_battery ... ok
+test ls_only_total_line ... ok
+test grep_many_files_few_matches ... ok
+test grep_one_over_limit ... ok
+test grep_many_matches_per_file ... ok
+test grep_edge_case_battery ... ok
+test read_101_lines_triggers_truncation ... ok
+test ls_zero_byte_file ... ok
+test ls_single_file ... ok
+test read_empty ... ok
+test ls_large_files_gb ... ok
+test read_exactly_100_lines_no_truncation ... ok
+test ls_symlinks ... ok
+test ls_unicode_filenames ... ok
+test read_line_numbers_present ... ok
+test read_path_in_header ... ok
+test read_edge_case_battery ... ok
+test read_single_line ... ok
+test read_very_long_lines_truncated ... ok
+test read_preserves_first_and_last_lines ... ok
+test ls_edge_case_battery ... ok
+test sanitize_redacts_linux_home ... ok
+test ls_many_entries ... ok
+test sanitize_preserves_non_home_paths ... ok
+test sanitize_redacts_home_paths_in_ls ... ok
+test smart_all_blank_lines ... ok
+test smart_empty ... ok
+test smart_exactly_30_lines_passthrough ... ok
+test smart_small_file_passthrough ... ok
+test smart_all_comments ... ok
+test smart_mixed_languages ... ok
+test smart_31_lines_triggers_compression ... ok
+test sanitize_no_false_positives ... ok
+test sanitize_redacts_env_secrets ... ok
+test sanitize_multiple_secrets_one_line ... ok
+test smart_edge_case_battery ... ok
+
+test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/efficiency_test.rs (target/debug/deps/efficiency_test-e913253aaa866cf4)
+
+running 16 tests
+test efficiency_git_simple_commands ... ok
+test efficiency_find ... ok
+test efficiency_find_large_project ... ok
+test efficiency_git_diff ... ok
+test efficiency_git_log_20_commits ... ok
+test efficiency_git_log ... ok
+test efficiency_git_status ... ok
+test efficiency_diff_multi_file ... ok
+test efficiency_git_status_busy_repo ... ok
+test efficiency_read_large_file ... ok
+test efficiency_grep_limited ... ok
+test efficiency_grep ... ok
+test efficiency_grep_many_matches ... ok
+test efficiency_read_huge_file ... ok
+test efficiency_smart_large_rust_file ... ok
+test efficiency_ls ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests tok0
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

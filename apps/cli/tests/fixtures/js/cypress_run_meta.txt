@@ -1,0 +1,1 @@
+Synthetic fixture: cypress real run unavailable in capture sandbox (no `timeout` on host; npm install/cypress binary download skipped). Mirrors `cypress run --headless --reporter spec` output for a single passing spec.

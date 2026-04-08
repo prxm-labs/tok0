@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (kustomize not installed in sandbox)
+parent_git_sha: 34415cc045301f1a51653bc07b050b0df6093cd0
+command: kustomize build overlays/dev
+notes: Synthetic ~80-line YAML fixture mimicking rendered Service + Deployment output from a typical kustomize overlay (replicas, probes, env, volumes).

@@ -1,0 +1,27 @@
+Skaffold v2.11.1
+Listing files to watch...
+ - demo-api
+ - demo-web
+Generating tags...
+ - demo-api -> demo-api:v1.2.3-dirty
+ - demo-web -> demo-web:v1.2.3-dirty
+Checking cache...
+ - demo-api: Found Locally
+ - demo-web: Found Locally
+Tags used in deployment:
+ - demo-api -> demo-api:v1.2.3-dirty@sha256:abc123def456
+ - demo-web -> demo-web:v1.2.3-dirty@sha256:def456abc789
+Starting deploy...
+ - deployment.apps/demo-api created
+ - deployment.apps/demo-web created
+ - service/demo-api created
+ - service/demo-web created
+Waiting for deployments to stabilize...
+ - deployment/demo-api: waiting for rollout to finish: 0 of 1 updated replicas are available...
+ - deployment/demo-web: waiting for rollout to finish: 0 of 1 updated replicas are available...
+ - deployment/demo-api is ready.
+ - deployment/demo-web is ready.
+Deployments stabilized in 18.241 seconds
+Port forwarding service/demo-api in namespace default, remote port 8080 -> http://127.0.0.1:8080
+Port forwarding service/demo-web in namespace default, remote port 3000 -> http://127.0.0.1:3000
+Watching for changes...

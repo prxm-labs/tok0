@@ -1,0 +1,134 @@
+Randomized with seed 12345
+
+UserAuthentication
+  with valid credentials
+    logs in successfully
+    returns an auth token
+    sets the session cookie
+    records the login timestamp
+    sends a welcome notification
+    updates last_seen_at field
+  with invalid credentials
+    raises AuthenticationError
+    does not return a token
+    does not set a session cookie
+    increments the failed attempt counter
+    logs the failed attempt to audit table
+    returns a 401 status code
+  with expired token
+    raises TokenExpiredError
+    clears the session
+    returns a 401 status
+  with revoked token
+    raises TokenRevokedError
+    does not allow access to protected resources
+    removes token from valid tokens list
+
+OrderService
+  #create_order
+    with valid items
+      creates the order record in database
+      charges the customer credit card
+      sends confirmation email with order details
+      decrements inventory count for each item
+      assigns a unique order number
+      sets order status to pending
+    with out-of-stock items
+      does not create the order
+      returns descriptive stock error message
+      does not charge the customer
+      sends a restock notification to admin
+    with invalid price
+      raises PriceValidationError
+      does not persist anything
+  #cancel_order
+    when order is pending
+      cancels successfully
+      issues full refund to original payment
+      sends cancellation email with confirmation
+      releases reserved inventory
+    when order is shipped
+      cannot cancel
+      returns already_shipped error code
+      suggests return process instead
+  #update_order
+    with valid changes
+      updates item quantities correctly
+      recalculates total price including tax
+      re-validates stock availability
+
+PaymentProcessor
+  #charge
+    with valid card
+      returns successful charge object
+      stores transaction id in database
+      triggers payment success webhook
+      records charge in audit log
+    with declined card
+      raises PaymentDeclinedError
+      does not store transaction
+      notifies customer of decline
+    with network timeout
+      retries three times with backoff
+      raises PaymentTimeoutError after exhausting retries
+      logs all retry attempts
+  #refund
+    for valid charge
+      issues full refund to card
+      updates transaction record status
+      sends refund confirmation email
+
+NotificationService
+  #send_email
+    with valid recipient
+      delivers email via SMTP
+      records delivery in log
+      returns delivery status code
+      stores message id for tracking
+    with invalid email address
+      raises InvalidEmailError with details
+      does not attempt SMTP delivery
+      logs the invalid address
+  #send_sms
+    with valid phone number
+      sends message via SMS gateway
+      records message id in database
+      returns gateway response code
+    with invalid phone number
+      raises InvalidPhoneError
+      does not consume message credits
+
+AuditLogger
+  #log_event
+    records event type and timestamp
+    stores user id with each entry
+    serializes metadata to JSON column
+    flushes to database within 100ms
+
+...............................F.............................F..........
+
+Failures:
+
+  1) OrderService#create_order with valid items charges the customer credit card
+     Failure/Error: expect(charge.amount).to eq(99.99)
+
+       expected: 99.99
+            got: 89.99
+
+       (compared using ==)
+
+     # ./spec/services/order_service_spec.rb:47:in `block (5 levels) in <top (required)>'
+
+  2) UserAuthentication with expired token raises TokenExpiredError
+     Failure/Error: expect { service.login(token: expired_token) }.to raise_error(TokenExpiredError)
+       expected TokenExpiredError but nothing was raised
+
+     # ./spec/services/user_authentication_spec.rb:33:in `block (4 levels) in <top (required)>'
+
+Finished in 2.84521 seconds (files took 1.803 seconds to load)
+70 examples, 2 failures
+
+Failed examples:
+
+rspec ./spec/services/order_service_spec.rb:44 # OrderService#create_order with valid items charges the customer credit card
+rspec ./spec/services/user_authentication_spec.rb:30 # UserAuthentication with expired token raises TokenExpiredError

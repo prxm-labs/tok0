@@ -1,0 +1,90 @@
+✓ main · build-and-test · 8432109876
+Triggered via push about 1 hour ago
+
+JOBS
+✓ lint (ubuntu-latest) in 45s
+  ✓ Set up job (2s)
+  ✓ Checkout code (actions/checkout@v4) (3s)
+  ✓ Install Rust toolchain (dtolnay/rust-toolchain@stable) (8s)
+  ✓ Cache cargo registry (actions/cache@v4) (5s)
+  ✓ Run clippy -- -D warnings (12s)
+  ✓ Run rustfmt --check (4s)
+  ✓ Post Cache cargo registry (1s)
+  ✓ Post Checkout code (1s)
+  ✓ Complete job (1s)
+
+✓ test (ubuntu-latest, stable) in 1m32s
+  ✓ Set up job (2s)
+  ✓ Checkout code (actions/checkout@v4) (3s)
+  ✓ Install Rust toolchain (dtolnay/rust-toolchain@stable) (8s)
+  ✓ Cache cargo registry (actions/cache@v4) (5s)
+  ✓ Run unit tests (cargo test --lib) (28s)
+  ✓ Run integration tests (cargo test --test '*') (35s)
+  ✓ Run doc tests (cargo test --doc) (12s)
+  ✓ Upload coverage report (codecov/codecov-action@v4) (8s)
+  ✓ Post Cache cargo registry (1s)
+  ✓ Post Checkout code (1s)
+  ✓ Complete job (1s)
+
+✓ test (ubuntu-latest, nightly) in 1m28s
+  ✓ Set up job (2s)
+  ✓ Checkout code (actions/checkout@v4) (3s)
+  ✓ Install Rust toolchain (dtolnay/rust-toolchain@nightly) (9s)
+  ✓ Cache cargo registry (actions/cache@v4) (5s)
+  ✓ Run unit tests (cargo test --lib) (26s)
+  ✓ Run integration tests (cargo test --test '*') (33s)
+  ✓ Run doc tests (cargo test --doc) (11s)
+  ✓ Post Cache cargo registry (1s)
+  ✓ Post Checkout code (1s)
+  ✓ Complete job (1s)
+
+X build (ubuntu-latest) in 2m14s
+  ✓ Set up job (2s)
+  ✓ Checkout code (actions/checkout@v4) (3s)
+  ✓ Install Rust toolchain (dtolnay/rust-toolchain@stable) (8s)
+  ✓ Cache cargo registry (actions/cache@v4) (5s)
+  X Build release binary (cargo build --release) (1m42s)
+    Error: process '/home/runner/.cargo/bin/cargo' failed with exit code 101
+    error[E0308]: mismatched types
+      --> src/engine/config.rs:142:9
+       |
+    142 |         Ok(default_config)
+       |         ^^^^^^^^^^^^^^^^^^ expected `Config`, found `DefaultConfig`
+       |
+    note: this error originates in the expansion of the macro `config_impl`
+      --> src/engine/macros.rs:15:5
+       |
+    15  |     impl $name { ... }
+       |     ^^^^^^^^^^^^^^^^^^^
+    error: aborting due to 1 previous error
+    For more information about this error, try `rustc --explain E0308`.
+  X Upload release artifacts (actions/upload-artifact@v4) (0s)
+    Error: Previous step failed with exit code 101, skipping artifact upload
+  ✓ Post Cache cargo registry (1s)
+  ✓ Post Checkout code (1s)
+  ✓ Complete job (1s)
+
+✓ security-scan (ubuntu-latest) in 1m05s
+  ✓ Set up job (2s)
+  ✓ Checkout code (actions/checkout@v4) (3s)
+  ✓ Install cargo-audit (cargo install cargo-audit) (15s)
+  ✓ Run cargo-audit (cargo audit) (8s)
+  ✓ Install trivy (aquasecurity/trivy-action@master) (12s)
+  ✓ Run trivy filesystem scan (trivy fs --severity HIGH,CRITICAL .) (18s)
+  ✓ Upload SARIF results (github/codeql-action/upload-sarif@v3) (5s)
+  ✓ Post Checkout code (1s)
+  ✓ Complete job (1s)
+
+✓ docker-build (ubuntu-latest) in 3m22s
+  ✓ Set up job (2s)
+  ✓ Checkout code (actions/checkout@v4) (3s)
+  ✓ Set up Docker Buildx (docker/setup-buildx-action@v3) (5s)
+  ✓ Login to GitHub Container Registry (docker/login-action@v3) (2s)
+  ✓ Build and push Docker image (docker/build-push-action@v5) (2m55s)
+  ✓ Post Login to GitHub Container Registry (1s)
+  ✓ Post Checkout code (1s)
+  ✓ Complete job (1s)
+
+ANNOTATIONS
+X Build release binary - Process completed with exit code 101.
+X Upload release artifacts - Previous step failed with exit code 101, skipping artifact upload.

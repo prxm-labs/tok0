@@ -1,0 +1,8 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+warning: src/main.rs:42:1: this could be a `String::is_empty` check
+src/index.ts 12ms
+src/api.ts 7ms
+3 files reformatted across all tools.

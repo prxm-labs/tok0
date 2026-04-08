@@ -1,0 +1,67 @@
+level=info msg="[config] Config search paths: [.golangci.yml .golangci.yaml .golangci.toml .golangci.json golangci.yml golangci.yaml golangci.toml golangci.json]"
+level=info msg="[config] Config file was not found, using default settings"
+level=info msg="[loader] Go packages loading at mode 575 (deps|imports|name|files|compiled_files|export_file|types|syntax|types_sizes|typed_deps|mode) took 3.451s"
+level=info msg="[loader] Parsed packages in 3.45s: github.com/user/project/pkg/handler github.com/user/project/pkg/user github.com/user/project/pkg/db github.com/user/project/pkg/config"
+level=info msg="[loader] Loaded package github.com/user/project/pkg/handler: 6 files, 847 lines"
+level=info msg="[loader] Loaded package github.com/user/project/pkg/user: 4 files, 623 lines"
+level=info msg="[loader] Loaded package github.com/user/project/pkg/db: 3 files, 412 lines"
+level=info msg="[loader] Loaded package github.com/user/project/pkg/config: 2 files, 198 lines"
+level=info msg="[runner] Processing package github.com/user/project/pkg/handler with 12 linters"
+level=info msg="[runner] Processing package github.com/user/project/pkg/user with 12 linters"
+level=info msg="[runner] Processing package github.com/user/project/pkg/db with 12 linters"
+level=info msg="[runner] Processing package github.com/user/project/pkg/config with 12 linters"
+level=info msg="[runner] Ran linter errcheck on github.com/user/project/pkg/handler in 0.034s"
+level=info msg="[runner] Ran linter goimports on github.com/user/project/pkg/handler in 0.012s"
+level=info msg="[runner] Ran linter golint on github.com/user/project/pkg/handler in 0.008s"
+level=info msg="[runner] Ran linter gosec on github.com/user/project/pkg/user in 0.045s"
+level=info msg="[runner] Ran linter govet on github.com/user/project/pkg/user in 0.023s"
+level=info msg="[runner] Ran linter gocognit on github.com/user/project/pkg/user in 0.019s"
+level=info msg="[runner] Ran linter staticcheck on github.com/user/project/pkg/db in 0.078s"
+level=info msg="[runner] Ran linter typecheck on github.com/user/project/pkg/db in 0.091s"
+level=info msg="[runner] Ran linter goconst on github.com/user/project/pkg/config in 0.006s"
+level=info msg="[runner] Issues before default exclusions: 17"
+level=info msg="[runner] Issues after default exclusions: 17"
+level=info msg="[linters] Active 12 linters: [errcheck gocognit goconst goimports golint gosec govet ineffassign staticcheck typecheck unconvert unused]"
+pkg/handler/handler.go:15:2: "net/http" imported and not used (goimports)
+pkg/handler/handler.go:23:14: undefined: middleware.AuthMiddleware (typecheck)
+pkg/handler/auth.go:34:6: exported function AuthHandler returns unexported type *authResult, which can be annoying to use (golint)
+pkg/handler/auth.go:67:5: ineffectual assignment to err (ineffassign)
+pkg/handler/auth.go:89:9: Error return value of `w.Write` is not checked (errcheck)
+pkg/user/service.go:12:1: package comment should be of the form "Package user ..." (golint)
+pkg/user/service.go:45:15: cognitive complexity 24 of function `CreateUser` is high (> 15) (gocognit)
+pkg/user/service.go:78:6: exported type UserService should have comment or be unexported (golint)
+pkg/user/service.go:112:9: G304: Potential file inclusion via variable (gosec)
+pkg/user/repo.go:23:2: shadow: declaration of "err" shadows declaration at line 19 (govet)
+pkg/user/repo.go:56:14: unnecessary conversion (unconvert)
+pkg/db/connection.go:18:2: "database/sql" imported and not used (goimports)
+pkg/db/connection.go:34:8: variable 'conn' is not used (unused)
+pkg/db/connection.go:67:5: SA1006: Printf with dynamic first argument and no further arguments (staticcheck)
+pkg/db/query.go:89:12: undefined: QueryBuilder (typecheck)
+pkg/config/config.go:34:2: fieldalignment: struct with 56 pointer bytes could be 48 (govet)
+pkg/config/config.go:78:9: string `"production"` has 3 occurrences, make it a constant (goconst)
+
+Run with --fix to apply automatic fixes.
+
+WARN [linters context] some linters took too long and were skipped: goanalysis_metalinter
+level=warning msg="[runner] The linter 'goanalysis_metalinter' timed out during execution. Consider increasing the timeout via --timeout flag."
+level=warning msg="[runner] The linter 'goanalysis_metalinter' failed. Consider increasing the linters timeout using --timeout option."
+Issues found: 17
+Linters used: errcheck(1), gocognit(1), goconst(1), goimports(2), golint(3), gosec(1), govet(2), ineffassign(1), staticcheck(1), typecheck(2), unconvert(1), unused(1)
+level=info msg="[runner] Total time: 8.32s, memory: 234MB"
+level=info msg="[runner] Cache size: 12MB, hits: 847, misses: 23"
+level=info msg="[runner] Disk cache used: 45MB out of 100MB limit"
+level=info msg="[runner] Completed analysis of 4 packages across 12 linters"
+level=info msg="[runner] Linter errcheck took 0.034s total across 4 packages"
+level=info msg="[runner] Linter goimports took 0.023s total across 4 packages"
+level=info msg="[runner] Linter golint took 0.019s total across 4 packages"
+level=info msg="[runner] Linter gosec took 0.067s total across 4 packages"
+level=info msg="[runner] Linter govet took 0.045s total across 4 packages"
+level=info msg="[runner] Linter gocognit took 0.028s total across 4 packages"
+level=info msg="[runner] Linter staticcheck took 0.112s total across 4 packages"
+level=info msg="[runner] Linter typecheck took 0.134s total across 4 packages"
+level=info msg="[runner] Linter goconst took 0.011s total across 4 packages"
+level=info msg="[runner] Linter ineffassign took 0.007s total across 4 packages"
+level=info msg="[runner] Linter unconvert took 0.009s total across 4 packages"
+level=info msg="[runner] Linter unused took 0.056s total across 4 packages"
+level=info msg="[runner] Writing results to stdout"
+level=info msg="[runner] golangci-lint finished in 8.45s"

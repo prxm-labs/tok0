@@ -1,0 +1,61 @@
+title:	feat: implement distributed rate limiting with redis sentinel support and failover
+state:	OPEN
+author:	jsmith
+number:	142
+url:	https://github.com/owner/repo/pull/142
+base:	main
+head:	feature/rate-limiting-redis-sentinel-failover
+created:	about 2 days ago
+updated:	about 1 hour ago
+
+labels:	enhancement, backend, needs-review
+assignees:	jsmith
+reviewers:	alee (REQUESTED), mjones (APPROVED), kchen (CHANGES_REQUESTED)
+projects:	Sprint 42
+milestone:	v2.8.0
+
+--
+This PR implements distributed rate limiting using Redis Sentinel for high availability.
+
+## Motivation
+
+Our current rate limiting solution uses a single Redis instance which has been a
+single point of failure in production. We've experienced three outages in the last
+quarter due to Redis going down.
+
+## Changes
+
+- Added `RateLimiter` struct backed by Redis Sentinel connection pool
+- Implemented sliding window algorithm with configurable window size
+- Added failover detection with automatic reconnection to new primary
+- New Prometheus metrics for rate limit hits/misses
+- Integration tests against a local Redis Sentinel cluster using testcontainers
+
+## Configuration
+
+```toml
+[rate_limiting]
+enabled = true
+window_size_seconds = 60
+max_requests = 1000
+sentinel_addresses = ["sentinel-1:26379", "sentinel-2:26379", "sentinel-3:26379"]
+master_name = "mymaster"
+```
+
+## Testing
+
+- Unit tests for sliding window algorithm
+- Integration tests with Redis Sentinel using testcontainers-rs
+- Load tested with k6 at 10,000 RPS showing p99 latency under 2ms
+- Chaos tested by killing sentinel nodes during traffic
+
+## Screenshots
+
+N/A - backend change only
+
+## Checklist
+
+- [x] Tests added
+- [x] Documentation updated
+- [x] Changelog entry added
+- [ ] Performance benchmarks attached

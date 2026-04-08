@@ -1,0 +1,31 @@
+
+  VITE v5.4.21  ready in 134 ms
+
+  ➜  Local:   http://localhost:5193/
+  ➜  Network: use --host to expose
+
+10:24:01 AM [vite] hmr update /src/main.ts
+10:24:02 AM [vite] hmr update /src/main.ts
+10:24:03 AM [vite] hmr update /src/components/Header.tsx
+10:24:04 AM [vite] hmr update /src/components/Footer.tsx
+10:24:05 AM [vite] hmr update /src/styles/global.css
+10:24:06 AM [vite] hmr update /src/main.ts
+10:24:07 AM [vite] hmr update /src/components/Header.tsx
+10:24:08 AM [vite] hmr update /src/components/Footer.tsx
+10:24:09 AM [vite] hmr update /src/components/Sidebar.tsx
+10:24:10 AM [vite] hmr update /src/components/Modal.tsx
+10:24:11 AM [vite] hmr update /src/utils/api.ts
+10:24:12 AM [vite] hmr update /src/utils/format.ts
+10:24:13 AM [vite] hmr update /src/store/index.ts
+10:24:14 AM [vite] hmr update /src/store/user.ts
+10:24:15 AM [vite] hmr update /src/main.ts
+10:24:16 AM [vite] hmr update /src/components/Header.tsx
+10:24:17 AM [vite] hmr update /src/components/Card.tsx
+10:24:18 AM [vite] hmr update /src/components/List.tsx
+10:24:19 AM [vite] hmr update /src/components/Item.tsx
+10:24:20 AM [vite] hmr update /src/main.ts
+10:24:21 AM [vite] hmr update /src/styles/theme.css
+10:24:22 AM [vite] hmr update /src/styles/buttons.css
+10:24:23 AM [vite] hmr update /src/styles/forms.css
+10:24:24 AM [vite] hmr update /src/components/Form.tsx
+10:24:25 AM [vite] hmr update /src/components/Input.tsx

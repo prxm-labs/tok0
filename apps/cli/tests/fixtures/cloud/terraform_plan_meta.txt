@@ -1,0 +1,6 @@
+source: pre-existing (already in repo before PR-B; reused for the TOML rule_test! row)
+capture_date: 2026-04-28
+tool_version: terraform (origin uncertain — predates PR-B; resembles ~v1.x output for an aws_vpc/aws_instance/aws_security_group plan)
+parent_git_sha: e2e19f6
+command: terraform plan
+notes: This fixture predates PR-B and is used by the existing native Rust compressor tests in src/compressors/cloud/terraform_cmd.rs (test_terraform_plan_*). PR-B's Task 12 reuses it for the new TOML `terraform-plan` rule_test! row in tests/rule_snapshot_tests.rs (rather than introducing a parallel fixture). The TOML rule's strip_patterns don't match this fixture's prefix-style "aws_vpc.main: Refreshing state..." preamble (the rule pattern `^Refreshing state` only matches a leading-position version), and the 77-line file fits inside head_lines=80, so savings are 0% on this fixture. Floor lowered to 0% with a comment in rule_snapshot_tests.rs explaining the constraint. A separate real-capture (terraform v1.5.6) was attempted but overlapped with the existing native-test fixture filename and was reverted to avoid breaking those tests.

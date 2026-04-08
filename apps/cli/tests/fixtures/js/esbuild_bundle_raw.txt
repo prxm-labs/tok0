@@ -1,0 +1,355 @@
+⬥ [VERBOSE] Resolving import "./src.js" in directory "/private/tmp/esb-fixture" of type "entry-point"
+
+  Read 21 entries for directory "/"
+  Read 4 entries for directory "/private"
+  Read 20 entries for directory "/private/tmp"
+  The file "/private/tmp/esb-fixture/package.json" exists
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/src.js" as a file
+    Checking for file "src.js"
+    Found file "src.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/src.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m1.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m1.js" as a file
+    Checking for file "m1.js"
+    Found file "m1.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m1.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m2.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m2.js" as a file
+    Checking for file "m2.js"
+    Found file "m2.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m2.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m3.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m3.js" as a file
+    Checking for file "m3.js"
+    Found file "m3.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m3.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m4.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m4.js" as a file
+    Checking for file "m4.js"
+    Found file "m4.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m4.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m5.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m5.js" as a file
+    Checking for file "m5.js"
+    Found file "m5.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m5.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m6.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m6.js" as a file
+    Checking for file "m6.js"
+    Found file "m6.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m6.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m7.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m7.js" as a file
+    Checking for file "m7.js"
+    Found file "m7.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m7.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m8.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m8.js" as a file
+    Checking for file "m8.js"
+    Found file "m8.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m8.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m9.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m9.js" as a file
+    Checking for file "m9.js"
+    Found file "m9.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m9.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m10.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m10.js" as a file
+    Checking for file "m10.js"
+    Found file "m10.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m10.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m11.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m11.js" as a file
+    Checking for file "m11.js"
+    Found file "m11.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m11.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m12.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m12.js" as a file
+    Checking for file "m12.js"
+    Found file "m12.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m12.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m13.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m13.js" as a file
+    Checking for file "m13.js"
+    Found file "m13.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m13.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m14.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m14.js" as a file
+    Checking for file "m14.js"
+    Found file "m14.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m14.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m15.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m15.js" as a file
+    Checking for file "m15.js"
+    Found file "m15.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m15.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m16.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m16.js" as a file
+    Checking for file "m16.js"
+    Found file "m16.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m16.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m17.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m17.js" as a file
+    Checking for file "m17.js"
+    Found file "m17.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m17.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m18.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m18.js" as a file
+    Checking for file "m18.js"
+    Found file "m18.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m18.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m19.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m19.js" as a file
+    Checking for file "m19.js"
+    Found file "m19.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m19.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m20.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m20.js" as a file
+    Checking for file "m20.js"
+    Found file "m20.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m20.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m21.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m21.js" as a file
+    Checking for file "m21.js"
+    Found file "m21.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m21.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m22.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m22.js" as a file
+    Checking for file "m22.js"
+    Found file "m22.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m22.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m23.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m23.js" as a file
+    Checking for file "m23.js"
+    Found file "m23.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m23.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m24.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m24.js" as a file
+    Checking for file "m24.js"
+    Found file "m24.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m24.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m25.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m25.js" as a file
+    Checking for file "m25.js"
+    Found file "m25.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m25.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m26.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m26.js" as a file
+    Checking for file "m26.js"
+    Found file "m26.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m26.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m27.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m27.js" as a file
+    Checking for file "m27.js"
+    Found file "m27.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m27.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m28.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m28.js" as a file
+    Checking for file "m28.js"
+    Found file "m28.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m28.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m29.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m29.js" as a file
+    Checking for file "m29.js"
+    Found file "m29.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m29.js" in namespace "file"
+
+⬥ [VERBOSE] Resolving import "./m30.js" in directory "/private/tmp/esb-fixture" of type "import-statement"
+
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  No "browser" map found in directory "/private/tmp/esb-fixture"
+  Attempting to load "/private/tmp/esb-fixture/m30.js" as a file
+    Checking for file "m30.js"
+    Found file "m30.js"
+  Read 34 entries for directory "/private/tmp/esb-fixture"
+  Primary path is "/private/tmp/esb-fixture/m30.js" in namespace "file"
+
+
+  out.js     88b   100.0%
+   ├ src.js  27b    30.7%
+   └ m1.js   22b    25.0%
+
+
+  out.js  88b 
+
+⚡ Done in 3ms

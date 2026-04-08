@@ -1,0 +1,6 @@
+Resolving dependencies
+Resolved, downloaded and extracted [4]
+Saved lockfile
+Checking formatting...
+[warn] sample.js
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.

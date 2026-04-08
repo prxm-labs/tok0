@@ -1,0 +1,11 @@
+source: real
+command: npx prisma validate
+project: ephemeral SQLite (User model with id + unique email)
+prisma version: 5.22.0
+captured: 2026-04-26
+notes:
+- Real Prisma 5.22.0 validate output. 2 lines, ~11 tokens — the
+  command intrinsically prints almost nothing on success.
+- Filter keeps the `is valid` line, drops the schema-loaded preamble.
+- Per the plan: validate fixtures are intrinsically short and use a
+  30% savings floor instead of the project-wide 60%.

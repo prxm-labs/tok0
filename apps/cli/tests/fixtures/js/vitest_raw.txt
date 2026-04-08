@@ -1,0 +1,56 @@
+ RUN  v1.6.0 /home/user/myapp
+
+ ✓ src/utils/format.test.ts (3)
+   ✓ formatDate formats ISO string correctly (8ms)
+   ✓ formatDate handles null input (2ms)
+   ✓ formatCurrency rounds to 2 decimals (1ms)
+
+ ✓ src/utils/validate.test.ts (4)
+   ✓ validateEmail accepts valid addresses (3ms)
+   ✓ validateEmail rejects invalid addresses (1ms)
+   ✓ validatePhone accepts E.164 format (2ms)
+   ✓ validatePhone rejects short numbers (1ms)
+
+ ✓ src/hooks/useAuth.test.ts (5)
+   ✓ returns null when not authenticated (4ms)
+   ✓ returns user object after login (12ms)
+   ✓ clears user on logout (3ms)
+   ✓ refreshes token before expiry (8ms)
+   ✓ redirects to login on 401 (5ms)
+
+ ✗ src/api/client.test.ts (2)
+   ✓ sends correct headers (6ms)
+   ✗ retries on 503 (18ms)
+     → AssertionError: expected 3 but got 1
+
+     - Expected
+     + Received
+
+     - 3
+     + 1
+
+      at src/api/client.test.ts:42:18
+
+ ✗ src/components/Button.test.tsx (1)
+   ✓ renders with default props (9ms)
+   ✓ calls onClick when clicked (4ms)
+   ✗ shows loading spinner during async action (22ms)
+     → AssertionError: expected element to be visible
+
+     - Expected  - 1
+     + Received  + 1
+
+     - <span class="spinner" style="display: block">
+     + <span class="spinner" style="display: none">
+
+      at src/components/Button.test.tsx:67:24
+
+ ✓ src/store/userSlice.test.ts (4)
+   ✓ initialises with empty state (1ms)
+   ✓ setUser updates state correctly (2ms)
+   ✓ clearUser resets to initial state (1ms)
+   ✓ selector returns current user (1ms)
+
+Tests: 2 failed, 18 passed, 20 total
+Test Files: 2 failed, 4 passed, 6 total
+Duration: 1.42s

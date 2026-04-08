@@ -1,0 +1,76 @@
+diff --git a/src/engine/config.rs b/src/engine/config.rs
+index abc1234..def5678 100644
+--- a/src/engine/config.rs
++++ b/src/engine/config.rs
+@@ -23,6 +23,7 @@ pub struct Tok0Config {
+
+ #[derive(Debug, Deserialize)]
++#[serde(default)]
+ pub struct TrackingConfig {
+     pub enabled: bool,
+     pub history_days: u32,
+@@ -118,6 +119,15 @@ pub fn config_path() -> PathBuf {
+         .join("config.toml")
+ }
+
++pub fn db_path() -> PathBuf {
++    if let Ok(p) = std::env::var("TOK0_DB_PATH") {
++        return PathBuf::from(p);
++    }
++    dirs::data_dir()
++        .unwrap_or_else(|| PathBuf::from("."))
++        .join("tok0")
++        .join("tracking.db")
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+diff --git a/src/engine/shell.rs b/src/engine/shell.rs
+index 1234567..abcdefg 100644
+--- a/src/engine/shell.rs
++++ b/src/engine/shell.rs
+@@ -1,5 +1,6 @@
+ use anyhow::{Context, Result};
+ use lazy_static::lazy_static;
++use regex::Regex;
+ use std::process::{Command, Output};
+
+ lazy_static! {
+@@ -45,6 +46,22 @@ pub fn head_tail(input: &str, head: usize, tail: usize) -> String {
+     output
+ }
+
++/// Hard cap on total characters.
++pub fn hard_cap(input: &str, max_chars: usize) -> String {
++    if input.len() <= max_chars {
++        input.to_string()
++    } else {
++        format!("{}... (truncated)", &input[..max_chars.saturating_sub(16)])
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+diff --git a/src/engine/meter.rs b/src/engine/meter.rs
+index 0000000..1111111 100644
+--- a/src/engine/meter.rs
++++ b/src/engine/meter.rs
+@@ -0,0 +1,200 @@
++use anyhow::{Context, Result};
++use rusqlite::{params, Connection};
++use std::path::Path;
++
++pub struct Tracker {
++    conn: Connection,
++}
++
++#[derive(Debug)]
++pub struct Summary {
++    pub total_commands: u64,
++    pub total_input_tokens: u64,
++    pub total_output_tokens: u64,
++    pub total_saved: u64,
++    pub avg_savings_pct: f64,
++}

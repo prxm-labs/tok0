@@ -1,0 +1,14 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+Opening `/dev/tty` failed (6): Device not configured
+@parcel/core: Intializing request tracker...
+@parcel/core: Asset graph walked
+Bundling...
+@parcel/core: Asset graph walked
+dist/logo.73afb947.png            8 B    75ms
+dist/pc-fixture.1a696ad3.css     68 B    45ms
+dist/pc-fixture.4a38feb3.js      68 B    61ms
+dist/pc-fixture.dcb673de.js     545 B    71ms
+dist/pc-fixture.d8c66915.js     434 B    84ms

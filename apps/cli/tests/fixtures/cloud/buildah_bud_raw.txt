@@ -1,0 +1,20 @@
+STEP 1/4: FROM alpine:3.19
+Getting image source signatures
+Copying blob sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8
+Copying config sha256:05455a08881ea9cf0e752bc48e61bbd71a34c029bb13df01e40e3e70e0d007bd
+Writing manifest to image destination
+STEP 2/4: WORKDIR /app
+--> a1b2c3d4e5f6
+STEP 3/4: COPY . /app
+--> b2c3d4e5f6a7
+STEP 4/4: RUN apk add --no-cache curl && echo done
+fetch https://dl-cdn.alpinelinux.org/alpine/v3.19/main/x86_64/APKINDEX.tar.gz
+(1/4) Installing ca-certificates (20240226-r0)
+(2/4) Installing libcurl (8.5.0-r0)
+(3/4) Installing curl (8.5.0-r0)
+OK: 8 MiB in 18 packages
+done
+COMMIT demo
+--> c3d4e5f6a7b8
+Successfully tagged localhost/demo:latest
+c3d4e5f6a7b8aabbccddeeff00112233445566778899aabbccddeeff00112233

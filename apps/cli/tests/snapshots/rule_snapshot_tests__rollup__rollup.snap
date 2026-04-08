@@ -1,0 +1,11 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+
+
+a.js → out-a.js...
+created out-a.js in 3ms
+
+b.js → out-b.js...
+created out-b.js in 2ms

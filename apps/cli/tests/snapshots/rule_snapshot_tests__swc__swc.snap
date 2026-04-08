@@ -1,0 +1,5 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+ok

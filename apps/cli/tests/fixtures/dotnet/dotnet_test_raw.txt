@@ -1,0 +1,80 @@
+Test run for /home/dev/myapp/tests/MyApp.Core.Tests/bin/Debug/net8.0/MyApp.Core.Tests.dll (.NETCoreApp,Version=v8.0)
+VSTest version 17.8.0 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+MSBuild version 17.8.3+195e7f5a3 for .NET
+Determining projects to restore...
+  Restored /home/dev/myapp/src/MyApp.Core/MyApp.Core.csproj (181ms).
+  Restored /home/dev/myapp/src/MyApp.Api/MyApp.Api.csproj (243ms).
+  Restored /home/dev/myapp/src/MyApp.Services/MyApp.Services.csproj (198ms).
+  Restored /home/dev/myapp/src/MyApp.Data/MyApp.Data.csproj (167ms).
+  Restored /home/dev/myapp/src/MyApp.Infrastructure/MyApp.Infrastructure.csproj (221ms).
+  Restored /home/dev/myapp/src/MyApp.Domain/MyApp.Domain.csproj (189ms).
+  Restored /home/dev/myapp/tests/MyApp.Core.Tests/MyApp.Core.Tests.csproj (211ms).
+  Restored /home/dev/myapp/tests/MyApp.Api.Tests/MyApp.Api.Tests.csproj (256ms).
+  Restored /home/dev/myapp/tests/MyApp.Services.Tests/MyApp.Services.Tests.csproj (244ms).
+  Restored /home/dev/myapp/tests/MyApp.Integration.Tests/MyApp.Integration.Tests.csproj (312ms).
+Build started 04/07/2026 09:15:22.
+     1>Using "ResGen" task from assembly "/usr/share/dotnet/sdk/8.0.100/MSBuild.dll".
+     1>Using "GenerateResource" task from assembly "/usr/share/dotnet/sdk/8.0.100/MSBuild.dll".
+     1>Project "MyApp.sln" on node 1 (Build target(s)).
+     1>Project "/home/dev/myapp/src/MyApp.Domain/MyApp.Domain.csproj" on node 2 (Build target(s)).
+     1>CoreCompile:
+     1>  /usr/bin/dotnet /root/.nuget/packages/microsoft.net.sdk.compilers.toolset/4.9.0-3.24165.2/tasks/net8.0/Microsoft.CSharp.Core.targets
+     1>MyApp.Domain -> /home/dev/myapp/src/MyApp.Domain/bin/Debug/net8.0/MyApp.Domain.dll
+     1>Project "/home/dev/myapp/src/MyApp.Core/MyApp.Core.csproj" on node 3 (Build target(s)).
+     1>CoreCompile:
+     1>  /usr/bin/dotnet /root/.nuget/packages/microsoft.net.sdk.compilers.toolset/4.9.0-3.24165.2/tasks/net8.0/Microsoft.CSharp.Core.targets
+     1>MyApp.Core -> /home/dev/myapp/src/MyApp.Core/bin/Debug/net8.0/MyApp.Core.dll
+     1>Project "/home/dev/myapp/src/MyApp.Infrastructure/MyApp.Infrastructure.csproj" on node 4 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Infrastructure -> /home/dev/myapp/src/MyApp.Infrastructure/bin/Debug/net8.0/MyApp.Infrastructure.dll
+     1>Project "/home/dev/myapp/src/MyApp.Data/MyApp.Data.csproj" on node 5 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Data -> /home/dev/myapp/src/MyApp.Data/bin/Debug/net8.0/MyApp.Data.dll
+     1>Project "/home/dev/myapp/src/MyApp.Services/MyApp.Services.csproj" on node 6 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Services -> /home/dev/myapp/src/MyApp.Services/bin/Debug/net8.0/MyApp.Services.dll
+     1>Project "/home/dev/myapp/src/MyApp.Api/MyApp.Api.csproj" on node 7 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Api -> /home/dev/myapp/src/MyApp.Api/bin/Debug/net8.0/MyApp.Api.dll
+     1>Project "/home/dev/myapp/tests/MyApp.Core.Tests/MyApp.Core.Tests.csproj" on node 8 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Core.Tests -> /home/dev/myapp/tests/MyApp.Core.Tests/bin/Debug/net8.0/MyApp.Core.Tests.dll
+     1>Project "/home/dev/myapp/tests/MyApp.Api.Tests/MyApp.Api.Tests.csproj" on node 9 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Api.Tests -> /home/dev/myapp/tests/MyApp.Api.Tests/bin/Debug/net8.0/MyApp.Api.Tests.dll
+     1>Project "/home/dev/myapp/tests/MyApp.Services.Tests/MyApp.Services.Tests.csproj" on node 10 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Services.Tests -> /home/dev/myapp/tests/MyApp.Services.Tests/bin/Debug/net8.0/MyApp.Services.Tests.dll
+     1>Project "/home/dev/myapp/tests/MyApp.Integration.Tests/MyApp.Integration.Tests.csproj" on node 11 (Build target(s)).
+     1>CoreCompile:
+     1>MyApp.Integration.Tests -> /home/dev/myapp/tests/MyApp.Integration.Tests/bin/Debug/net8.0/MyApp.Integration.Tests.dll
+     1>GenerateBuildDependencyFile:
+     1>  Writing dependency file to /home/dev/myapp/tests/MyApp.Integration.Tests/bin/Debug/net8.0/MyApp.Integration.Tests.deps.json.
+     1>GenerateRuntimeConfigurationFiles:
+     1>  Writing runtimeconfig file to /home/dev/myapp/tests/MyApp.Integration.Tests/bin/Debug/net8.0/MyApp.Integration.Tests.runtimeconfig.json.
+     1>CopyFilesToOutputDirectory:
+     1>  MyApp.Integration.Tests -> /home/dev/myapp/tests/MyApp.Integration.Tests/bin/Debug/net8.0/MyApp.Integration.Tests.dll
+     1>Done Building Project "MyApp.sln" (Build target(s)).
+     1>Done Building Project "MyApp.sln" (Default target(s)).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.17
+
+Microsoft.NET.Build.Tasks version 8.0.3+5e9717cf5
+  /home/dev/myapp/src/MyApp.Core/bin/Debug/net8.0/MyApp.Core.dll
+  /home/dev/myapp/src/MyApp.Api/bin/Debug/net8.0/MyApp.Api.dll
+  /home/dev/myapp/src/MyApp.Services/bin/Debug/net8.0/MyApp.Services.dll
+  /home/dev/myapp/src/MyApp.Data/bin/Debug/net8.0/MyApp.Data.dll
+
+A total of 4 test files matched the specified pattern.
+  Passed!  - Failed:   0, Passed:  25, Skipped:   2, Total:  27, Duration: 843 ms - MyApp.Core.Tests.dll (net8.0)
+  Passed!  - Failed:   0, Passed:  18, Skipped:   0, Total:  18, Duration: 412 ms - MyApp.Api.Tests.dll (net8.0)
+  Passed!  - Failed:   0, Passed:  22, Skipped:   1, Total:  23, Duration: 555 ms - MyApp.Services.Tests.dll (net8.0)
+  Passed!  - Failed:   0, Passed:  14, Skipped:   1, Total:  15, Duration: 621 ms - MyApp.Integration.Tests.dll (net8.0)

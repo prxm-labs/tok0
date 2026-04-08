@@ -1,0 +1,5 @@
+vite v5.4.21 build output (real capture)
+
+Captured 2026-04-26 from `npx vite build` on a minimal project
+(index.html + src/main.ts). Real vite 5.4.21 output. Note: this fixture
+is intrinsically small (~9 lines) — savings floor is set realistically.

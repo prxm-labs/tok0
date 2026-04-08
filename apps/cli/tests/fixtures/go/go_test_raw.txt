@@ -1,0 +1,90 @@
+ok  	github.com/user/project/pkg/config	(cached)
+ok  	github.com/user/project/pkg/logger	(cached)
+=== RUN   TestNewLogger
+--- PASS: TestNewLogger (0.00s)
+=== RUN   TestLogLevel
+--- PASS: TestLogLevel (0.00s)
+=== RUN   TestLogFormat
+--- PASS: TestLogFormat (0.00s)
+=== RUN   TestLogRotation
+--- PASS: TestLogRotation (0.00s)
+=== RUN   TestLogOutput
+--- PASS: TestLogOutput (0.00s)
+ok  	github.com/user/project/pkg/logger	0.003s
+=== RUN   TestParseConfig
+--- PASS: TestParseConfig (0.00s)
+=== RUN   TestValidateConfig
+--- PASS: TestValidateConfig (0.00s)
+=== RUN   TestDefaultValues
+--- PASS: TestDefaultValues (0.00s)
+=== RUN   TestConfigReload
+--- PASS: TestConfigReload (0.00s)
+=== RUN   TestConfigEnvOverride
+--- PASS: TestConfigEnvOverride (0.00s)
+ok  	github.com/user/project/pkg/config	0.004s
+=== RUN   TestUserCreate
+--- PASS: TestUserCreate (0.00s)
+=== RUN   TestUserUpdate
+--- PASS: TestUserUpdate (0.00s)
+=== RUN   TestUserDelete
+--- PASS: TestUserDelete (0.00s)
+=== RUN   TestUserList
+--- PASS: TestUserList (0.00s)
+=== RUN   TestUserGetByID
+--- PASS: TestUserGetByID (0.00s)
+=== RUN   TestUserGetByEmail
+--- PASS: TestUserGetByEmail (0.00s)
+ok  	github.com/user/project/pkg/user	0.006s
+=== RUN   TestHandlerGet
+--- PASS: TestHandlerGet (0.00s)
+=== RUN   TestHandlerPost
+--- PASS: TestHandlerPost (0.00s)
+=== RUN   TestHandlerAuth
+--- FAIL: TestHandlerAuth (0.01s)
+    handler_test.go:87: expected status 200, got 401
+    handler_test.go:88: response body: {"error":"unauthorized","code":401}
+=== RUN   TestHandlerDelete
+--- PASS: TestHandlerDelete (0.00s)
+=== RUN   TestHandlerPatch
+--- PASS: TestHandlerPatch (0.00s)
+=== RUN   TestHandlerMiddleware
+--- PASS: TestHandlerMiddleware (0.00s)
+FAIL	github.com/user/project/pkg/handler	0.013s
+=== RUN   TestDBConnect
+--- PASS: TestDBConnect (0.00s)
+=== RUN   TestDBInsert
+--- PASS: TestDBInsert (0.00s)
+=== RUN   TestDBQuery
+--- PASS: TestDBQuery (0.00s)
+=== RUN   TestDBTransaction
+--- FAIL: TestDBTransaction (0.03s)
+    db_test.go:142: transaction rollback failed: connection reset by peer
+    db_test.go:143: expected 3 rows, got 0
+=== RUN   TestDBClose
+--- PASS: TestDBClose (0.00s)
+=== RUN   TestDBPrepare
+--- PASS: TestDBPrepare (0.00s)
+ok  	github.com/user/project/pkg/db	0.037s
+=== RUN   TestCacheSet
+--- PASS: TestCacheSet (0.00s)
+=== RUN   TestCacheGet
+--- PASS: TestCacheGet (0.00s)
+=== RUN   TestCacheExpiry
+--- PASS: TestCacheExpiry (0.00s)
+=== RUN   TestCacheEviction
+--- PASS: TestCacheEviction (0.00s)
+=== RUN   TestCacheTTL
+--- PASS: TestCacheTTL (0.00s)
+=== RUN   TestCacheClear
+--- PASS: TestCacheClear (0.00s)
+ok  	github.com/user/project/pkg/cache	0.009s
+=== RUN   TestMetricsCounter
+--- PASS: TestMetricsCounter (0.00s)
+=== RUN   TestMetricsGauge
+--- PASS: TestMetricsGauge (0.00s)
+=== RUN   TestMetricsHistogram
+--- PASS: TestMetricsHistogram (0.00s)
+=== RUN   TestMetricsExport
+--- PASS: TestMetricsExport (0.00s)
+ok  	github.com/user/project/pkg/metrics	0.002s
+FAIL

@@ -1,0 +1,13 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+2
+
+4, reused 0, downloaded 4Packages: +5
+
+dependencies:
++ react 18.3.1 (19.2.5 is available)
++ react-dom 18.3.1 (19.2.5 is available)
+
+Done in 994ms using pnpm v10.8.0

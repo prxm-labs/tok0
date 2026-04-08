@@ -1,0 +1,11 @@
+STATUS  TITLE                        WORKFLOW              BRANCH                               EVENT         ID           ELAPSED  AGE
+✓       CI passed                    build-and-test        main                                 push          8432109876   2m14s    about 1 hour ago
+✓       CI passed                    build-and-test        feature/rate-limiting-redis-sentinel  pull_request  8431987654   3m02s    about 3 hours ago
+X       CI failed                    build-and-test        bugfix/connection-pool-idle-leak      pull_request  8430876543   1m47s    about 5 hours ago
+✓       CI passed                    lint-and-format       main                                 push          8429765432   45s      about 8 hours ago
+✓       Deployment succeeded         deploy-staging        main                                 push          8428654321   4m33s    about 12 hours ago
+X       CI failed                    build-and-test        chore/deps-upgrade-2026-q1           pull_request  8427543210   2m58s    about 1 day ago
+✓       CI passed                    build-and-test        main                                 push          8426432109   2m21s    about 1 day ago
+✓       Security scan passed         codeql-analysis       main                                 schedule      8425321098   6m17s    about 2 days ago
+-       CI in progress               build-and-test        refactor/auth-middleware-extraction   pull_request  8424210987   -        about 2 days ago
+✓       CI passed                    build-and-test        main                                 push          8423109876   2m08s    about 3 days ago

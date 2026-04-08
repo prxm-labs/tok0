@@ -1,0 +1,44 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: demo
+  name: demo
+  namespace: dev
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: demo
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demo
+  name: demo
+  namespace: dev
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+        - mountPath: /var/cache/nginx
+          name: cache
+        - mountPath: /etc/nginx/conf.d
+          name: config
+      volumes:
+      - emptyDir: {}
+        name: cache
+      - configMap:
+          name: nginx-config
+        name: config

@@ -1,0 +1,9 @@
+---
+source: tests/rule_snapshot_tests.rs
+assertion_line: 134
+expression: out
+---
+
+Verification for cgr.dev/chainguard/static --
+
+[{"critical":{"identity":{"docker-reference":"cgr.dev/chainguard/static"},"image":{"docker-manifest-digest":"sha256:0a1b2c3d4e5f60718293a4b5c6d7e8f90112233445566778899aabbccddeeff0"},"type":"cosign container image signature"},"optional":{"Bundle":{"SignedEntryTimestamp":"MEUCIQDxxx","Payload":{"body":"abc","integratedTime":1714200000,"logIndex":12345678,"logID":"abcdef"}},"Issuer":"https://token.actions.githubusercontent.com","Subject":"https://github.com/chainguard-images/images/.github/workflows/release.yaml@refs/heads/main"}}]

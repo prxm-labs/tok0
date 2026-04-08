@@ -1,0 +1,15 @@
+source: real
+command: npx prisma migrate dev --name init --skip-seed
+project: ephemeral SQLite (User model with id + unique email)
+prisma version: 5.22.0
+captured: 2026-04-26
+notes:
+- Real Prisma 5.22.0 migrate output. Includes the `Applying migration`
+  banner, the migrations/ tree, the "in sync" line, and a tail
+  `✔ Generated Prisma Client` summary triggered by the implicit
+  generate-after-migrate flow.
+- A "Update available 5.22.0 -> 7.8.0" 8-line ASCII box appears at the
+  end. The migrate filter drops it because it matches none of the
+  keep-rules (migration / applied / sync / generated / error).
+- ANSI cursor-control sequences (`\x1b[2K\x1b[1A`) are present on the
+  `Running generate…` lines and are stripped by the engine's strip_ansi.

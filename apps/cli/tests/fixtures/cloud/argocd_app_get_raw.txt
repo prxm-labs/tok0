@@ -1,0 +1,29 @@
+Name:               demo-app
+Project:            default
+Server:             https://kubernetes.default.svc
+Namespace:          argocd
+URL:                https://argocd.example.com/applications/demo-app
+Repo:               https://github.com/foo/bar.git
+Target:             HEAD
+Path:               infra/dev
+SyncWindow:         Sync Allowed
+Sync Policy:        Automated (Prune)
+Sync Status:        Synced to HEAD (abc1234)
+Health Status:      Healthy
+
+GROUP  KIND        NAMESPACE  NAME             STATUS  HEALTH   HOOK  MESSAGE
+       Service     argocd     demo             Synced  Healthy        service/demo created
+apps   Deployment  argocd     demo             Synced  Healthy        deployment.apps/demo created
+       ConfigMap   argocd     demo-config      Synced  Healthy        configmap/demo-config created
+       Secret      argocd     demo-secret      Synced  Healthy        secret/demo-secret created
+       Ingress     argocd     demo             Synced  Healthy        ingress.networking.k8s.io/demo created
+apps   ReplicaSet  argocd     demo-7d4b9c6f5   Synced  Healthy        replicaset.apps/demo-7d4b9c6f5 created
+       Pod         argocd     demo-7d4b9c6f5-x Synced  Healthy        pod/demo-7d4b9c6f5-x created
+       Pod         argocd     demo-7d4b9c6f5-y Synced  Healthy        pod/demo-7d4b9c6f5-y created
+       Pod         argocd     demo-7d4b9c6f5-z Synced  Healthy        pod/demo-7d4b9c6f5-z created
+       ServiceAccount argocd  demo-sa          Synced  Healthy        serviceaccount/demo-sa created
+rbac   Role        argocd     demo-role        Synced  Healthy        role.rbac/demo-role created
+rbac   RoleBinding argocd     demo-rb          Synced  Healthy        rolebinding.rbac/demo-rb created
+       PersistentVolumeClaim argocd demo-data  Synced  Healthy        pvc/demo-data created
+networking NetworkPolicy argocd demo-policy    Synced  Healthy        networkpolicy/demo-policy created
+autoscaling HorizontalPodAutoscaler argocd demo-hpa Synced Healthy    hpa/demo-hpa created

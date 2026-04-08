@@ -1,0 +1,20 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+NAME                ZONE              MACHINE_TYPE    PREEMPTIBLE  INTERNAL_IP   EXTERNAL_IP      STATUS
+web-prod-01         us-central1-a     n2-standard-4                10.128.0.11   34.71.10.221     RUNNING
+web-prod-02         us-central1-a     n2-standard-4                10.128.0.12   34.71.10.222     RUNNING
+web-prod-03         us-central1-b     n2-standard-4                10.128.0.13   34.71.10.223     RUNNING
+api-prod-01         us-central1-a     n2-standard-8                10.128.0.21   34.71.10.231     RUNNING
+api-prod-02         us-central1-b     n2-standard-8                10.128.0.22                    TERMINATED
+worker-batch-01     us-east1-b        e2-medium       true         10.150.0.31                    STOPPING
+worker-batch-02     us-east1-b        e2-medium       true         10.150.0.32                    TERMINATED
+db-replica-01       us-central1-c     n2-highmem-4                 10.128.0.41   34.71.10.241     RUNNING
+db-replica-02       us-central1-c     n2-highmem-4                 10.128.0.42   34.71.10.242     RUNNING
+cache-redis-01      us-central1-a     n2-highcpu-2                 10.128.0.51   34.71.10.251     RUNNING
+cache-redis-02      us-central1-a     n2-highcpu-2                 10.128.0.52                    TERMINATED
+bastion-host        us-central1-a     e2-small                     10.128.0.61   34.71.10.261     RUNNING
+ci-runner-01        us-west1-a        n2-standard-2   true         10.138.0.71   35.197.10.71     RUNNING
+ci-runner-02        us-west1-a        n2-standard-2   true         10.138.0.72                    STOPPING
+analytics-job-01    us-east1-c        n2-highmem-8                 10.150.0.81                    TERMINATED

@@ -1,0 +1,8 @@
+---
+source: tests/rule_snapshot_tests.rs
+assertion_line: 106
+expression: out
+---
+ok ... ok (0ms)
+
+ok | 1 passed | 0 failed (2ms)

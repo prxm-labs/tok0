@@ -1,0 +1,12 @@
+source: real
+command: npx prisma generate
+project: ephemeral SQLite (User model with id + unique email)
+prisma version: 5.22.0
+captured: 2026-04-26
+notes:
+- Real Prisma 5.22.0 generate output. 8 lines total — already short.
+- Filter retains the `✔ Generated Prisma Client (... in <ms>ms)` line
+  (matches both GENERATE_OK and the `in ` heuristic) and drops env /
+  schema banner + tip lines.
+- Because the raw fixture is so small, the savings floor for this
+  subcommand is relaxed from the project's standard 60% to 30%.

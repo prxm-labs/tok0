@@ -1,0 +1,9 @@
+warning: src/main.rs:42:1: this could be a `String::is_empty` check
+src/index.ts 12ms
+src/utils.ts 8ms (unchanged)
+src/api.ts 7ms
+reformatted src/main.py
+reformatted src/utils.py
+internal/api.go: reformatted
+internal/svc.go: reformatted
+3 files reformatted across all tools.

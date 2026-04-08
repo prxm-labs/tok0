@@ -1,0 +1,103 @@
+Name:             api-server-7d9f8b6c4-xk2pq
+Namespace:        production
+Priority:         0
+Service Account:  api-server-sa
+Node:             gke-cluster-pool-1-abc123/10.128.0.45
+Start Time:       Sun, 06 Apr 2026 10:30:00 +0000
+Labels:           app=api-server
+                  pod-template-hash=7d9f8b6c4
+                  version=v2.3.1
+                  team=backend
+                  env=production
+                  tier=web
+Annotations:      kubernetes.io/config.seen: 2026-04-06T10:30:00.000000000Z
+                  kubernetes.io/config.source: api
+                  prometheus.io/scrape: true
+                  prometheus.io/port: 8080
+                  prometheus.io/path: /metrics
+                  sidecar.istio.io/inject: true
+                  sidecar.istio.io/status: {"initContainers":["istio-init"],"containers":["istio-proxy"],"volumes":["istio-envoy","istio-data","istio-podinfo","istio-token","istiod-ca-cert"],"imagePullSecrets":null,"revision":"default"}
+Status:           Running
+IP:               10.244.2.15
+IPs:
+  IP:           10.244.2.15
+Controlled By:  ReplicaSet/api-server-7d9f8b6c4
+Init Containers:
+  istio-init:
+    Container ID:  containerd://abc123def456
+    Image:         docker.io/istio/proxyv2:1.20.0
+    Image ID:      docker.io/istio/proxyv2@sha256:abcdef1234567890
+    Port:          <none>
+    Host Port:     <none>
+    Args:
+      istio-iptables
+      -p
+      15001
+      -z
+      15006
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Sun, 06 Apr 2026 10:30:05 +0000
+      Finished:     Sun, 06 Apr 2026 10:30:06 +0000
+    Ready:          True
+    Restart Count:  0
+Containers:
+  api-server:
+    Container ID:   containerd://def456ghi789
+    Image:          registry.example.com/api-server:v2.3.1
+    Image ID:       registry.example.com/api-server@sha256:fedcba0987654321
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Sun, 06 Apr 2026 10:30:10 +0000
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     500m
+      memory:  512Mi
+    Requests:
+      cpu:      250m
+      memory:   256Mi
+    Liveness:   http-get http://:8080/healthz delay=30s timeout=5s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:8080/readyz delay=5s timeout=3s period=5s #success=1 #failure=3
+    Environment:
+      DATABASE_URL:  <set to the key 'database-url' in secret 'api-secrets'>  Optional: false
+      REDIS_URL:     <set to the key 'redis-url' in secret 'api-secrets'>     Optional: false
+      LOG_LEVEL:     info
+      PORT:          8080
+Conditions:
+  Type              Status
+  Initialized       True
+  Ready             True
+  ContainersReady   True
+  PodScheduled      True
+Volumes:
+  api-config:
+    Type:      ConfigMap (a volume populated by a ConfigMap)
+    Name:      api-server-config
+    Optional:  false
+  api-secrets:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  api-secrets
+    Optional:    false
+  kube-api-access-xyz:
+    Type:                    Projected (a]volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  3d    default-scheduler  Successfully assigned production/api-server-7d9f8b6c4-xk2pq to gke-cluster-pool-1-abc123
+  Normal  Pulled     3d    kubelet            Container image "docker.io/istio/proxyv2:1.20.0" already present on machine
+  Normal  Created    3d    kubelet            Created container istio-init
+  Normal  Started    3d    kubelet            Started container istio-init
+  Normal  Pulled     3d    kubelet            Container image "registry.example.com/api-server:v2.3.1" already present on machine
+  Normal  Created    3d    kubelet            Created container api-server
+  Normal  Started    3d    kubelet            Started container api-server

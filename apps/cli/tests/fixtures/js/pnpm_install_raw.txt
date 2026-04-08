@@ -1,0 +1,21 @@
+Progress: resolved 1, reused 0, downloaded 0, added 0
+[19C[1A2[20D[1B[1A[0K
+   ╭──────────────────────────────────────────╮
+   │                                          │
+   │   Update available! 10.8.0 → 10.33.2.    │
+   │   Changelog: https://pnpm.io/v/10.33.2   │
+   │     To update, run: pnpm self-update     │
+   │                                          │
+   ╰──────────────────────────────────────────╯
+
+Progress: resolved 2, reused 0, downloaded 0, added 0
+[19C[1A4, reused 0, downloaded 4[44D[1B[1APackages: +5[0K
++++++
+Progress: resolved 4, reused 0, downloaded 4, added 0
+[1AProgress: resolved 5, reused 0, downloaded 5, added 5, done
+
+dependencies:
++ react 18.3.1 (19.2.5 is available)
++ react-dom 18.3.1 (19.2.5 is available)
+
+Done in 994ms using pnpm v10.8.0

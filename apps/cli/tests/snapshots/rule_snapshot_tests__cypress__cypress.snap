@@ -1,0 +1,9 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+
+
+  smoke
+    ✓ ok (50ms)
+  1 passing (60ms)

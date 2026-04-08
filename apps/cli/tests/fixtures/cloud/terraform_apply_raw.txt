@@ -1,0 +1,32 @@
+aws_security_group.main: Creating...
+aws_security_group.main: Still creating... [10s elapsed]
+aws_security_group.main: Creation complete after 3s [id=sg-0a1b2c3d4e5f67890]
+aws_instance.main: Creating...
+aws_instance.main: Still creating... [10s elapsed]
+aws_instance.main: Still creating... [20s elapsed]
+aws_instance.main: Still creating... [30s elapsed]
+aws_instance.main: Still creating... [40s elapsed]
+aws_instance.main: Still creating... [50s elapsed]
+aws_instance.main: Still creating... [1m0s elapsed]
+aws_instance.main: Still creating... [1m10s elapsed]
+aws_instance.main: Still creating... [1m20s elapsed]
+aws_instance.main: Still creating... [1m30s elapsed]
+aws_instance.main: Still creating... [1m40s elapsed]
+aws_instance.main: Still creating... [1m50s elapsed]
+aws_instance.main: Still creating... [2m0s elapsed]
+aws_instance.main: Still creating... [2m10s elapsed]
+aws_instance.main: Still creating... [2m20s elapsed]
+aws_instance.main: Still creating... [2m30s elapsed]
+aws_instance.main: Still creating... [2m40s elapsed]
+aws_instance.main: Still creating... [2m50s elapsed]
+aws_instance.main: Still creating... [3m0s elapsed]
+aws_instance.main: Still creating... [3m10s elapsed]
+aws_instance.main: Still creating... [3m20s elapsed]
+aws_instance.main: Creation complete after 3m28s [id=i-0a1b2c3d4e5f67890]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+instance_id = "i-0a1b2c3d4e5f67890"
+public_ip = "54.23.45.67"

@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: helm v3.11.3 (real binary, no cluster reachable so dry-run flow unusable)
+parent_git_sha: 163d085
+command: helm install demo bitnami/nginx --dry-run
+notes: Real `helm install --dry-run` requires a reachable cluster (the call returned "Kubernetes cluster unreachable" in the sandbox). Synthesized ~125-line fixture mimicking the documented dry-run shape: NAME/LAST DEPLOYED/NAMESPACE/STATUS/REVISION header, HOOKS section with a test Pod, MANIFEST section with three rendered resources (ConfigMap, Service, Deployment) carrying the standard nginx-15.4.4 chart labels.

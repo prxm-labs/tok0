@@ -1,0 +1,61 @@
+title:	bug: WebSocket connections drop silently under high load causing data loss in real-time dashboard
+state:	OPEN
+author:	alee
+number:	389
+url:	https://github.com/owner/repo/issues/389
+created:	about 2 hours ago
+updated:	about 30 minutes ago
+
+labels:	bug, critical, backend
+assignees:	alee, mjones
+projects:	Sprint 42
+milestone:	v2.8.0
+
+--
+## Description
+
+WebSocket connections are silently dropping when the server is under high load
+(>5000 concurrent connections). The client does not receive a close frame, so it
+does not attempt to reconnect immediately, causing data loss in the real-time
+dashboard.
+
+## Steps to Reproduce
+
+1. Connect 5000+ WebSocket clients to the `/ws/dashboard` endpoint
+2. Start sending updates at a rate of 100 messages/second
+3. Observe that after ~30 seconds, connections start dropping
+4. Check client-side logs - no close frame received
+
+## Expected Behavior
+
+Connections should remain stable or gracefully close with a proper close frame,
+allowing clients to reconnect automatically.
+
+## Actual Behavior
+
+Connections drop silently. The server logs show:
+```
+WARN  tokio_tungstenite: send failed: Broken pipe (os error 32)
+ERROR ws_handler: failed to send message to client session_id=abc123
+```
+
+## Environment
+
+- Server: Rust 1.78.0 with tokio 1.37
+- Load balancer: nginx 1.25 with WebSocket proxy
+- OS: Ubuntu 22.04 on AWS c6i.2xlarge
+- Concurrent connections at failure: ~5200
+
+## Investigation Notes
+
+I suspect the issue is in the write buffer management. The current implementation
+uses an unbounded channel which can cause backpressure when the TCP send buffer
+fills up. We should switch to a bounded channel with a configurable buffer size
+and implement proper backpressure handling.
+
+## Proposed Fix
+
+- Switch to bounded channel (capacity: 256 messages)
+- Add backpressure detection with slow-consumer eviction
+- Send close frame before dropping connection
+- Add metrics for dropped connections

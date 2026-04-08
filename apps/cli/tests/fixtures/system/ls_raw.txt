@@ -1,0 +1,15 @@
+total 112
+drwxr-xr-x  14 user  staff    448 Apr  7 14:11 .
+drwxr-xr-x  47 user  staff   1504 Apr  7 00:56 ..
+drwxr-xr-x   4 user  staff    128 Apr  7 11:38 .claude
+drwxr-xr-x  10 user  staff    320 Apr  7 14:12 .git
+drwxr-xr-x   3 user  staff     96 Apr  7 14:11 .github
+-rw-r--r--   1 user  staff    465 Apr  7 13:30 .gitignore
+-rw-r--r--   1 user  staff  48382 Apr  7 13:32 Cargo.lock
+-rw-r--r--   1 user  staff    761 Apr  7 13:30 Cargo.toml
+drwxr-xr-x   3 user  staff     96 Apr  7 01:32 docs
+drwxr-xr-x   3 user  staff     96 Apr  7 01:02 refs
+drwxr-xr-x   3 user  staff     96 Apr  7 14:12 scripts
+drwxr-xr-x   6 user  staff    192 Apr  7 13:32 src
+drwxr-xr-x@  5 user  staff    160 Apr  7 13:33 target
+drwxr-xr-x   4 user  staff    128 Apr  7 14:11 tests

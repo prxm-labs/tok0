@@ -1,0 +1,12 @@
+source: real
+command: npm run build
+project: ephemeral create-next-app@latest (TS, app router, no tailwind/eslint)
+next version: 16.2.4 (Turbopack)
+captured: 2026-04-26
+notes:
+- Real Next.js 16 build output. Note Next 16 reshapes the route table:
+  the gzip "Size / First Load JS" columns are no longer printed for the
+  default scaffolded app, only the route tree (┌ ○ /, └ ○ /_not-found).
+- The filter still keeps `Route (app)` headers + tree rows + the
+  `✓ Compiled successfully` summary, so it works against both the
+  classic Next 14/15 layout (synthetic test inputs) and Next 16.

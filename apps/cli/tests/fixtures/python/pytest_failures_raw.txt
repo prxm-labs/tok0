@@ -1,0 +1,78 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.3, pytest-8.1.1, pluggy-1.4.0
+rootdir: /Users/dev/myproject
+configfile: pyproject.toml
+plugins: anyio-4.3.0, cov-5.0.0, mock-3.14.0
+collected 30 items
+
+tests/test_auth.py ....                                                  [ 13%]
+tests/test_models.py ....F....                                           [ 43%]
+tests/test_api.py ....F..F..                                             [ 76%]
+tests/test_utils.py ....                                                 [ 90%]
+tests/test_db.py ...                                                     [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_user_model_validation _________________________
+
+self = <tests.test_models.TestUserModel object at 0x102a3b4c0>
+
+    def test_user_model_validation(self):
+        """Test that invalid user data fails validation."""
+        user = User(email="not-an-email", age=-1)
+>       assert user.is_valid()
+E       AssertionError: assert False
+E        +  where False = <bound method User.is_valid of <User email='not-an-email' age=-1>>()
+E       AssertionError: Model validation failed for fields: email, age
+
+tests/test_models.py:54: AssertionError
+--------------------------- Captured stderr call -------------------------------
+WARNING: validation failed for email field
+WARNING: validation failed for age field
+
+___________________________ test_api_create_resource ___________________________
+
+    def test_api_create_resource():
+        """Test creating a new resource via POST."""
+        client = TestClient(app)
+        payload = {"name": "widget", "price": -5.0}
+>       response = client.post("/api/resources", json=payload)
+>       assert response.status_code == 201
+E       AssertionError: assert 422 == 201
+E        +  where 422 = <Response [422 Unprocessable Entity]>.status_code
+E       Response body: {"detail": [{"loc": ["body", "price"], "msg": "ensure this value is greater than 0", "type": "value_error.number.not_gt"}]}
+
+tests/test_api.py:38: AssertionError
+--------------------------- Captured log call ----------------------------------
+WARNING  myproject.api:api.py:120 Validation error for POST /api/resources
+
+_______________________ test_api_delete_missing_resource _______________________
+
+    def test_api_delete_missing_resource():
+        """Test that deleting a non-existent resource returns 404."""
+        client = TestClient(app)
+>       response = client.delete("/api/resources/999999")
+>       assert response.status_code == 404
+E       AssertionError: assert 500 == 404
+E        +  where 500 = <Response [500 Internal Server Error]>.status_code
+E       Response body: {"detail": "Internal Server Error"}
+E       Expected 404 Not Found but got 500 Internal Server Error
+
+tests/test_api.py:72: AssertionError
+--------------------------- Captured log call ----------------------------------
+ERROR    myproject.api:api.py:220 Unhandled exception: Resource.DoesNotExist
+ERROR    myproject.api:api.py:221 Traceback (most recent call last):
+ERROR    myproject.api:api.py:222   File "myproject/api.py", line 215, in delete_resource
+ERROR    myproject.api:api.py:223     resource = Resource.objects.get(id=resource_id)
+
+/Users/dev/myproject/tests/test_api.py:45: PytestUnraisableExceptionWarning: Exception ignored in: <generator object cleanup at 0x102b4c5d0>
+  warnings.warn(pytest.PytestUnraisableExceptionWarning)
+
+/Users/dev/myproject/tests/test_models.py:88: DeprecationWarning: datetime.utcnow() is deprecated and scheduled for removal in a future version.
+  warnings.warn(DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================== short test summary info ==============================
+FAILED tests/test_models.py::TestUserModel::test_user_model_validation - AssertionError: assert False
+FAILED tests/test_api.py::test_api_create_resource - AssertionError: assert 422 == 201
+FAILED tests/test_api.py::test_api_delete_missing_resource - AssertionError: assert 500 == 404
+========================= 27 passed, 3 failed in 3.61s =========================

@@ -1,0 +1,89 @@
+commit a1b2c3d4e5f6789012345678901234567890abcd
+Author: Dev User <dev@example.com>
+Date:   Mon Apr 7 13:00:00 2026 +0300
+
+    feat: add core system compressors (ls, find, grep, diff, read, smart)
+
+    Implements 6 system compressors with full TDD coverage.
+    Each compressor includes snapshot tests and token savings assertions.
+
+commit b2c3d4e5f67890123456789012345678901234ab
+Author: Dev User <dev@example.com>
+Date:   Mon Apr 7 12:00:00 2026 +0300
+
+    feat: SQLite tracking system with project-scoped analytics
+
+    WAL mode, 90-day retention, daily/weekly aggregation.
+    Full test coverage including savings calculation validation.
+
+commit c3d4e5f678901234567890123456789012345abc
+Author: Dev User <dev@example.com>
+Date:   Mon Apr 7 11:00:00 2026 +0300
+
+    feat: bootstrap tok0 project with config, shell utils, and CLI routing
+
+    Core infrastructure: Tok0Config with TOML parsing, shell helpers
+    (strip_ansi, count_tokens, head_tail, hard_cap), Clap CLI routing.
+
+commit d4e5f6789012345678901234567890123456abcd
+Author: Dev User <dev@example.com>
+Date:   Mon Apr 7 10:00:00 2026 +0300
+
+    chore: initial project setup with .gitignore and docs
+
+    Added .gitignore for Rust artifacts, SQLite databases, and
+    sensitive files. Created docs/ directory structure.
+
+commit e5f67890123456789012345678901234567abcde
+Author: Dev Contributor <jane@example.com>
+Date:   Sun Apr 6 22:00:00 2026 +0300
+
+    docs: add implementation plan for token squasher
+
+    Comprehensive 8-phase plan covering 250+ command compressors,
+    45 AI tool integrations, cloud dashboard, and auto-update.
+
+commit f6789012345678901234567890123456789abcdef
+Author: Dev User <dev@example.com>
+Date:   Sun Apr 6 20:00:00 2026 +0300
+
+    feat: add bridge adapter architecture design
+
+    Per-tool format translators for Claude Code, Copilot, Cursor,
+    Gemini CLI, Windsurf, and 40 more AI tools.
+
+commit 0789012345678901234567890123456789abcdef0
+Author: Dev Contributor <jane@example.com>
+Date:   Sun Apr 6 18:00:00 2026 +0300
+
+    feat: add TOML rule engine specification
+
+    Declarative compression rules: strip_patterns, head/tail,
+    pattern_replace, inline assertions, mtime caching.
+
+commit 1890123456789012345678901234567890abcdef1
+Author: Dev User <dev@example.com>
+Date:   Sat Apr 5 16:00:00 2026 +0300
+
+    feat: add telemetry and privacy design
+
+    Opt-in analytics, hashed device IDs only, no source code
+    or file paths transmitted.
+
+commit 2901234567890123456789012345678901abcdef2
+Author: Dev Contributor <jane@example.com>
+Date:   Sat Apr 5 14:00:00 2026 +0300
+
+    feat: add cloud team dashboard specification
+
+    REST API for team analytics, SSE for real-time updates,
+    project-scoped aggregation.
+
+commit 3012345678901234567890123456789012abcdef3
+Author: Dev User <dev@example.com>
+Date:   Sat Apr 5 12:00:00 2026 +0300
+
+    chore: add Rust development guidelines and TDD skill
+
+    Comprehensive patterns for tok0 development: no async,
+    no unwrap, lazy_static regex, fallback on failure.

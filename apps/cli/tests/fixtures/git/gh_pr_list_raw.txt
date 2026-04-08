@@ -1,0 +1,10 @@
+Showing 8 of 8 pull requests in owner/repo
+
+  #142  feat: implement distributed rate limiting with redis sentinel support and failover   feature/rate-limiting-redis-sentinel-failover     OPEN    about 2 days ago
+  #139  fix: resolve memory leak in connection pool when idle timeout expires unexpectedly   bugfix/connection-pool-idle-timeout-memory-leak   OPEN    about 4 days ago
+  #137  chore: upgrade all devDependencies to latest major versions for security patches     chore/deps-upgrade-major-versions-2026-q1         OPEN    about 6 days ago
+  #134  refactor: extract authentication middleware into standalone reusable npm package     refactor/auth-middleware-extraction-standalone    OPEN    about 9 days ago
+  #131  feat: add prometheus metrics endpoint with custom histogram buckets and labels       feature/prometheus-metrics-histogram-endpoint     MERGED  about 2 weeks ago
+  #128  fix: correct timezone handling in recurring cron job scheduler for DST transitions  bugfix/cron-scheduler-timezone-dst-fix            MERGED  about 3 weeks ago
+  #125  docs: update API reference documentation with new pagination cursor parameters      docs/api-pagination-cursor-reference              MERGED  about 4 weeks ago
+  #121  feat: implement webhook retry logic with exponential backoff and jitter strategy    feature/webhook-retry-exponential-backoff-jitter  CLOSED  about 5 weeks ago

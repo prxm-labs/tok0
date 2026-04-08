@@ -1,0 +1,14 @@
+Showing 12 of 47 issues in owner/repo that match the current filter criteria and search parameters
+
+#389  bug: WebSocket connections drop silently under high load causing data loss in real-time dashboard monitoring system and alerting pipeline          bug, critical, backend, websocket, real-time, monitoring, p0       about 2 hours ago
+#385  feat: add comprehensive support for OpenTelemetry distributed tracing with automatic context propagation across all microservices and workers      enhancement, observability, tracing, opentelemetry, backend       about 1 day ago
+#382  bug: CSV export functionality fails with Unicode characters in customer names producing corrupted output files that cannot be reimported properly  bug, encoding, data-export, unicode, csv, internationalization    about 2 days ago
+#378  feat: implement granular role-based access control permissions system for API keys with per-endpoint scope restrictions and audit logging          enhancement, security, api, rbac, permissions, audit-logging      about 3 days ago
+#374  chore: migrate entire continuous integration and deployment pipeline from legacy Jenkins to GitHub Actions with matrix builds for all platforms     chore, ci, infrastructure, github-actions, jenkins, migration     about 5 days ago
+#371  docs: add comprehensive API versioning guide with detailed migration examples upgrade paths and breaking change documentation from v1 to v2        documentation, api, versioning, migration, developer-experience   about 1 week ago
+#368  bug: memory usage grows unbounded when processing large batch imports exceeding 100k records in the background worker queue processing service     bug, performance, memory, batch-processing, worker, queue         about 1 week ago
+#365  feat: add Slack and Microsoft Teams notification integration for deployment status updates with configurable channel routing rules per environment  enhancement, integrations, slack, teams, deployment, alerts        about 2 weeks ago
+#361  bug: rate limiter incorrectly counts browser preflight OPTIONS requests toward the per-client rate limiting request quota in production clusters   bug, rate-limiting, cors, options, http, production               about 2 weeks ago
+#358  feat: implement database connection pooling with automatic health checks stale connection eviction retry logic and configurable pool sizing        enhancement, database, connection-pool, health, retry, scaling    about 3 weeks ago
+#354  chore: update all Docker base images across all services and environments to address CVE-2026-1234 critical vulnerability in openssl library       chore, security, docker, cve, openssl, vulnerability-management   about 3 weeks ago
+#350  feat: add GraphQL subscriptions support for real-time order status updates with JWT-based authentication authorization and rate limiting controls  enhancement, graphql, api, subscriptions, realtime, auth          about 4 weeks ago

@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (podman not installed in sandbox)
+parent_git_sha: 31e778946c77ea08aa6e468717fd915513597841
+command: podman ps -a
+notes: Synthetic ~10-row `podman ps -a` table mixing running, exited, healthy, and created container states across nginx/postgres/redis/grafana/prometheus/alpine/busybox plus a few localhost demo images. Real capture would require an installed `podman` binary plus a running podman machine on macOS.

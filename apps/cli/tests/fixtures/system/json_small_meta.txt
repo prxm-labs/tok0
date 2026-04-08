@@ -1,0 +1,4 @@
+synthetic
+captured: 2026-04-28
+origin: hand-written JSON literal
+git_sha: b1af0d477abfc99e8e787821f1da3d0d48525395

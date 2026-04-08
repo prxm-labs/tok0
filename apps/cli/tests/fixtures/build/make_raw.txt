@@ -1,0 +1,14 @@
+gcc -c -O2 -Wall -Wextra -o obj/main.o src/main.c
+gcc -c -O2 -Wall -Wextra -o obj/util.o src/util.c
+src/util.c:45: warning: unused variable 'x'
+gcc -c -O2 -Wall -Wextra -o obj/parser.o src/parser.c
+gcc -c -O2 -Wall -Wextra -o obj/lexer.o src/lexer.c
+gcc -c -O2 -Wall -Wextra -o obj/buffer.o src/buffer.c
+gcc -c -O2 -Wall -Wextra -o obj/hash.o src/hash.c
+src/hash.c:112: warning: implicit declaration of function 'memset'
+gcc -c -O2 -Wall -Wextra -o obj/arena.o src/arena.c
+gcc -c -O2 -Wall -Wextra -o obj/io.o src/io.c
+gcc -c -O2 -Wall -Wextra -o obj/fmt.o src/fmt.c
+gcc -c -O2 -Wall -Wextra -o obj/net.o src/net.c
+gcc -c -O2 -Wall -Wextra -o obj/cfg.o src/cfg.c
+gcc -o bin/myapp obj/main.o obj/util.o obj/parser.o obj/lexer.o obj/buffer.o obj/hash.o obj/arena.o obj/io.o obj/fmt.o obj/net.o obj/cfg.o -lm -lpthread

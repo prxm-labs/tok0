@@ -1,0 +1,11 @@
+# Captured: 2026-04-26
+# Command: LANG=C pnpm install --reporter=default 2>&1
+# Setup:
+#   mkdir /tmp/pnpm-fixture && cd /tmp/pnpm-fixture
+#   echo '{"name":"f","dependencies":{"react":"^18","react-dom":"^18"}}' > package.json
+# Tool version: pnpm 10.8.0
+# Source: real-captured (not synthetic)
+# Git SHA: 1a75bc49c311eacaa278c5d8bddae72fd0a9dbe4
+# Notes: Output contains terminal cursor escape sequences and an
+#        "Update available!" banner block — useful for testing
+#        strip_patterns + head/tail windowing.

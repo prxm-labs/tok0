@@ -1,0 +1,28 @@
+src/components/Button.tsx(12,5): error TS2322: Type 'string' is not assignable to type 'number'.
+src/components/Button.tsx(23,10): error TS2339: Property 'onClick' does not exist on type 'ButtonProps'.
+src/components/Button.tsx(45,3): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/components/Button.tsx(58,12): error TS2554: Expected 2 arguments, but got 1.
+src/components/Button.tsx(71,8): error TS2531: Object is possibly 'null'.
+src/components/Modal.tsx(8,1): error TS2305: Module '"react"' has no exported member 'FC'.
+src/components/Modal.tsx(15,18): error TS2345: Argument of type 'null' is not assignable to parameter of type 'HTMLElement'.
+src/components/Modal.tsx(27,9): error TS2532: Object is possibly 'undefined'.
+src/components/Modal.tsx(38,14): error TS2551: Property 'classname' does not exist on type 'HTMLDivElement'. Did you mean 'className'?
+src/components/Modal.tsx(51,6): error TS2454: Variable 'ref' is used before being assigned.
+src/components/Modal.tsx(64,3): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+src/utils/helpers.ts(5,8): error TS7016: Could not find a declaration file for module 'lodash'. Try `npm install @types/lodash`.
+src/utils/helpers.ts(19,15): error TS2304: Cannot find name 'NodeJS'.
+src/utils/helpers.ts(33,22): error TS2365: Operator '+' cannot be applied to types 'string' and 'number'.
+src/utils/helpers.ts(47,11): error TS2339: Property 'trim' does not exist on type 'number'.
+src/utils/helpers.ts(59,4): error TS2322: Type 'boolean | undefined' is not assignable to type 'boolean'.
+src/api/client.ts(10,5): error TS2307: Cannot find module './config' or its corresponding type declarations.
+src/api/client.ts(24,3): error TS2741: Property 'headers' is missing in type '{ body: string; }' but required in type 'RequestInit'.
+src/api/client.ts(41,18): error TS2322: Type 'Response | undefined' is not assignable to type 'Response'.
+src/api/client.ts(58,7): error TS2454: Variable 'result' is used before being assigned.
+src/api/client.ts(73,9): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/store/index.ts(3,10): error TS2305: Module '"redux"' has no exported member 'createStore'.
+src/store/index.ts(17,5): error TS2339: Property 'dispatch' does not exist on type 'Store<{}, AnyAction>'.
+src/store/index.ts(29,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+src/store/index.ts(44,8): error TS2322: Type 'Reducer<State, AnyAction>' is not assignable to type 'Reducer<never, AnyAction>'.
+src/store/index.ts(57,14): error TS2531: Object is possibly 'null'.
+
+Found 26 errors.

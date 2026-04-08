@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (tilt not installed in sandbox)
+parent_git_sha: 84bd10f06fc9f7dd7586ed16c0b4d5eadd4c6727
+command: tilt up
+notes: Synthetic ~50-line fixture mimicking Tilt's `tilt up` startup banner plus the per-resource hot-reload loop spam (`running...` / `✓ ready` repeats per resource). Real capture would require an installed `tilt` binary plus a Tiltfile in a target project; neither is available here.

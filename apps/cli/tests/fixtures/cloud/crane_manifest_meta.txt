@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (crane not installed in sandbox)
+parent_git_sha: b714758
+command: crane manifest gcr.io/distroless/static:latest
+notes: Synthetic ~25-line OCI image manifest JSON (schemaVersion 2, mediaType, config, layers array, annotations). Real `crane manifest` emits compact single-line JSON; this fixture uses pretty-printed form so head/tail clipping has visible structure to operate on. Users typically pipe crane output through `tok0 json` for full JSON-aware compression — this rule provides head/tail-only fallback.

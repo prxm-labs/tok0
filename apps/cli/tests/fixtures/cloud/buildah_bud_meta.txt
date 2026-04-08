@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (buildah not installed in sandbox)
+parent_git_sha: 2162191
+command: buildah bud -t demo .
+notes: Synthetic ~20-line `buildah bud` output mirroring podman_build's shape: STEP N/M markers, image-pull (Getting image source signatures, Copying blob/config, Writing manifest), --> layer markers, intermediate apk install lines (signal in build failures), final COMMIT/Successfully tagged/image SHA. Real capture would require an installed `buildah` binary on Linux (buildah is Linux-only).

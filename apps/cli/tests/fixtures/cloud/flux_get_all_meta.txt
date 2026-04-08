@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (flux not installed in sandbox)
+parent_git_sha: 34415cc045301f1a51653bc07b050b0df6093cd0
+command: flux get all -A
+notes: Synthetic ~32-line fixture spanning the four Flux resource categories that `flux get all -A` prints (GitRepository, Kustomization, HelmRepository, HelmRelease) with NAMESPACE / NAME / REVISION / SUSPENDED / READY / MESSAGE columns and a couple of degraded rows for realism.

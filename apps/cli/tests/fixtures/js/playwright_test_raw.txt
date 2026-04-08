@@ -1,0 +1,5 @@
+Running 1 test using 1 worker
+  ✔  1 [chromium] › tests/smoke.spec.ts:3:1 › ok (300ms)
+  1 passed (1.5s)
+
+Trace was written to tmp/trace.zip

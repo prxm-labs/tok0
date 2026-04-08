@@ -1,0 +1,17 @@
+src/main.py:5:1: F401 [*] `os` imported but unused
+src/main.py:12:80: E501 Line too long (92 > 79 characters)
+src/main.py:18:5: E741 Ambiguous variable name: `l`
+src/main.py:24:1: F841 Local variable `result` is assigned to but never used
+src/main.py:31:14: E711 Comparison to `None` (use `is` or `is not`)
+src/main.py:47:80: E501 Line too long (105 > 79 characters)
+src/main.py:63:1: F841 Local variable `tmp` is assigned to but never used
+src/utils/helpers.py:3:1: F401 [*] `sys` imported but unused
+src/utils/helpers.py:9:1: F401 [*] `typing.List` imported but unused
+src/utils/helpers.py:17:5: B006 Do not use mutable data structures for argument defaults
+src/utils/helpers.py:28:9: E302 Expected 2 blank lines, got 1
+src/utils/helpers.py:43:12: E711 Comparison to `None` (use `is` or `is not`)
+src/utils/helpers.py:61:80: E501 Line too long (108 > 79 characters)
+src/api/client.py:7:1: F401 [*] `json` imported but unused
+src/api/client.py:15:5: E303 Too many blank lines (3)
+src/api/client.py:22:9: B007 Loop control variable `i` not used in loop body
+Found 15 errors (8 fixable).

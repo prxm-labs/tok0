@@ -1,0 +1,127 @@
+src/compressors/system/ls_cmd.rs:14:pub fn filter_ls(input: &str, path: &str) -> String {
+src/compressors/system/ls_cmd.rs:65:fn format_size(bytes: u64) -> String {
+src/compressors/system/ls_cmd.rs:82:    fn count_tokens(s: &str) -> usize {
+src/compressors/system/ls_cmd.rs:87:    fn test_ls_output_format() {
+src/compressors/system/ls_cmd.rs:94:    fn test_ls_savings() {
+src/compressors/system/ls_cmd.rs:112:    fn test_ls_empty() {
+src/compressors/system/ls_cmd.rs:117:    fn test_ls_malformed() {
+src/compressors/system/ls_cmd.rs:123:    fn test_ls_unicode() {
+src/compressors/system/ls_cmd.rs:130:    fn test_ls_ansi() {
+src/compressors/system/ls_cmd.rs:138:    fn test_format_size() {
+src/compressors/system/find_cmd.rs:11:pub fn filter_find(input: &str) -> String {
+src/compressors/system/find_cmd.rs:57:    fn count_tokens(s: &str) -> usize {
+src/compressors/system/find_cmd.rs:62:    fn test_find_output_format() {
+src/compressors/system/find_cmd.rs:69:    fn test_find_savings() {
+src/compressors/system/find_cmd.rs:87:    fn test_find_empty() {
+src/compressors/system/find_cmd.rs:92:    fn test_find_small_list() {
+src/compressors/system/find_cmd.rs:98:    fn test_find_unicode() {
+src/compressors/system/smart_cmd.rs:13:pub fn filter_smart(input: &str) -> String {
+src/compressors/system/smart_cmd.rs:72:    fn count_tokens(s: &str) -> usize {
+src/compressors/system/smart_cmd.rs:77:    fn test_smart_small_file() {
+src/compressors/system/smart_cmd.rs:78:        let input = "fn main() {\n    println!(\"hello\");\n}";
+src/compressors/system/smart_cmd.rs:83:    fn test_smart_large_file() {
+src/compressors/system/smart_cmd.rs:89:        lines.push("pub fn main() {".to_string());
+src/compressors/system/smart_cmd.rs:95:        lines.push("pub fn helper() {".to_string());
+src/compressors/system/smart_cmd.rs:103:        assert!(output.contains("pub fn main"));
+src/compressors/system/smart_cmd.rs:104:        assert!(output.contains("pub fn helper"));
+src/compressors/system/smart_cmd.rs:115:    fn test_smart_empty() {
+src/compressors/system/smart_cmd.rs:120:    fn test_smart_unicode() {
+src/compressors/system/smart_cmd.rs:121:        let input = "// 日本語コメント\nfn テスト() {}";
+src/compressors/system/grep_cmd.rs:11:pub fn filter_grep(input: &str, max_results: usize, max_per_file: usize) -> String {
+src/compressors/system/grep_cmd.rs:60:    fn count_tokens(s: &str) -> usize {
+src/compressors/system/grep_cmd.rs:65:    fn test_grep_output_format() {
+src/compressors/system/grep_cmd.rs:72:    fn test_grep_savings() {
+src/compressors/system/grep_cmd.rs:90:    fn test_grep_empty() {
+src/compressors/system/grep_cmd.rs:95:    fn test_grep_small_results() {
+src/compressors/system/grep_cmd.rs:96:        let input = "src/main.rs:1:fn main() {";
+src/compressors/system/grep_cmd.rs:101:    fn test_grep_unicode() {
+src/compressors/system/diff_cmd.rs:15:pub fn filter_diff(input: &str) -> String {
+src/compressors/system/diff_cmd.rs:115:    fn count_tokens(s: &str) -> usize {
+src/compressors/system/diff_cmd.rs:120:    fn test_diff_synthetic() {
+src/compressors/system/diff_cmd.rs:129: fn main() {
+src/compressors/system/diff_cmd.rs:147:    fn test_diff_savings() {
+src/compressors/system/diff_cmd.rs:180:    fn test_diff_empty() {
+src/compressors/system/diff_cmd.rs:185:    fn test_diff_malformed() {
+src/compressors/system/diff_cmd.rs:191:    fn test_diff_unicode() {
+src/compressors/system/read_cmd.rs:4:pub fn filter_read(input: &str, path: &str) -> String {
+src/compressors/system/read_cmd.rs:58:    fn count_tokens(s: &str) -> usize {
+src/compressors/system/read_cmd.rs:63:    fn test_read_small_file() {
+src/compressors/system/read_cmd.rs:72:    fn test_read_large_file() {
+src/compressors/system/read_cmd.rs:90:    fn test_read_empty() {
+src/compressors/system/read_cmd.rs:96:    fn test_read_unicode() {
+src/compressors/system/read_cmd.rs:103:    fn test_read_long_lines() {
+src/compressors/git/git_cmd.rs:19:pub fn filter_git_log(input: &str) -> String {
+src/compressors/git/git_cmd.rs:62:pub fn filter_git_status(input: &str) -> String {
+src/compressors/git/git_cmd.rs:126:pub fn filter_git_diff(input: &str) -> String {
+src/compressors/git/git_cmd.rs:178:pub fn filter_git_simple(input: &str, subcommand: &str) -> String {
+src/compressors/git/git_cmd.rs:190:    fn count_tokens(s: &str) -> usize {
+src/compressors/git/git_cmd.rs:195:    fn test_git_log_format() {
+src/compressors/git/git_cmd.rs:202:    fn test_git_log_savings() {
+src/compressors/git/git_cmd.rs:218:    fn test_git_log_empty() {
+src/compressors/git/git_cmd.rs:223:    fn test_git_log_malformed() {
+src/compressors/git/git_cmd.rs:229:    fn test_git_status_format() {
+src/compressors/git/git_cmd.rs:236:    fn test_git_status_savings() {
+src/compressors/git/git_cmd.rs:250:    fn test_git_status_empty() {
+src/compressors/git/git_cmd.rs:255:    fn test_git_status_clean() {
+src/compressors/git/git_cmd.rs:262:    fn test_git_diff_format() {
+src/compressors/git/git_cmd.rs:269:    fn test_git_diff_savings() {
+src/compressors/git/git_cmd.rs:283:    fn test_git_diff_empty() {
+src/compressors/git/git_cmd.rs:288:    fn test_git_push_ok() {
+src/compressors/git/git_cmd.rs:294:    fn test_git_commit_ok() {
+src/compressors/git/git_cmd.rs:300:    fn test_git_simple_unicode() {
+src/main.rs:109:fn main() {
+src/main.rs:117:fn run(cli: Cli) -> Result<()> {
+src/main.rs:148:fn run_proxy(cmd: &str, args: &[String]) -> Result<()> {
+src/main.rs:170:fn run_raw_proxy(args: &[String]) -> Result<()> {
+src/engine/timeout.rs:7:pub fn execute_with_timeout(cmd: &str, args: &[&str], timeout: Duration) -> Result<Output> {
+src/engine/timeout.rs:49:    fn test_command_completes_within_timeout() {
+src/engine/timeout.rs:58:    fn test_command_timeout() {
+src/engine/timeout.rs:71:    fn test_command_not_found() {
+src/engine/timeout.rs:77:    fn test_command_with_args() {
+src/engine/timeout.rs:86:    fn test_command_exit_code_propagation() {
+src/engine/timeout.rs:100:    fn test_short_timeout_fast_command() {
+src/engine/shell.rs:11:pub fn strip_ansi(input: &str) -> std::borrow::Cow<str> {
+src/engine/shell.rs:20:pub fn count_tokens(text: &str) -> usize {
+src/engine/shell.rs:25:pub fn execute_command(cmd: &str, args: &[&str]) -> Result<Output> {
+src/engine/shell.rs:33:pub fn truncate_line(line: &str, max_chars: usize) -> String {
+src/engine/shell.rs:42:pub fn head_tail(input: &str, head: usize, tail: usize) -> String {
+src/engine/shell.rs:62:pub fn hard_cap(input: &str, max_chars: usize) -> String {
+src/engine/shell.rs:75:    fn test_strip_ansi_with_codes() {
+src/engine/shell.rs:81:    fn test_strip_ansi_without_codes() {
+src/engine/shell.rs:90:    fn test_strip_ansi_empty() {
+src/engine/shell.rs:95:    fn test_count_tokens() {
+src/engine/shell.rs:103:    fn test_truncate_line_short() {
+src/engine/shell.rs:108:    fn test_truncate_line_long() {
+src/engine/shell.rs:115:    fn test_head_tail_small_input() {
+src/engine/shell.rs:121:    fn test_head_tail_large_input() {
+src/engine/shell.rs:133:    fn test_hard_cap_short() {
+src/engine/shell.rs:138:    fn test_hard_cap_long() {
+src/engine/config.rs:32:    fn default() -> Self {
+src/engine/config.rs:55:    fn default() -> Self {
+src/engine/config.rs:74:    fn default() -> Self {
+src/engine/config.rs:91:    fn default() -> Self {
+src/engine/config.rs:103:    fn default() -> Self {
+src/engine/config.rs:119:pub fn load_config() -> Result<Tok0Config> {
+src/engine/config.rs:130:pub fn config_path() -> PathBuf {
+src/engine/config.rs:137:pub fn db_path() -> PathBuf {
+src/engine/config.rs:152:    fn test_default_config() {
+src/engine/config.rs:161:    fn test_parse_minimal_toml() {
+src/engine/config.rs:172:    fn test_parse_full_toml() {
+src/engine/config.rs:202:    fn test_parse_empty_toml() {
+src/engine/config.rs:208:    fn test_config_path_not_empty() {
+src/engine/meter.rs:36:    pub fn new(db_path: &Path) -> Result<Self> {
+src/engine/meter.rs:64:    pub fn record(
+src/engine/meter.rs:94:    pub fn get_summary(&self) -> Result<Summary> {
+src/engine/meter.rs:118:    pub fn get_daily(&self, days: u32) -> Result<Vec<DailyStats>> {
+src/engine/meter.rs:147:    pub fn get_recent(&self, limit: u32) -> Result<Vec<RecentCommand>> {
+src/engine/meter.rs:171:    pub fn cleanup(&self, retention_days: u32) -> Result<u64> {
+src/engine/meter.rs:185:pub fn record(
+src/engine/meter.rs:223:    fn make_tracker() -> (Tracker, NamedTempFile) {
+src/engine/meter.rs:230:    fn test_record_and_query() {
+src/engine/meter.rs:254:    fn test_multiple_records() {
+src/engine/meter.rs:281:    fn test_empty_summary() {
+src/engine/meter.rs:290:    fn test_get_recent() {
+src/engine/meter.rs:303:    fn test_cleanup_old_records() {
+src/engine/meter.rs:317:    fn test_savings_calculation() {
+src/engine/meter.rs:326:    fn test_get_daily() {
+src/engine/meter.rs:348:    fn test_wal_mode_active() {

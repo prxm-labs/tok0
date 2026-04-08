@@ -1,0 +1,63 @@
+> myapp@1.2.3 test
+> jest --coverage
+
+ PASS  src/utils/format.test.ts (3.421 s)
+  format utilities
+    ✓ formatCurrency returns formatted string (12 ms)
+    ✓ formatDate handles UTC (8 ms)
+    ✓ formatDate handles local timezone (5 ms)
+    ✓ truncateText at limit (3 ms)
+    ✓ truncateText below limit returns original (2 ms)
+
+ PASS  src/utils/validation.test.ts (2.108 s)
+  validation utilities
+    ✓ isEmail accepts valid addresses (6 ms)
+    ✓ isEmail rejects invalid addresses (4 ms)
+    ✓ isPhoneNumber validates E.164 format (3 ms)
+    ✓ required field validation (2 ms)
+
+ FAIL  src/components/Button.test.tsx (4.876 s)
+  Button component
+    ✓ renders with default props (15 ms)
+    ✓ applies variant classes (9 ms)
+    ✗ calls onClick when not disabled (18 ms)
+    ✓ renders disabled state (7 ms)
+    ✗ shows loading spinner (22 ms)
+
+  ● Button component › calls onClick when not disabled
+
+    expect(jest.fn()).toHaveBeenCalledTimes(1)
+
+    Expected number of calls: 1
+    Received number of calls: 0
+
+      27 |   fireEvent.click(button);
+      28 |   expect(handleClick).toHaveBeenCalledTimes(1);
+    > 29 |   expect(handleClick).toHaveBeenCalledWith(expect.any(MouseEvent));
+         |                       ^
+      30 | });
+
+      at Object.<anonymous> (src/components/Button.test.tsx:29:23)
+
+  ● Button component › shows loading spinner
+
+    TestingLibraryElementError: Unable to find an accessible element with the role "progressbar"
+
+      43 |   render(<Button loading={true}>Submit</Button>);
+    > 44 |   expect(screen.getByRole('progressbar')).toBeInTheDocument();
+         |                 ^
+      45 | });
+
+      at getNodeError (node_modules/@testing-library/dom/dist/query-helpers.js:180:21)
+      at Object.<anonymous> (src/components/Button.test.tsx:44:17)
+
+ PASS  src/hooks/useDebounce.test.ts (1.654 s)
+  useDebounce
+    ✓ delays the callback (45 ms)
+    ✓ cancels pending call on unmount (12 ms)
+
+Test Suites: 1 failed, 3 passed, 4 total
+Tests:       2 failed, 14 passed, 16 total
+Snapshots:   0 total
+Time:        12.059 s
+Ran all test suites.

@@ -1,0 +1,6 @@
+source: synthetic
+capture_date: 2026-04-28
+tool_version: synthetic (skaffold not installed in sandbox)
+parent_git_sha: b6e42cc1c11027acee3df4554e6aef2cb540d243
+command: skaffold dev --tail=false
+notes: Synthetic ~30-line fixture mimicking `skaffold dev` startup output: banner, Listing/Generating tags/Checking cache phases, Tags-used-in-deployment block, Starting-deploy listing, deployment readiness waits, port-forwarding announcements, and the final "Watching for changes..." line. Real capture would require an installed `skaffold` binary plus a configured project with skaffold.yaml.

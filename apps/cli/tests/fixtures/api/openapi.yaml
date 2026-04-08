@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: tok0 Cloud API
+  version: 1.0.0
+  description: |
+    Cloud API for tok0 team analytics. Two ingestion paths:
+    1. Anonymous telemetry (POST /telemetry) — no auth, aggregate stats only
+    2. Authenticated team reporting (POST /report) — bearer token, per-command data
+paths:
+  /telemetry:
+    post:
+      summary: Anonymous telemetry ping (no auth)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TelemetryPayload'
+      responses:
+        '204':
+          description: Accepted
+  /report:
+    post:
+      summary: Batch report token savings events (authenticated)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ReportEvent'
+      responses:
+        '204':
+          description: Events accepted
+        '401':
+          description: Unauthorized
+  /team/stats:
+    get:
+      summary: Aggregate team token savings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamStats'
+        '401':
+          description: Unauthorized
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    TelemetryPayload:
+      type: object
+      required:
+        - installation_id
+        - version
+        - os
+        - total_commands
+        - total_saved_tokens
+        - avg_savings_pct
+      properties:
+        installation_id:
+          type: string
+          example: "a3f8b2c1d4e5f6..."
+          description: SHA-256 of machine identifiers (not user-identifiable)
+        version:
+          type: string
+          example: "0.5.2"
+        os:
+          type: string
+          example: "macos-aarch64"
+        total_commands:
+          type: integer
+          example: 4821
+        total_saved_tokens:
+          type: integer
+          example: 1200000
+        avg_savings_pct:
+          type: number
+          format: double
+          example: 78.3
+    ReportEvent:
+      type: object
+      required:
+        - command
+        - input_tokens
+        - output_tokens
+        - savings_pct
+        - timestamp_secs
+      properties:
+        command:
+          type: string
+          example: "git log"
+          description: Sanitized — program + subcommand only, no paths or arguments
+        input_tokens:
+          type: integer
+        output_tokens:
+          type: integer
+        savings_pct:
+          type: integer
+        timestamp_secs:
+          type: integer
+    TeamStats:
+      type: object
+      properties:
+        total_input_tokens:
+          type: integer
+        total_output_tokens:
+          type: integer
+        savings_pct:
+          type: integer
+        total_commands:
+          type: integer
+        members:
+          type: integer

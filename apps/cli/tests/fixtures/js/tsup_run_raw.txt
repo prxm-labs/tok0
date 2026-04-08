@@ -1,0 +1,6 @@
+CLI Building entry: src/index.ts
+CLI tsup v8.5.1
+CLI Target: node16
+CJS Build start
+CJS dist/index.js 1021.00 B
+CJS ⚡️ Build success in 11ms

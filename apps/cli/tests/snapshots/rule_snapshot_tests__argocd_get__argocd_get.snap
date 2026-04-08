@@ -1,0 +1,14 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+Name:               demo-app
+Sync Status:        Synced to HEAD (abc1234)
+Health Status:      Healthy
+
+GROUP  KIND        NAMESPACE  NAME             STATUS  HEALTH   HOOK  MESSAGE
+rbac   Role        argocd     demo-role        Synced  Healthy        role.rbac/demo-role created
+rbac   RoleBinding argocd     demo-rb          Synced  Healthy        rolebinding.rbac/demo-rb created
+       PersistentVolumeClaim argocd demo-data  Synced  Healthy        pvc/demo-data created
+networking NetworkPolicy argocd demo-policy    Synced  Healthy        networkpolicy/demo-policy created
+autoscaling HorizontalPodAutoscaler argocd demo-hpa Synced Healthy    hpa/demo-hpa created

@@ -1,0 +1,40 @@
+Sending build context to Docker daemon  48.64MB
+Step 1/8 : FROM node:18-alpine AS builder
+18-alpine: Pulling from library/node
+Digest: sha256:a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1
+Status: Downloaded newer image for node:18-alpine
+ ---> 3f4a1b2c9d8e
+Step 2/8 : WORKDIR /app
+ ---> Using cache
+ ---> 7e8f9a0b1c2d
+Step 3/8 : COPY package*.json ./
+ ---> Using cache
+ ---> 1c2d3e4f5a6b
+Step 4/8 : RUN npm ci --only=production
+ ---> Running in 4e5f6a7b8c9d
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory.
+npm warn deprecated npmlog@5.0.1: Use of npmlog is no longer supported.
+added 421 packages in 34s
+ ---> Removing intermediate container 4e5f6a7b8c9d
+ ---> 9a0b1c2d3e4f
+Step 5/8 : COPY . .
+ ---> 5b6c7d8e9f0a
+Step 6/8 : RUN npm run build
+ ---> Running in f0a1b2c3d4e5
+> myapp@2.14.1 build
+> tsc --project tsconfig.build.json && node scripts/bundle.js
+
+TypeScript compilation succeeded (0 errors, 0 warnings)
+Bundle created: dist/server.js (1.2MB)
+Bundle created: dist/worker.js (892KB)
+ ---> Removing intermediate container f0a1b2c3d4e5
+ ---> a1b2c3d4e5f6
+Step 7/8 : FROM node:18-alpine AS runtime
+ ---> 3f4a1b2c9d8e
+Step 8/8 : COPY --from=builder /app/dist ./dist
+ ---> b2c3d4e5f6a7
+ ---> Removing intermediate container e3f4a5b6c7d8
+ ---> c3d4e5f6a7b8
+Successfully built c3d4e5f6a7b8
+Successfully tagged myapp/backend:v2.14.1-release
+Successfully tagged myapp/backend:latest

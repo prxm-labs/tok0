@@ -1,0 +1,6 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+a1.js 5ms
+a4.js 5ms

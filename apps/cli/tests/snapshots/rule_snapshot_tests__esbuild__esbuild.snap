@@ -1,0 +1,14 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+⬥ [VERBOSE] Resolving import "./src.js" in directory "/private/tmp/esb-fixture" of type "entry-point"
+
+  Read 21 entries for directory "/"
+  Read 4 entries for directory "/private"
+  Read 20 entries for directory "/private/tmp"
+
+
+  out.js  88b 
+
+⚡ Done in 3ms

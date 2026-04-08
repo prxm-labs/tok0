@@ -1,0 +1,1 @@
+Synthetic fixture: playwright npm install/browser-download skipped (no `timeout` on macOS host; npm/npx unavailable in capture sandbox). Mirrors `playwright test --reporter=list` output for a single passing chromium spec.

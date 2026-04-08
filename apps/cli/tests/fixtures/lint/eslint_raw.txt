@@ -1,0 +1,36 @@
+
+/home/user/project/src/components/Button.tsx
+  12:5   error    'React' must be in scope when using JSX  react/react-in-jsx-scope
+  23:10  warning  Unexpected console statement              no-console
+  45:3   error    Expected '===' and instead saw '=='       eqeqeq
+  67:15  warning  'onClick' is defined but never used       no-unused-vars
+  89:1   error    Missing semicolon                         semi
+  101:7  warning  Unexpected var, use let or const instead  no-var
+  115:3  error    'undefined' is not allowed                no-undefined
+
+/home/user/project/src/utils/helpers.ts
+   5:1   error    'lodash' should be listed in the project's dependencies  import/no-extraneous-dependencies
+  18:22  error    Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  34:7   warning  Prefer const over let for variables that are never reassigned  prefer-const
+  41:14  error    Do not use 'Number' as a type                            @typescript-eslint/ban-types
+  55:3   warning  Arrow function used ambiguously with a conditional expression  no-confusing-arrow
+  72:9   error    'data' is assigned a value but never used                no-unused-vars
+  88:12  warning  Expected a default case                                  default-case
+  94:5   error    Unexpected use of 'debugger'                             no-debugger
+
+/home/user/project/src/api/client.ts
+   8:1   error    Unexpected use of 'alert'                                no-alert
+  19:5   warning  Expected a default case                                  default-case
+  31:17  error    Avoid using global variable 'window' directly            no-restricted-globals
+  47:3   error    Do not access Object.prototype method 'hasOwnProperty' from target object  no-prototype-builtins
+  63:8   warning  Require statement not part of import statement           @typescript-eslint/no-require-imports
+  79:1   error    'fetch' is not defined                                   no-undef
+  92:14  warning  Do not mix different operators                           no-mixed-operators
+  108:6  error    Unexpected trailing comma                                comma-dangle
+
+/home/user/project/src/store/actions.ts
+   4:1   warning  Prefer default export                                    import/prefer-default-export
+  17:5   warning  Missing return type on function                          @typescript-eslint/explicit-function-return-type
+
+✖ 24 problems (15 errors, 9 warnings)
+  15 errors and 3 warnings potentially fixable with the `--fix` option.

@@ -1,0 +1,9 @@
+➤ YN0000: ┌ Resolution step
+➤ YN0061: │ left-pad@npm:1.3.0 is deprecated: use String.prototype.padStart()
+➤ YN0000: └ Completed in 0s 324ms
+➤ YN0000: ┌ Fetch step
+➤ YN0013: │ left-pad@npm:1.3.0 can't be found in the cache and will be fetched from the remote registry
+➤ YN0000: └ Completed
+➤ YN0000: ┌ Link step
+➤ YN0000: └ Completed
+➤ YN0000: Done with warnings in 0s 457ms

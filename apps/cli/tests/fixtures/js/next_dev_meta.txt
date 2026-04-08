@@ -1,0 +1,9 @@
+source: synthetic (with real banner header)
+command: npm run dev
+notes:
+- The real `next dev` boot output (banner + Local/Network URLs +
+  `✓ Ready in …`) was captured but is too clean to exercise the
+  HMR-dedup + 32-line cap behavior. Fixture is augmented with synthetic
+  `Compiling /page` repeats and 50× `[hot reload] /page` lines per the
+  documented Next.js 14.x dev-server output, plus a few `[hot reload]
+  /about` lines to verify the hard cap (NOT per-path) at 32.

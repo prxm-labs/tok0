@@ -1,0 +1,10 @@
+origin: synthetic
+capture_date: 2026-04-28
+npx_version: 11.9.0
+git_sha: a431978cd2622b0cc3613bfb7248e11d996b7b92
+notes: Real local capture of `npx --yes tsc --noEmit` produced only the bare TS
+       error line (npx printed no preamble because tsc was already locally
+       installed). To exercise the strip_patterns (npm warn / npm notice / npm
+       install / npm WARN), this fixture is synthetic: the noise lines are
+       transcribed from documented npx 11.x output formats and the trailing
+       TS2322 + "Found 1 error" lines come from the real tsc 5.6.3 capture.

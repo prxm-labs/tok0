@@ -1,0 +1,14 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+Skaffold v2.11.1
+ - demo-api
+ - demo-web
+ - demo-api -> demo-api:v1.2.3-dirty
+ - demo-web -> demo-web:v1.2.3-dirty
+ - deployment/demo-api is ready.
+ - deployment/demo-web is ready.
+Deployments stabilized in 18.241 seconds
+Port forwarding service/demo-api in namespace default, remote port 8080 -> http://127.0.0.1:8080
+Port forwarding service/demo-web in namespace default, remote port 3000 -> http://127.0.0.1:3000

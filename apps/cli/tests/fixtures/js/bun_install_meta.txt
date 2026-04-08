@@ -1,0 +1,6 @@
+origin: real
+capture_date: 2026-04-26
+bun_version: 1.3.6
+git_sha: 78daec933ff3258c7c06ecadd2d78e905a88ae18
+notes: Captured against a synthetic package.json with 10 popular deps to exercise
+       the "+ pkg@version" install lines and the "N packages installed [time]" tail.

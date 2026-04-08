@@ -1,0 +1,347 @@
+warning: function `filter_git_log` is never used
+  --> src/compressors/git/git_cmd.rs:19:8
+   |
+19 | pub fn filter_git_log(input: &str) -> String {
+   |        ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` on by default
+
+warning: function `filter_git_status` is never used
+  --> src/compressors/git/git_cmd.rs:62:8
+   |
+62 | pub fn filter_git_status(input: &str) -> String {
+   |        ^^^^^^^^^^^^^^^^^
+
+warning: function `filter_git_diff` is never used
+   --> src/compressors/git/git_cmd.rs:126:8
+    |
+126 | pub fn filter_git_diff(input: &str) -> String {
+    |        ^^^^^^^^^^^^^^^
+
+warning: function `filter_git_simple` is never used
+   --> src/compressors/git/git_cmd.rs:178:8
+    |
+178 | pub fn filter_git_simple(input: &str, subcommand: &str) -> String {
+    |        ^^^^^^^^^^^^^^^^^
+
+warning: function `filter_df` is never used
+  --> src/compressors/system/df_cmd.rs:16:8
+   |
+16 | pub fn filter_df(input: &str) -> String {
+   |        ^^^^^^^^^
+
+warning: function `filter_diff` is never used
+  --> src/compressors/system/diff_cmd.rs:15:8
+   |
+15 | pub fn filter_diff(input: &str) -> String {
+   |        ^^^^^^^^^^^
+
+warning: struct `FileDiff` is never constructed
+   --> src/compressors/system/diff_cmd.rs:101:8
+    |
+101 | struct FileDiff {
+    |        ^^^^^^^^
+
+warning: function `parse_size` is never used
+  --> src/compressors/system/du_cmd.rs:12:4
+   |
+12 | fn parse_size(s: &str) -> f64 {
+   |    ^^^^^^^^^^
+
+warning: function `filter_du` is never used
+  --> src/compressors/system/du_cmd.rs:32:8
+   |
+32 | pub fn filter_du(input: &str, top_n: usize) -> String {
+   |        ^^^^^^^^^
+
+warning: function `filter_env` is never used
+  --> src/compressors/system/env_cmd.rs:19:8
+   |
+19 | pub fn filter_env(input: &str, filter_pattern: Option<&str>) -> String {
+   |        ^^^^^^^^^^
+
+warning: function `filter_find` is never used
+  --> src/compressors/system/find_cmd.rs:11:8
+   |
+11 | pub fn filter_find(input: &str) -> String {
+   |        ^^^^^^^^^^^
+
+warning: function `filter_grep` is never used
+  --> src/compressors/system/grep_cmd.rs:11:8
+   |
+11 | pub fn filter_grep(input: &str, max_results: usize, max_per_file: usize) -> String {
+   |        ^^^^^^^^^^^
+
+warning: function `filter_ls` is never used
+  --> src/compressors/system/ls_cmd.rs:14:8
+   |
+14 | pub fn filter_ls(input: &str, path: &str) -> String {
+   |        ^^^^^^^^^
+
+warning: function `format_size` is never used
+  --> src/compressors/system/ls_cmd.rs:65:4
+   |
+65 | fn format_size(bytes: u64) -> String {
+   |    ^^^^^^^^^^^
+
+warning: function `filter_read` is never used
+ --> src/compressors/system/read_cmd.rs:4:8
+  |
+4 | pub fn filter_read(input: &str, path: &str) -> String {
+  |        ^^^^^^^^^^^
+
+warning: function `filter_smart` is never used
+  --> src/compressors/system/smart_cmd.rs:13:8
+   |
+13 | pub fn filter_smart(input: &str) -> String {
+   |        ^^^^^^^^^^^^
+
+warning: function `filter_wc` is never used
+  --> src/compressors/system/wc_cmd.rs:15:8
+   |
+15 | pub fn filter_wc(input: &str) -> String {
+   |        ^^^^^^^^^
+
+warning: multiple fields are never read
+  --> src/engine/config.rs:8:9
+   |
+6  | pub struct Tok0Config {
+   |            ---------- fields in this struct
+7  |     #[serde(default)]
+8  |     pub tracking: TrackingConfig,
+   |         ^^^^^^^^
+9  |     #[serde(default)]
+10 |     pub hooks: HooksConfig,
+   |         ^^^^^
+11 |     #[serde(default)]
+12 |     pub display: DisplayConfig,
+   |         ^^^^^^^
+13 |     #[serde(default)]
+14 |     pub limits: LimitsConfig,
+   |         ^^^^^^
+15 |     #[serde(default)]
+16 |     pub telemetry: TelemetryConfig,
+   |         ^^^^^^^^^
+17 |     #[serde(default)]
+18 |     pub update: UpdateConfig,
+   |         ^^^^^^
+19 |     #[serde(default)]
+20 |     pub cloud: CloudConfig,
+   |         ^^^^^
+   |
+   = note: `Tok0Config` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: field `exclude_commands` is never read
+  --> src/engine/config.rs:44:9
+   |
+42 | pub struct HooksConfig {
+   |            ----------- field in this struct
+43 |     #[serde(default)]
+44 |     pub exclude_commands: Vec<String>,
+   |         ^^^^^^^^^^^^^^^^
+   |
+   = note: `HooksConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `colors`, `emoji`, and `max_width` are never read
+  --> src/engine/config.rs:49:9
+   |
+48 | pub struct DisplayConfig {
+   |            ------------- fields in this struct
+49 |     pub colors: bool,
+   |         ^^^^^^
+50 |     pub emoji: bool,
+   |         ^^^^^
+51 |     pub max_width: usize,
+   |         ^^^^^^^^^
+   |
+   = note: `DisplayConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `grep_max_results`, `grep_max_per_file`, `status_max_files`, `passthrough_max_chars`, and `command_timeout_secs` are never read
+  --> src/engine/config.rs:66:9
+   |
+65 | pub struct LimitsConfig {
+   |            ------------ fields in this struct
+66 |     pub grep_max_results: usize,
+   |         ^^^^^^^^^^^^^^^^
+67 |     pub grep_max_per_file: usize,
+   |         ^^^^^^^^^^^^^^^^^
+68 |     pub status_max_files: usize,
+   |         ^^^^^^^^^^^^^^^^
+69 |     pub passthrough_max_chars: usize,
+   |         ^^^^^^^^^^^^^^^^^^^^^
+70 |     pub command_timeout_secs: u64,
+   |         ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `LimitsConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: field `enabled` is never read
+  --> src/engine/config.rs:87:9
+   |
+86 | pub struct TelemetryConfig {
+   |            --------------- field in this struct
+87 |     pub enabled: bool,
+   |         ^^^^^^^
+   |
+   = note: `TelemetryConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `auto_check` and `check_interval_hours` are never read
+  --> src/engine/config.rs:98:9
+   |
+97 | pub struct UpdateConfig {
+   |            ------------ fields in this struct
+98 |     pub auto_check: bool,
+   |         ^^^^^^^^^^
+99 |     pub check_interval_hours: u64,
+   |         ^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `UpdateConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: fields `enabled`, `api_url`, `team_id`, and `api_key` are never read
+   --> src/engine/config.rs:113:9
+    |
+112 | pub struct CloudConfig {
+    |            ----------- fields in this struct
+113 |     pub enabled: bool,
+    |         ^^^^^^^
+114 |     pub api_url: Option<String>,
+    |         ^^^^^^^
+115 |     pub team_id: Option<String>,
+    |         ^^^^^^^
+116 |     pub api_key: Option<String>,
+    |         ^^^^^^^
+    |
+    = note: `CloudConfig` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: function `load_config` is never used
+   --> src/engine/config.rs:119:8
+    |
+119 | pub fn load_config() -> Result<Tok0Config> {
+    |        ^^^^^^^^^^^
+
+warning: function `config_path` is never used
+   --> src/engine/config.rs:130:8
+    |
+130 | pub fn config_path() -> PathBuf {
+    |        ^^^^^^^^^^^
+
+warning: function `db_path` is never used
+   --> src/engine/config.rs:137:8
+    |
+137 | pub fn db_path() -> PathBuf {
+    |        ^^^^^^^
+
+warning: struct `Tracker` is never constructed
+ --> src/engine/meter.rs:5:12
+  |
+5 | pub struct Tracker {
+  |            ^^^^^^^
+
+warning: struct `Summary` is never constructed
+  --> src/engine/meter.rs:10:12
+   |
+10 | pub struct Summary {
+   |            ^^^^^^^
+   |
+   = note: `Summary` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: struct `DailyStats` is never constructed
+  --> src/engine/meter.rs:19:12
+   |
+19 | pub struct DailyStats {
+   |            ^^^^^^^^^^
+   |
+   = note: `DailyStats` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: struct `RecentCommand` is never constructed
+  --> src/engine/meter.rs:27:12
+   |
+27 | pub struct RecentCommand {
+   |            ^^^^^^^^^^^^^
+   |
+   = note: `RecentCommand` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+
+warning: associated items `new`, `record`, `get_summary`, `get_daily`, `get_recent`, and `cleanup` are never used
+   --> src/engine/meter.rs:36:12
+    |
+35  | impl Tracker {
+    | ------------ associated items in this implementation
+36  |     pub fn new(db_path: &Path) -> Result<Self> {
+    |            ^^^
+...
+64  |     pub fn record(
+    |            ^^^^^^
+...
+94  |     pub fn get_summary(&self) -> Result<Summary> {
+    |            ^^^^^^^^^^^
+...
+118 |     pub fn get_daily(&self, days: u32) -> Result<Vec<DailyStats>> {
+    |            ^^^^^^^^^
+...
+147 |     pub fn get_recent(&self, limit: u32) -> Result<Vec<RecentCommand>> {
+    |            ^^^^^^^^^^
+...
+171 |     pub fn cleanup(&self, retention_days: u32) -> Result<u64> {
+    |            ^^^^^^^
+
+warning: function `record` is never used
+   --> src/engine/meter.rs:185:8
+    |
+185 | pub fn record(
+    |        ^^^^^^
+
+warning: function `redact_paths` is never used
+  --> src/engine/sanitize.rs:27:8
+   |
+27 | pub fn redact_paths(input: &str) -> Cow<str> {
+   |        ^^^^^^^^^^^^
+
+warning: function `redact_secrets` is never used
+  --> src/engine/sanitize.rs:36:8
+   |
+36 | pub fn redact_secrets(input: &str) -> Cow<str> {
+   |        ^^^^^^^^^^^^^^
+
+warning: function `sanitize_output` is never used
+  --> src/engine/sanitize.rs:62:8
+   |
+62 | pub fn sanitize_output(input: &str) -> String {
+   |        ^^^^^^^^^^^^^^^
+
+warning: function `strip_ansi` is never used
+  --> src/engine/shell.rs:11:8
+   |
+11 | pub fn strip_ansi(input: &str) -> std::borrow::Cow<str> {
+   |        ^^^^^^^^^^
+
+warning: function `count_tokens` is never used
+  --> src/engine/shell.rs:20:8
+   |
+20 | pub fn count_tokens(text: &str) -> usize {
+   |        ^^^^^^^^^^^^
+
+warning: function `truncate_line` is never used
+  --> src/engine/shell.rs:33:8
+   |
+33 | pub fn truncate_line(line: &str, max_chars: usize) -> String {
+   |        ^^^^^^^^^^^^^
+
+warning: function `head_tail` is never used
+  --> src/engine/shell.rs:42:8
+   |
+42 | pub fn head_tail(input: &str, head: usize, tail: usize) -> String {
+   |        ^^^^^^^^^
+
+warning: function `hard_cap` is never used
+  --> src/engine/shell.rs:62:8
+   |
+62 | pub fn hard_cap(input: &str, max_chars: usize) -> String {
+   |        ^^^^^^^^
+
+warning: function `execute_with_timeout` is never used
+ --> src/engine/timeout.rs:7:8
+  |
+7 | pub fn execute_with_timeout(cmd: &str, args: &[&str], timeout: Duration) -> Result<Output> {
+  |        ^^^^^^^^^^^^^^^^^^^^
+
+warning: `tok0` (bin "tok0") generated 42 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s

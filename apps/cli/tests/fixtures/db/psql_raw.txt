@@ -1,0 +1,13 @@
+ id  |        name         |          email           | age | active |         created_at
+-----+---------------------+--------------------------+-----+--------+----------------------------
+   1 | Alice Johnson       | alice@example.com        |  34 | t      | 2024-01-15 09:23:11.452+00
+   2 | Bob Smith           | bob.smith@example.com    |  28 | t      | 2024-01-16 14:05:33.781+00
+   3 | Carol Williams      | carol.w@example.com      |  41 | f      | 2024-01-17 08:47:22.119+00
+   4 | David Brown         | david.brown@example.com  |  35 | t      | 2024-01-18 11:30:45.203+00
+   5 | Eva Martinez        | eva.m@example.com        |  29 | t      | 2024-01-19 16:12:09.874+00
+   6 | Frank Lee           | frank.lee@example.com    |  52 | t      | 2024-01-20 10:55:17.563+00
+   7 | Grace Kim           | grace.kim@example.com    |  38 | f      | 2024-01-21 13:20:41.992+00
+   8 | Henry Zhang         | henry.z@example.com      |  45 | t      | 2024-01-22 09:08:55.347+00
+   9 | Iris Patel          | iris.patel@example.com   |  31 | t      | 2024-01-23 15:44:28.611+00
+  10 | James Wilson        | james.w@example.com      |  27 | t      | 2024-01-24 12:33:02.785+00
+(10 rows)

@@ -1,0 +1,9 @@
+[36m
+[1msrc.js[22m → [1mout.js[22m...[39m
+[32mcreated [1mout.js[22m in [1m15ms[22m[39m
+[36m
+[1ma.js[22m → [1mout-a.js[22m...[39m
+[32mcreated [1mout-a.js[22m in [1m3ms[22m[39m
+[36m
+[1mb.js[22m → [1mout-b.js[22m...[39m
+[32mcreated [1mout-b.js[22m in [1m2ms[22m[39m

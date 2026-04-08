@@ -1,0 +1,7 @@
+---
+source: tests/rule_snapshot_tests.rs
+expression: out
+---
+
+
+  1 test passed

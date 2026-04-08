@@ -1,0 +1,53 @@
+==> Downloading https://ghcr.io/v2/homebrew/core/wget/manifests/1.21.4_1
+Already downloaded: /Users/dev/Library/Caches/Homebrew/downloads/abc123.json
+==> Fetching dependencies for wget: libidn2, pcre2, openssl@3
+==> Downloading https://ghcr.io/v2/homebrew/core/libidn2/manifests/2.3.7
+Already downloaded: /Users/dev/Library/Caches/Homebrew/downloads/def456.json
+==> Fetching libidn2
+==> Downloading https://ghcr.io/v2/homebrew/core/libidn2/blobs/sha256:def456abc789
+######################################################################### 100.0%
+==> Downloading https://ghcr.io/v2/homebrew/core/pcre2/manifests/10.44
+Already downloaded: /Users/dev/Library/Caches/Homebrew/downloads/789abc.json
+==> Fetching pcre2
+==> Downloading https://ghcr.io/v2/homebrew/core/pcre2/blobs/sha256:789abcdef012
+######################################################################### 100.0%
+==> Downloading https://ghcr.io/v2/homebrew/core/openssl@3/manifests/3.4.1
+Already downloaded: /Users/dev/Library/Caches/Homebrew/downloads/012def.json
+==> Fetching openssl@3
+==> Downloading https://ghcr.io/v2/homebrew/core/openssl@3/blobs/sha256:012defabc345
+######################################################################### 100.0%
+==> Fetching wget
+==> Downloading https://ghcr.io/v2/homebrew/core/wget/blobs/sha256:abc123def456
+######################################################################### 100.0%
+==> Installing dependencies for wget: libidn2, pcre2, openssl@3
+==> Installing wget dependency: libidn2
+==> Pouring libidn2--2.3.7.arm64_sequoia.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/libidn2/2.3.7: 76 files, 812.6KB
+==> Installing wget dependency: pcre2
+==> Pouring pcre2--10.44.arm64_sequoia.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/pcre2/10.44: 230 files, 6.2MB
+==> Installing wget dependency: openssl@3
+==> Pouring openssl@3--3.4.1.arm64_sequoia.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/openssl@3/3.4.1: 6,853 files, 32MB
+==> Installing wget
+==> Pouring wget--1.21.4_1.arm64_sequoia.bottle.tar.gz
+==> Caveats
+wget has been installed as:
+  /opt/homebrew/bin/wget
+
+To use the OpenSSL backend, set the following environment variable:
+  export OPENSSL_NO_VENDOR=1
+
+If you need to have wget first in your PATH, run:
+  echo 'export PATH="/opt/homebrew/opt/wget/bin:$PATH"' >> ~/.zshrc
+==> Summary
+🍺  /opt/homebrew/Cellar/wget/1.21.4_1: 89 files, 4.2MB
+==> Running `brew cleanup wget`...
+Removing: /Users/dev/Library/Caches/Homebrew/downloads/old_wget.tar.gz... (3.2MB)
+Removing: /opt/homebrew/Cellar/wget/1.21.3... (88 files, 4.1MB)
+Disable this behaviour by setting HOMEBREW_NO_INSTALL_CLEANUP.
+Hide these hints with HOMEBREW_NO_ENV_HINTS (see `man brew`).
+==> Caveats
+==> wget
+wget has been installed as:
+  /opt/homebrew/bin/wget

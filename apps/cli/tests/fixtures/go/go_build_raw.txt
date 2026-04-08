@@ -1,0 +1,49 @@
+go: downloading github.com/gin-gonic/gin v1.9.1
+go: downloading github.com/stretchr/testify v1.8.4
+go: downloading github.com/lib/pq v1.10.9
+go: downloading github.com/redis/go-redis/v9 v9.3.0
+go: downloading go.uber.org/zap v1.26.0
+go: downloading golang.org/x/crypto v0.17.0
+go: downloading golang.org/x/net v0.19.0
+go: downloading google.golang.org/grpc v1.60.0
+go: downloading github.com/gorilla/mux v1.8.1
+go: downloading github.com/spf13/viper v1.18.1
+go: downloading github.com/spf13/cobra v1.8.0
+go: downloading github.com/prometheus/client_golang v1.18.0
+go: downloading github.com/google/uuid v1.5.0
+go: downloading golang.org/x/sys v0.15.0
+go: downloading github.com/pkg/errors v0.9.1
+go: downloading github.com/golang/protobuf v1.5.3
+go: downloading github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.1
+go: downloading github.com/envoyproxy/protoc-gen-validate v1.0.2
+go: downloading github.com/dgrijalva/jwt-go v3.2.0+incompatible
+go: downloading github.com/go-sql-driver/mysql v1.7.1
+go: downloading github.com/jinzhu/gorm v1.9.16
+go: downloading github.com/streadway/amqp v1.1.0
+go: downloading github.com/hashicorp/consul/api v1.26.1
+go: downloading go.opentelemetry.io/otel v1.21.0
+go: downloading github.com/elastic/go-elasticsearch/v8 v8.11.1
+go: downloading github.com/aws/aws-sdk-go-v2 v1.24.1
+go: downloading github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.4.0
+go: downloading cloud.google.com/go/storage v1.36.0
+go: downloading github.com/segmentio/kafka-go v0.4.47
+go: downloading github.com/nats-io/nats.go v1.32.0
+go: downloading github.com/mitchellh/mapstructure v1.5.0
+go: downloading github.com/pelletier/go-toml/v2 v2.1.1
+go: downloading github.com/fsnotify/fsnotify v1.7.0
+go: downloading github.com/jackc/pgx/v5 v5.5.1
+go: downloading github.com/go-chi/chi/v5 v5.0.11
+go: downloading github.com/shopspring/decimal v1.3.1
+go: downloading github.com/golang-migrate/migrate/v4 v4.17.0
+go: downloading github.com/testcontainers/testcontainers-go v0.27.0
+# github.com/user/project/pkg/handler
+pkg/handler/handler.go:23:14: undefined: middleware.AuthMiddleware
+pkg/handler/handler.go:45:6: cannot use req.Body (variable of type io.ReadCloser) as type io.Reader in argument to json.NewDecoder
+pkg/handler/handler.go:67:9: too many arguments in call to w.WriteHeader
+	have (int, string)
+	want (int)
+# github.com/user/project/pkg/db
+pkg/db/connection.go:18:2: imported and not used: "database/sql"
+pkg/db/connection.go:34:15: cannot use cfg.DSN (variable of type string) as type *url.URL in argument to sql.Open
+# github.com/user/project/cmd/server
+cmd/server/main.go:42:16: cannot use port (variable of type int) as type string in argument to net.Listen

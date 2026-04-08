@@ -1,0 +1,4 @@
+source: synthetic
+capture_date: 2026-04-28
+purpose: umbrella over cargo fmt + prettier + black + gofmt
+git_sha: 48e86e452107d68909c4fd331e7110151056682d

@@ -1,0 +1,6 @@
+source: real
+captured: 2026-04-28
+tool: yarn 1.22.21
+node: v24.14.0
+git_sha: 9b067e899d27f7685f521b8a4ae25f12836a4c1c
+command: yarn install (in fresh dir, package.json with left-pad ^1.3.0)

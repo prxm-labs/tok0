@@ -1,0 +1,98 @@
+Starting Gradle Daemon...
+Gradle Daemon started in 1 s 428 ms
+
+> Configure project :
+> Configure project :myapp-core
+> Configure project :myapp-api
+> Configure project :myapp-common
+> Configure project :myapp-persistence
+> Configure project :myapp-messaging
+> Configure project :myapp-security
+
+> Task :myapp-bom:jar UP-TO-DATE
+> Task :myapp-bom:assemble UP-TO-DATE
+> Task :myapp-client:compileJava UP-TO-DATE
+> Task :myapp-client:processResources UP-TO-DATE
+> Task :myapp-client:classes UP-TO-DATE
+> Task :myapp-client:jar UP-TO-DATE
+> Task :myapp-client:check UP-TO-DATE
+> Task :myapp-client:assemble UP-TO-DATE
+> Task :myapp-annotations:compileJava UP-TO-DATE
+> Task :myapp-annotations:processResources UP-TO-DATE
+> Task :myapp-annotations:classes UP-TO-DATE
+> Task :myapp-annotations:jar UP-TO-DATE
+> Task :myapp-proto:generateProto UP-TO-DATE
+> Task :myapp-proto:compileJava UP-TO-DATE
+> Task :myapp-proto:processResources UP-TO-DATE
+> Task :myapp-proto:classes UP-TO-DATE
+> Task :myapp-proto:jar UP-TO-DATE
+> Task :myapp-generated:generateSources UP-TO-DATE
+> Task :myapp-generated:compileJava UP-TO-DATE
+> Task :myapp-generated:processResources UP-TO-DATE
+> Task :myapp-generated:classes UP-TO-DATE
+> Task :myapp-generated:jar UP-TO-DATE
+> Task :myapp-common:generateSources UP-TO-DATE
+> Task :myapp-common:compileJava
+> Task :myapp-common:processResources UP-TO-DATE
+> Task :myapp-common:classes
+> Task :myapp-common:jar
+> Task :myapp-security:generateSources UP-TO-DATE
+> Task :myapp-security:compileJava
+> Task :myapp-security:processResources UP-TO-DATE
+> Task :myapp-security:classes
+> Task :myapp-security:jar
+> Task :myapp-messaging:generateSources UP-TO-DATE
+> Task :myapp-messaging:compileJava
+> Task :myapp-messaging:processResources UP-TO-DATE
+> Task :myapp-messaging:classes
+> Task :myapp-messaging:jar
+> Task :myapp-core:compileJava
+> Task :myapp-core:processResources UP-TO-DATE
+> Task :myapp-core:classes
+> Task :myapp-core:jar
+> Task :myapp-persistence:compileJava
+> Task :myapp-persistence:processResources UP-TO-DATE
+> Task :myapp-persistence:classes
+> Task :myapp-persistence:jar
+> Task :myapp-api:compileJava
+> Task :myapp-api:processResources UP-TO-DATE
+> Task :myapp-api:classes
+> Task :myapp-api:jar
+> Task :myapp-common:compileTestJava NO-SOURCE
+> Task :myapp-common:processTestResources NO-SOURCE
+> Task :myapp-common:testClasses UP-TO-DATE
+> Task :myapp-common:test NO-SOURCE
+> Task :myapp-common:check UP-TO-DATE
+> Task :myapp-security:compileTestJava NO-SOURCE
+> Task :myapp-security:processTestResources NO-SOURCE
+> Task :myapp-security:testClasses UP-TO-DATE
+> Task :myapp-security:test NO-SOURCE
+> Task :myapp-security:check UP-TO-DATE
+> Task :myapp-messaging:compileTestJava NO-SOURCE
+> Task :myapp-messaging:processTestResources NO-SOURCE
+> Task :myapp-messaging:testClasses UP-TO-DATE
+> Task :myapp-messaging:test NO-SOURCE
+> Task :myapp-messaging:check UP-TO-DATE
+> Task :myapp-persistence:compileTestJava NO-SOURCE
+> Task :myapp-persistence:processTestResources NO-SOURCE
+> Task :myapp-persistence:testClasses UP-TO-DATE
+> Task :myapp-persistence:test NO-SOURCE
+> Task :myapp-persistence:check UP-TO-DATE
+> Task :myapp-core:compileTestJava
+> Task :myapp-core:processTestResources NO-SOURCE
+> Task :myapp-core:testClasses
+> Task :myapp-core:test
+> Task :myapp-api:compileTestJava
+> Task :myapp-api:processTestResources NO-SOURCE
+> Task :myapp-api:testClasses
+> Task :myapp-api:test
+> Task :myapp-api:check
+> Task :myapp-api:assemble
+> Task :myapp-api:build
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings
+
+BUILD SUCCESSFUL in 12s
+7 actionable tasks: 5 executed, 2 up-to-date

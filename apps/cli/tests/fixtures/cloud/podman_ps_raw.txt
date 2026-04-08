@@ -1,0 +1,22 @@
+CONTAINER ID  IMAGE                                     COMMAND               CREATED         STATUS                       PORTS                   NAMES
+3a1b2c3d4e5f  docker.io/library/nginx:1.25              nginx -g 'daemon o..  2 hours ago     Up 2 hours                   0.0.0.0:8080->80/tcp    web
+4b2c3d4e5f6a  docker.io/library/postgres:15             postgres              3 hours ago     Up 3 hours                   0.0.0.0:5432->5432/tcp  db
+5c3d4e5f6a7b  docker.io/library/redis:7                 redis-server          3 hours ago     Up 3 hours                   0.0.0.0:6379->6379/tcp  cache
+6d4e5f6a7b8c  localhost/demo-api:latest                 /app/api              1 hour ago      Up 1 hour                    0.0.0.0:8081->8081/tcp  api
+7e5f6a7b8c9d  localhost/demo-worker:latest              /app/worker           1 hour ago      Up 1 hour (healthy)                                  worker-1
+8f6a7b8c9d0e  localhost/demo-worker:latest              /app/worker           1 hour ago      Up 1 hour (healthy)                                  worker-2
+9a7b8c9d0e1f  localhost/demo-worker:latest              /app/worker           1 hour ago      Up 1 hour (healthy)                                  worker-3
+0b8c9d0e1f2a  localhost/demo-worker:latest              /app/worker           1 hour ago      Up 1 hour (healthy)                                  worker-4
+1c9d0e1f2a3b  docker.io/grafana/grafana:10.2.0          /run.sh               4 hours ago     Up 4 hours                   0.0.0.0:3000->3000/tcp  grafana
+2d0e1f2a3b4c  docker.io/prom/prometheus:v2.48.0         /bin/prometheus --..  4 hours ago     Up 4 hours                   0.0.0.0:9090->9090/tcp  prometheus
+3e1f2a3b4c5d  docker.io/grafana/loki:2.9.0              /usr/bin/loki -conf.. 4 hours ago     Up 4 hours                   0.0.0.0:3100->3100/tcp  loki
+4f2a3b4c5d6e  docker.io/grafana/promtail:2.9.0          /usr/bin/promtail -.. 4 hours ago     Up 4 hours                                            promtail
+5a3b4c5d6e7f  docker.io/jaegertracing/all-in-one:1.52   /go/bin/all-in-one..  4 hours ago     Up 4 hours                   0.0.0.0:16686->16686/tcp  jaeger
+6b4c5d6e7f8a  docker.io/library/rabbitmq:3.12-management rabbitmq-server     2 days ago      Up 2 days                    0.0.0.0:5672->5672/tcp  rabbit
+7c5d6e7f8a9b  docker.io/library/elasticsearch:8.11.0    /bin/tini -- /usr/.. 1 day ago       Up 1 day                     0.0.0.0:9200->9200/tcp  elastic
+8d6e7f8a9b0c  docker.io/library/alpine:3.19             sh                    5 minutes ago   Exited (0) 4 minutes ago                             oneshot
+9e7f8a9b0c1d  docker.io/library/busybox:latest          sh -c 'sleep 1'       6 minutes ago   Exited (0) 6 minutes ago                             quick
+0f8a9b0c1d2e  docker.io/library/alpine:3.19             /bin/sh               7 minutes ago   Exited (1) 7 minutes ago                             failed
+1a9b0c1d2e3f  docker.io/library/postgres:14             postgres              30 minutes ago  Exited (137) 25 minutes ago  0.0.0.0:5433->5432/tcp  db-old
+2b0c1d2e3f4a  docker.io/library/redis:6                 redis-server          1 hour ago      Created                      0.0.0.0:6380->6379/tcp  redis-staging
+3c1d2e3f4a5b  localhost/demo-migration:latest           /app/migrate          15 minutes ago  Created                                              migrations
