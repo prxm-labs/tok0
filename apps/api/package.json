@@ -1,0 +1,41 @@
+{
+  "name": "@tok0/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "tok0 cloud API — anonymous telemetry + aggregate stats on Cloudflare Workers",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "deploy:preview": "wrangler deploy --env preview",
+    "deploy:production": "wrangler deploy --env production",
+    "build": "wrangler deploy --dry-run",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:preview": "wrangler d1 migrations apply tok0_preview --env preview --remote",
+    "db:migrate:prod": "wrangler d1 migrations apply tok0_prod --env production --remote",
+    "db:migrate:local": "wrangler d1 migrations apply tok0_preview --local",
+    "db:seed:gen": "node scripts/seed-prod-stats.mjs",
+    "db:seed:local": "node scripts/seed-prod-stats.mjs > .wrangler/seed.sql && wrangler d1 execute tok0_preview --local --file .wrangler/seed.sql",
+    "db:seed:preview": "node scripts/seed-prod-stats.mjs > .wrangler/seed.sql && wrangler d1 execute tok0_preview --env preview --remote --file .wrangler/seed.sql",
+    "db:seed:prod": "node scripts/seed-prod-stats.mjs > .wrangler/seed.sql && wrangler d1 execute tok0_prod --env production --remote --file .wrangler/seed.sql"
+  },
+  "dependencies": {
+    "hono": "4.6.5",
+    "zod": "3.23.8",
+    "drizzle-orm": "0.35.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "0.5.20",
+    "@cloudflare/workers-types": "4.20241011.0",
+    "@types/node": "22.7.5",
+    "drizzle-kit": "0.26.2",
+    "typescript": "5.6.3",
+    "vitest": "2.1.3",
+    "wrangler": "3.80.0"
+  }
+}
