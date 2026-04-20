@@ -1,0 +1,141 @@
+---
+title: Architecture
+description: A tour of the tok0 binary — engine, bridge, compressors, insights, scanner, extensions. Where each subsystem lives.
+section: Concepts
+order: 2
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` is one Rust binary split into six subsystems. Each owns one concern and is testable on its own.
+
+## The big picture
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                       tok0 binary                          │
+├────────────────────────────────────────────────────────────┤
+│ main.rs · clap Commands enum + run_proxy / run_meta        │
+├──────────┬───────────┬────────────┬──────────┬─────────────┤
+│  bridge  │  engine   │compressors │ insights │  scanner    │
+│  (hooks) │ (pipeline)│  (filters) │ (stats)  │ (sessions)  │
+├──────────┴───────────┴────────────┴──────────┴─────────────┤
+│   rules/         · 120+ embedded TOML compression rules    │
+│   extensions/    · user rule packs from git URLs           │
+└────────────────────────────────────────────────────────────┘
+```
+
+## `engine` — shared infrastructure
+
+At `apps/cli/src/engine/`. Every other subsystem depends on it; it depends on none of them.
+
+| Module | What it does |
+|---|---|
+| `config.rs` | Read/write `~/.config/tok0/config.toml`. |
+| `meter.rs` | SQLite token meter. mpsc writer, `flush()` on shutdown. |
+| `shell.rs` | `strip_ansi`, `truncate`, `execute_command`, `execute_with_timeout`. |
+| `compressor.rs` | The 8-stage pipeline. Pure functions. |
+| `rules.rs` | TOML rule engine. Loads and applies `FilterRule`. |
+| `rules_cache.rs` | mtime-based cache — rules only re-load when changed. |
+| `dispatcher.rs` | Routes `(command, args)` to a compressor or TOML rule. |
+| `snapshot.rs` | Dumps raw output to `~/.cache/tok0/` on filter failure. |
+| `timeout.rs` | Hard timeout on every spawned command. |
+| `telemetry.rs` | Anonymous instance ping (opt-in). |
+| `updater.rs` | Self-update check against GitHub Releases. |
+
+## `bridge` — AI tool integration
+
+At `apps/cli/src/bridge/`. Owns everything tok0 does *outside* its own process: installing hooks, signing them, talking to AI tool config files.
+
+| Module | What it does |
+|---|---|
+| `setup.rs` | `tok0 init` — detects tools, writes hook configs, prints manual paste-ins. |
+| `rewriter.rs` | `tok0 rewrite` — invoked from inside hooks; reformats payloads. |
+| `adapters.rs` | Per-tool format translators (~20 lines each). Format only, no logic. |
+| `status.rs` | `tok0 status` — which bridges are wired and healthy. |
+| `verify.rs` | `tok0 verify` — SHA-256 every installed hook against the embedded manifest. |
+| `trust.rs` | Project trust gating. `tok0 trust` / `tok0 untrust`. |
+| `integrity.rs` | Spine of trust + verify. |
+
+<Callout type="note">
+Adapters are deliberately thin. Business logic belongs in `engine`, not in an adapter. See <a href="https://github.com/prxm-labs/tok0/blob/main/apps/cli/CLAUDE.md">CLAUDE.md</a>.
+</Callout>
+
+## `compressors` — per-command native filters
+
+At `apps/cli/src/compressors/`, organized by ecosystem:
+
+```
+compressors/
+├── git/         git, gh, gt, diff
+├── js/          npm, pnpm, bun, yarn, deno, vitest, jest, tsc, next, …
+├── python/      ruff, pytest, mypy, pip, uv, poetry, conda, black, …
+├── go/          go, golangci-lint
+├── rust/        cargo, runner
+├── dotnet/      dotnet, binlog, trx, format_report
+├── java/        gradle, maven
+├── ruby/        rake, rspec, rubocop
+├── cloud/       aws, gcloud, az, terraform, pulumi, helm, ansible, …
+├── db/          mysql, redis, mongo, sqlite3
+├── system/      ls, grep, find, diff, ssh, rsync, archive, net, proc, …
+├── pkg/         brew, apt, dnf, pacman, snap, flatpak, nix, winget, …
+├── build/       make, cmake, bazel, ninja, meson, scons, …
+├── lint/        shellcheck, hadolint, stylelint, yamllint, markdownlint, …
+├── security/    semgrep, trivy, bandit, snyk, grype, sonar
+├── cicd/        act, precommit
+├── api/         httpie, grpcurl, newman, loadtest
+├── versionmgr/  nvm, fnm, pyenv, rbenv, rustup, asdf, mise, volta
+└── (15 more language ecosystems)
+```
+
+Each `*_cmd.rs` has one `pub fn run(args: <Args>) -> Result<()>` and the same shape: capture output, apply filter, fall back on error, propagate exit code, record to meter.
+
+<Callout type="tip">
+Most simple compressions are TOML rules under `apps/cli/src/rules/`, not Rust modules. Native compressors are reserved for multi-pass parsing, AST-aware filtering, or JSON reshaping. See <a href="/docs/writing-rules/">Writing TOML rules</a>.
+</Callout>
+
+## `insights` — local analytics
+
+At `apps/cli/src/insights/`. Reads from the SQLite meter and renders.
+
+| Module | Command |
+|---|---|
+| `stats.rs` | `tok0 stats` — total tokens saved, ratios per command, 30-day chart. |
+| `costs.rs` | `tok0 costs` — token savings translated to $ at provider rates. |
+| `adoption.rs` | `tok0 adoption` — % of agent commands that hit a compressor. |
+| `profiler.rs` | `tok0 profile` — per-compressor time and size breakdown. |
+| `doctor.rs` | `tok0 doctor` — diagnostic across config, hooks, db. |
+| `rules_cli.rs` | `tok0 rules list/show/test` — inspect loaded rules. |
+
+## `scanner` — historical adoption
+
+At `apps/cli/src/scanner/`. Reads AI tool session histories (Claude Code transcripts, Cursor session logs) and reports what tok0 *would have* saved if it had been installed last month.
+
+| Module | What it does |
+|---|---|
+| `session_reader.rs` | Per-tool transcript parser. |
+| `command_catalog.rs` | 300+ command classification rules. |
+| `opportunity.rs` | The user-facing report. |
+
+## `extensions` — community rule packs
+
+At `apps/cli/src/extensions/`. Lets users install rule packs from arbitrary git URLs:
+
+```bash
+tok0 extensions install https://github.com/user/repo
+```
+
+Every extension hits a trust prompt before any of its rules load. See [Extensions](/docs/extensions/).
+
+## Threading model
+
+`tok0` is **single-threaded**. No `tokio`, no `async-std`, no `futures`. The metering writer runs on a dedicated background thread connected via mpsc — that's the only concurrency. Everything else is synchronous, blocking I/O.
+
+This is intentional. Async runtimes add 5–10ms of cold-start time we can't afford for a tool that wraps every shell call. Single-threaded execution also keeps the pipeline trivially deterministic and the binary 30% smaller.
+
+## Build flags
+
+| Feature | Default | Adds |
+|---|---|---|
+| `default` | yes | The minimal CLI. Everything in this doc. |

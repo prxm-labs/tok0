@@ -1,0 +1,215 @@
+---
+import SchematicCanvas from "~/components/SchematicCanvas.astro";
+
+const log = [
+  "# INIT............... OK",
+  "# SIGNAL LOCK........ STABLE",
+  "# FIELD RELAY........ CONNECTED",
+  "# AI OPS HANDSHAKE... COMPLETE",
+  "# FWD LINK 02........ ONLINE",
+];
+
+const sideRail = "RANGE: 1.000 TOKS — 801.000 TOKS";
+---
+
+<div
+  class="schematic calib"
+  role="img"
+  aria-label="A system log boots line-by-line, a current savings figure drifts inside a token range, and four concentric dashed rings mark a target crosshair."
+>
+  <span class="axis-l">{sideRail}</span>
+  <span class="axis-r">{sideRail}</span>
+
+  <div class="frame">
+    <div class="top">
+      <div class="log" aria-live="off">
+        <div class="log-head">[ SYSTEM LOG ]</div>
+        {
+          log.map((line, i) => {
+            const ch = line.length;
+            const dur = (ch * 0.04).toFixed(2);
+            const delay = (0.25 + i * 0.85).toFixed(2);
+            return (
+              <div
+                class="line"
+                style={`--w:${ch + 1}ch; animation: tok0-typewrite ${dur}s steps(${ch}) ${delay}s both;`}
+              >
+                {line}
+              </div>
+            );
+          })
+        }
+      </div>
+
+      <div class="freq" aria-label="Current savings display">
+        <div class="freq-label">CURRENT SAVINGS:</div>
+        <div class="freq-val"><span id="tok0-freq">0</span></div>
+        <div class="freq-unit">TOKENS</div>
+      </div>
+    </div>
+
+    <div class="rings">
+      <SchematicCanvas />
+    </div>
+  </div>
+
+  <div class="foot">
+    TOK0&nbsp;&nbsp;|&nbsp;&nbsp;CLI COMPRESSION PROXY
+  </div>
+</div>
+
+<style>
+  .calib {
+    color: var(--color-ink);
+    --rail: 22px;
+    --pad-x: calc(var(--rail) + 18px);
+    font-family: var(--font-mono);
+  }
+
+  .frame {
+    position: absolute;
+    inset: 16px var(--pad-x) 32px var(--pad-x);
+    display: grid;
+    grid-template-rows: auto 1fr;
+    row-gap: 18px;
+    overflow: hidden;
+    color: var(--color-ink);
+  }
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .log {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-width: 0;
+    font: 500 9px/1.55 var(--font-mono);
+    color: var(--color-ink);
+  }
+  .log-head {
+    margin-bottom: 4px;
+    letter-spacing: 0.18em;
+  }
+  .log .line {
+    overflow: hidden;
+    white-space: pre;
+    width: 0;
+    letter-spacing: 0;
+  }
+
+  .freq {
+    flex-shrink: 0;
+    border: 1px solid var(--color-ink);
+    padding: 8px 10px 9px;
+    min-width: 92px;
+    text-align: left;
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+  }
+  .freq-label {
+    font: 500 7px/1 var(--font-mono);
+    letter-spacing: 0.22em;
+    margin-bottom: 6px;
+  }
+  .freq-val {
+    font: 700 18px/1 var(--font-mono);
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .freq-unit {
+    margin-top: 2px;
+    font: 700 12px/1 var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .rings {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    align-self: center;
+    justify-self: center;
+    padding: 4px 0;
+    position: relative;
+    z-index: 0;
+  }
+
+  .foot {
+    position: absolute;
+    bottom: 12px;
+    left: var(--pad-x);
+    right: var(--pad-x);
+    text-align: center;
+    font: 500 8px/1 var(--font-mono);
+    letter-spacing: 0.22em;
+    color: var(--color-ink-3);
+  }
+
+  @media (max-width: 480px) {
+    .calib {
+      --pad-x: calc(var(--rail) + 10px);
+    }
+    .frame {
+      padding: 14px 12px 12px;
+    }
+    .log {
+      font-size: 8px;
+    }
+    .freq {
+      min-width: 78px;
+      padding: 6px 8px 7px;
+    }
+    .freq-val {
+      font-size: 15px;
+    }
+    .freq-unit {
+      font-size: 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .log .line {
+      width: var(--w, 100%) !important;
+      animation: none !important;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const el = document.getElementById("tok0-freq");
+    if (!el) return;
+
+    let total = 0;
+
+    function abbreviate(n) {
+      if (n < 1000) return String(n);
+      if (n < 1e6) {
+        const k = n / 1000;
+        return (k < 10 ? k.toFixed(2) : k.toFixed(1)) + "K";
+      }
+      if (n < 1e9) {
+        const m = n / 1e6;
+        return (m < 10 ? m.toFixed(2) : m.toFixed(1)) + "M";
+      }
+      const b = n / 1e9;
+      return (b < 10 ? b.toFixed(2) : b.toFixed(1)) + "B";
+    }
+
+    el.textContent = "0";
+
+    window.addEventListener("tok0:save", (e) => {
+      const tokens = (e && e.detail && e.detail.tokens) | 0;
+      if (tokens <= 0) return;
+      total += tokens;
+      el.textContent = abbreviate(total);
+    });
+  })();
+</script>

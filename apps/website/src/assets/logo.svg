@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 64" width="220" height="64" fill="none">
+  <!-- bracket frame -->
+  <g stroke="#0A0A0A" stroke-width="1.5" fill="none">
+    <path d="M2 2 H14 M2 2 V14"/>
+    <path d="M218 2 H206 M218 2 V14"/>
+    <path d="M2 62 H14 M2 62 V50"/>
+    <path d="M218 62 H206 M218 62 V50"/>
+  </g>
+  <!-- wordmark: tok0 in mono with serif 0 -->
+  <g>
+    <text x="20" y="44" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="700" font-size="34" fill="#0A0A0A" letter-spacing="-1.5">tok</text>
+    <!-- the "0" rendered as a serif glyph + crosshair to feel like a target / instrument -->
+    <g transform="translate(96 22)">
+      <ellipse cx="14" cy="14" rx="13" ry="14" stroke="#0A0A0A" stroke-width="2.5" fill="#FF4D1C"/>
+      <line x1="14" y1="2"  x2="14" y2="26" stroke="#0A0A0A" stroke-width="1"/>
+      <line x1="2"  y1="14" x2="26" y2="14" stroke="#0A0A0A" stroke-width="1"/>
+    </g>
+  </g>
+  <!-- tag right -->
+  <g font-family="JetBrains Mono, ui-monospace, monospace" font-size="7" letter-spacing="2" fill="#0A0A0A">
+    <text x="138" y="24">SERIAL</text>
+    <text x="138" y="34">001</text>
+    <text x="138" y="48">TOK0</text>
+  </g>
+  <!-- registered mark -->
+  <g transform="translate(196 36)">
+    <circle cx="0" cy="0" r="6" stroke="#0A0A0A" stroke-width="1" fill="none"/>
+    <text x="0" y="2.5" text-anchor="middle" font-family="ui-monospace, monospace" font-size="7" fill="#0A0A0A">R</text>
+  </g>
+</svg>

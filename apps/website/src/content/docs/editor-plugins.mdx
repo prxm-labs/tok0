@@ -1,0 +1,110 @@
+---
+title: Editor plugins
+description: First-party plugins for VS Code-family editors and OpenClaw. Rewrite a selection, preview a rule, strip ANSI on paste.
+section: Integrations
+order: 4
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+The bridge layer covers everything an AI agent does. Editor plugins cover what *you* do interactively — pasting a long shell-command output into a comment, formatting a fixture, previewing what a rule will produce.
+
+## OpenClaw plugin (`@prxm-labs/tok0-rewrite`)
+
+The first-party plugin for the OpenClaw IDE family (forks of VS Code with built-in agent UX). On npm:
+
+```bash
+npm install -g @prxm-labs/tok0-rewrite
+```
+
+Enable it from the OpenClaw command palette:
+
+```
+> tok0: enable rewrite
+```
+
+What it adds:
+
+- **Rewrite selection.** Highlight a block of shell output in any file, run `> tok0: rewrite selection`. The block is replaced in place with the compressed version. Useful for keeping fixture files small.
+- **Preview rule.** Run `> tok0: preview rule` on any open `*.toml`. tok0 picks a sample fixture (or you provide one) and shows raw + compressed side-by-side.
+- **Auto-strip ANSI on paste.** Optional setting; pasted text containing ANSI escape codes gets cleaned automatically.
+
+The plugin is a thin wrapper over the local `tok0` binary. It shells out to `tok0 rewrite --tool openclaw` and pipes content through. No model API calls, no network.
+
+Source: [packages/openclaw-plugin/](https://github.com/prxm-labs/tok0/tree/main/packages/openclaw-plugin).
+
+## VS Code
+
+No first-party VS Code extension yet. Two reasons:
+
+1. VS Code's tasks system already handles command output filtering. Pipe through `tok0` in `tasks.json`:
+   ```json
+   {
+     "label": "build (compressed)",
+     "type": "shell",
+     "command": "tok0 cargo build"
+   }
+   ```
+2. The headline use case (agent-side rewriting) is already covered for VS Code users by tok0's Cursor bridge, since Cursor is a VS Code fork.
+
+If you want a VS Code extension, the OpenClaw plugin source is permissively licensed and would port in a few hundred lines.
+
+## JetBrains
+
+No first-party JetBrains plugin. Same reasoning as VS Code: agentic IDE features in JetBrains tools (Continue, Cody, JetBrains AI) all delegate to external CLIs that tok0's bridge can wrap.
+
+If you author an unofficial plugin, open a PR to add it to the [README](https://github.com/prxm-labs/tok0#readme).
+
+## Vim / Neovim
+
+`tok0` is a normal CLI, so any Vim-side filter works. Pipe a buffer through tok0 for a specific command:
+
+```vim
+:%!tok0 git diff
+```
+
+Or strip ANSI escape codes in a captured terminal log:
+
+```vim
+:%!tok0 system strip-ansi
+```
+
+The community-maintained `tok0.nvim` plugin (search GitHub for `tok0-nvim`) wraps these into idiomatic commands and adds telescope integration for the local meter.
+
+## Emacs
+
+Same story. Pipe regions through `tok0` with `M-|` (`shell-command-on-region`). No first-party plugin.
+
+<Callout type="tip">
+The fastest way to use tok0 from inside any editor is the proxy form. Rather than installing a plugin, just run <code>tok0 &lt;cmd&gt;</code> instead of <code>&lt;cmd&gt;</code> in your editor's terminal. The compression flows through to wherever the output lands.
+</Callout>
+
+## Building your own
+
+Editor plugins do roughly the same thing: spawn the `tok0` binary with `--tool <slug>`, pipe content through stdin, replace the selection with stdout. Pseudocode:
+
+```js
+const { spawn } = require("child_process");
+
+function rewriteSelection(text, tool) {
+  return new Promise((resolve, reject) => {
+    const p = spawn("tok0", ["rewrite", "--tool", tool]);
+    let out = "";
+    p.stdout.on("data", (b) => (out += b));
+    p.on("close", (code) => code === 0 ? resolve(out) : reject(new Error(`tok0 exited ${code}`)));
+    p.stdin.write(text);
+    p.stdin.end();
+  });
+}
+```
+
+That's the whole integration. Permissions, settings UI, and packaging are editor-specific; the tok0 side is unchanged.
+
+## What plugins won't help with
+
+- **Compressing what your model sees.** That's the bridge layer's job. Install it once with `tok0 init`.
+- **Saving disk space on log files.** Use a log compressor (logrotate + gzip) instead.
+- **Intercepting system shell calls.** That's what shell aliases or `tok0 init` (with hooks into your tool of choice) handles.
+
+Editor plugins are interactive helpers. The bridge does the actual work.

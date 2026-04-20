@@ -1,0 +1,170 @@
+---
+title: Recipes
+description: Worked examples of common tok0 tasks — compressing an internal CLI, wiring tok0 into CI, masking secrets, debugging a noisy compressor.
+section: Concepts
+order: 4
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+Questions that come up in the issue tracker, distilled into copy-pasteable solutions. Each one is a complete worked example.
+
+## Compress an internal CLI
+
+You've got an internal tool — call it `acme` — that prints 60 lines of context-setting before the result. You want tok0 to keep only the result.
+
+1. **Capture a real fixture:**
+   ```bash
+   acme deploy production 2>&1 > /tmp/acme.raw
+   ```
+2. **Write** `~/.config/tok0/filters/acme.toml`:
+   ```toml
+   [filter]
+   name = "acme"
+   commands = ["acme"]
+   strip_patterns = [
+     "^\\[acme:debug\\]",
+     "^\\[acme:trace\\]",
+     "^→ Connecting",
+     "^→ Authenticated",
+   ]
+   head_lines = 5
+   tail_lines = 10
+   empty_message = "ok"
+
+   [[assertions]]
+   input = "[acme:debug] starting\n→ Connecting…\n→ Authenticated\nDeploy 1234 ok"
+   expected_contains = "Deploy 1234 ok"
+   min_savings_pct = 60
+   ```
+3. **Test it:**
+   ```bash
+   tok0 rules test ~/.config/tok0/filters/acme.toml /tmp/acme.raw
+   ```
+
+That's the loop. No rebuild, no agent restart — the rule cache is mtime-based and reloads on edit.
+
+## Wire tok0 into CI
+
+Two flavors:
+
+**Bypass mode (recommended for most CI).** Compression stays local; CI runs raw output for full audit trails:
+
+```yaml
+# .github/workflows/test.yml
+env:
+  TOK0_DISABLE: "1"
+```
+
+Set it once at the workflow level. Every wrapped command short-circuits to passthrough.
+
+**Active mode.** You want compressed CI logs (cheaper storage, faster log diff):
+
+```yaml
+- name: Install tok0
+  run: curl -fsSL https://tok0.dev/install.sh | sh
+
+- name: Initialize without AI hooks
+  run: tok0 init --tools none
+
+- name: Build
+  run: tok0 cargo build --release
+
+- name: Test
+  run: tok0 cargo test
+```
+
+`--tools none` skips bridge installation; AI hooks have nothing to attach to in a CI runner.
+
+## Mask secrets in compressed output
+
+If a wrapped command emits credentials in normal operation (some old auth tools, terraform plans with embedded keys), use a pattern replace:
+
+```toml
+[[replacements]]
+pattern = "(?i)(token|key|password|secret)[:=]\\s*\\S+"
+replacement = "$1=***REDACTED***"
+
+[[replacements]]
+pattern = "ghp_[A-Za-z0-9]{36,}"        # GitHub PATs
+replacement = "ghp_***REDACTED***"
+
+[[replacements]]
+pattern = "AKIA[A-Z0-9]{16}"            # AWS access keys
+replacement = "AKIA***REDACTED***"
+```
+
+<Callout type="warn">
+The right answer is "don't print secrets in the first place." Pattern-based redaction is defense in depth, not a security boundary. Audit the source of the leak; don't rely on regex to catch every variant.
+</Callout>
+
+## Debug a noisy compressor
+
+Symptom: a command's compressed output looks broken — too aggressive, missing the verdict, or unchanged.
+
+```bash
+tok0 profile run "<command-and-args>"
+```
+
+Output:
+
+```
+RAW           4,847 B  (1,194 tokens)
+COMPRESSED      612 B  (153 tokens)   −87.4%
+PIPELINE      0.42 ms
+
+per-stage:
+  strip_ansi    +0.05 ms   −512 B
+  pattern       +0.18 ms   −2,103 B
+  output_match  +0.04 ms   0 B
+  line_select   +0.07 ms   −1,128 B
+  truncate      +0.02 ms   −62 B
+  head/tail     +0.04 ms   −430 B
+  hard_cap      +0.02 ms   0 B
+  empty_msg     +0.00 ms   0 B
+```
+
+The per-stage breakdown tells you which clause is responsible. Edit the rule, re-run, iterate.
+
+If you suspect the wrong rule is matching:
+
+```bash
+tok0 rules show --for "git diff"   # which rule resolves for this command?
+```
+
+## Compress a JSON-emitting tool
+
+Tools that emit JSON (`gh api`, `kubectl ... -o json`, `docker inspect`) need structural reshaping, not pattern stripping. Use a native compressor; the [`json` system module](https://github.com/prxm-labs/tok0/blob/main/apps/cli/src/compressors/system/json_cmd.rs) is the reference. Wire your own `*_cmd.rs` and dispatcher case from there.
+
+For JSON output you usually want:
+
+- Drop top-level metadata fields the model doesn't need (`creationTimestamp`, `resourceVersion`, …).
+- Keep only the first N entries of long arrays (`items[0..10]`).
+- Replace base64 blobs with a length marker (`"<base64 ~12KB>"`).
+
+A TOML rule can't reach into JSON keys, so this is a Rust-compressor case.
+
+## Run only on certain projects
+
+You want tok0 active in your work repo but bypassed at home:
+
+```bash
+# in your work repo's .envrc (direnv) or .zshrc:
+export TOK0_DISABLE=0      # explicit on (default)
+
+# in your dotfiles (always loaded):
+export TOK0_DISABLE=1      # default off everywhere else
+```
+
+`TOK0_DISABLE=1` is the universal kill switch and works regardless of installed hooks or config.
+
+## Share rules across a team
+
+Two patterns:
+
+**Project-local** (`.tok0/filters/*.toml`, committed to your repo). Each teammate runs `tok0 trust .` once after cloning; the rules apply.
+
+**Extension** (your own git repo of rules). Teammates run `tok0 extensions install <git-url>` once; updates flow via `tok0 extensions update`. Better for cross-project rules — the same set covers every repo.
+
+See [Extensions](/docs/extensions/) for the manifest format.

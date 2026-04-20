@@ -1,0 +1,76 @@
+---
+title: Getting started
+description: Install tok0, register it with your AI tool, run a compressed command. Three steps, under a minute.
+section: Start
+order: 2
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+The shortest path from a fresh terminal to a compressed `git diff`. For every install option, see [Installation](/docs/installation/).
+
+## 1. Install the binary
+
+```bash
+curl -fsSL https://tok0.dev/install.sh | sh
+```
+
+Check it landed:
+
+```bash
+tok0 --version
+```
+
+You'll see something like `tok0 0.x.x`.
+
+## 2. Run `tok0 init`
+
+```bash
+tok0 init
+```
+
+This finds every supported AI tool on your machine and installs the right hook, rules file, or `AGENTS.md` entry:
+
+```
+✓ claude-code     → ~/.claude/settings.json (PreToolUse hook)
+✓ cursor          → printed paste-in (Settings → Rules)
+✓ gemini-cli      → ~/.gemini/GEMINI.md
+- windsurf        not detected
+```
+
+Tools marked `✓` install automatically. GUI-only tools (Cursor, Kimi Code) print a paste-in step instead — usually a few lines into a Settings panel.
+
+<Callout type="tip">
+You can re-run `tok0 init` any time. It's idempotent: existing hooks update in place, new tools get added.
+</Callout>
+
+## 3. Run a command through your agent
+
+Open your agent and ask it to run a compressible command — `git diff`, `cargo test`, `npm install`, `kubectl get pods`. The agent sees the compressed output; you see the raw output in your terminal.
+
+To try it directly:
+
+```bash
+tok0 git diff
+```
+
+Exit code, stderr, and content are preserved. Only the model-bound representation shrinks.
+
+## 4. Check the savings
+
+```bash
+tok0 stats
+```
+
+Per-command compression ratios, total tokens saved, a 30-day rolling chart — all from the local SQLite meter at `~/.config/tok0/meter.db`. None of it leaves your machine unless you opt into telemetry.
+
+## Common follow-ups
+
+- `tok0 doctor` — which hooks are wired and which aren't.
+- `tok0 status` — current bridge state per AI tool.
+- `tok0 verify` — SHA-256-checks every installed hook against tok0's signed manifest.
+
+<Callout type="note" label="Uninstalling">
+`tok0 init --remove` reverses every hook tok0 installed. Remove the binary with the same package manager you used to install it.
+</Callout>

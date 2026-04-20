@@ -1,0 +1,128 @@
+---
+title: Installation
+description: Every install path for tok0 — Homebrew, shell script, Cargo, Scoop, Chocolatey, Snap, Docker, source.
+section: Start
+order: 3
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` is a single static Rust binary, ~8 MB stripped, no runtime dependencies. Pick the package manager you already use.
+
+## Quick install (any platform)
+
+```bash
+curl -fsSL https://tok0.dev/install.sh | sh
+```
+
+Detects your OS and arch, downloads the matching binary from GitHub Releases, verifies its checksum, and drops it into `/usr/local/bin/tok0` (or `~/.local/bin/tok0` if `/usr/local` isn't writable).
+
+## macOS — Homebrew
+
+```bash
+brew install tok0
+```
+
+No tap. The formula updates on every release.
+
+## Linux
+
+### Debian / Ubuntu
+
+```bash
+curl -fsSLO https://github.com/prxm-labs/tok0/releases/latest/download/tok0_amd64.deb
+sudo dpkg -i tok0_amd64.deb
+```
+
+### Snap
+
+```bash
+sudo snap install tok0
+```
+
+### Arch / AUR
+
+`tok0-bin` tracks releases. Install with your favorite AUR helper.
+
+## Windows
+
+### Scoop
+
+```powershell
+scoop bucket add prxm-labs https://github.com/prxm-labs/scoop-bucket
+scoop install tok0
+```
+
+### Chocolatey
+
+```powershell
+choco install tok0
+```
+
+## Cargo (any platform)
+
+```bash
+cargo install tok0
+```
+
+Builds from source. Needs `rustup update stable` (1.95+).
+
+<Callout type="note">
+`cargo install` produces a stripped release binary identical to the published artifact. CI gates the same build.
+</Callout>
+
+## Docker
+
+```bash
+docker pull ghcr.io/prxm-labs/tok0:latest
+docker run --rm -i ghcr.io/prxm-labs/tok0:latest tok0 --version
+```
+
+Useful for containerized agent runtimes.
+
+## From source
+
+```bash
+git clone https://github.com/prxm-labs/tok0
+cd tok0/apps/cli
+cargo build --release
+./target/release/tok0 --version
+```
+
+There's also `make release` as a shortcut.
+
+## Verifying
+
+```bash
+tok0 --version
+tok0 doctor
+```
+
+`tok0 doctor` checks PATH wiring, config dir permissions, AI tool detection, and hook signatures.
+
+## Updating
+
+For binary installs:
+
+```bash
+tok0 update
+```
+
+For package-manager installs, use the manager:
+
+```bash
+brew upgrade tok0          # macOS
+sudo apt upgrade tok0      # Debian/Ubuntu
+scoop update tok0          # Windows
+cargo install tok0 --force # Cargo
+```
+
+## Uninstalling
+
+1. Remove the hooks:
+   ```bash
+   tok0 init --remove
+   ```
+2. Remove the binary the same way you installed it (`brew uninstall tok0`, `cargo uninstall tok0`, etc.).
+3. Optional — wipe config and cache: `rm -rf ~/.config/tok0 ~/.cache/tok0`.

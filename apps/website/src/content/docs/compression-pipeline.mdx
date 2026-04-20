@@ -1,0 +1,119 @@
+---
+title: Compression pipeline
+description: tok0 runs every command's output through eight pure stages. What each one does and where to tune it.
+section: Concepts
+order: 1
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+Every byte that flows through tok0 passes through the same eight stages. Each is a pure function of its input, which is why the pipeline ships with snapshot tests against real fixtures and a CI floor on `min_savings_pct` for every rule.
+
+## The eight stages
+
+```
+        raw stdout
+            │
+   ┌────────▼────────┐
+   │ 1. strip_ansi   │   remove colors / cursor moves
+   ├─────────────────┤
+   │ 2. pattern      │   user-defined search/replace
+   │    replace      │
+   ├─────────────────┤
+   │ 3. output match │   keep only matching blocks
+   ├─────────────────┤
+   │ 4. line select  │   include / exclude per regex
+   ├─────────────────┤
+   │ 5. truncate     │   per-line max chars
+   ├─────────────────┤
+   │ 6. head/tail    │   keep N first + N last
+   │    window       │
+   ├─────────────────┤
+   │ 7. hard cap     │   absolute byte ceiling
+   ├─────────────────┤
+   │ 8. empty        │   "ok" if nothing left
+   │    fallback     │
+   └────────┬────────┘
+            ▼
+       compressed text
+```
+
+### 1 · `strip_ansi`
+
+Removes every ANSI escape sequence — colors, cursor moves, hyperlink wrappers. 5–15% savings on its own for any TTY-aware tool (cargo, npm, pip, docker).
+
+### 2 · Pattern replace
+
+User- or rule-defined `(regex, replacement)` pairs, applied in order. Use it to collapse repeated banners, normalize timestamps, or strip checksums.
+
+```toml
+[[replacements]]
+pattern = "^Compiling [a-z0-9_-]+ v[0-9.]+ \\(.+\\)$"
+replacement = ""
+```
+
+### 3 · Output match
+
+If `output_match` patterns are defined, only blocks matching at least one survive. Useful for tools where 95% of output is preamble and only the trailing summary matters (e.g. `pytest -v`).
+
+### 4 · Line select
+
+Per-line include/exclude regexes. Excludes win on conflict. Lines match against trimmed content.
+
+### 5 · Truncate
+
+Caps each line at `max_line_chars` and replaces the rest with `…`. Default 240. Anything wider is almost certainly wrapped output meant for human eyes, not the model.
+
+### 6 · Head/tail window
+
+Keeps the first `head` and last `tail` lines, replacing the middle with a marker like `… 1,847 lines elided …`. The default of 30/15 keeps orientation and the verdict, drops the middle.
+
+### 7 · Hard cap
+
+Absolute byte ceiling. If the pipeline output is still over `max_chars`, it's truncated and a marker line appended. The safety valve: no compressor can produce output larger than `max_chars`.
+
+### 8 · Empty fallback
+
+If the previous seven stages collapsed everything to whitespace, the rule's `empty_message` is emitted instead. Default: `ok`. This is what makes silent successful commands cost almost nothing.
+
+## Worked example
+
+Raw `brew install foo`:
+
+```
+==> Downloading https://ghcr.io/v2/homebrew/core/foo/manifests/1.2.3
+######################################################################## 100.0%
+==> Pouring foo--1.2.3.arm64_sonoma.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/foo/1.2.3: 14 files, 2.1MB
+```
+
+After the `brew-install` rule:
+
+```
+ok
+```
+
+Savings: **94%**. The rule strips the `==>` lines, the percentage bar, and the cellar receipt. The only signal left is success, so the empty fallback fires.
+
+<Callout type="tip">
+Dry-run the pipeline against any captured output with `tok0 profile run <cmd>`. It prints raw and compressed sizes plus which stages stripped what.
+</Callout>
+
+## Determinism guarantees
+
+- No clock reads, no random numbers, no environment lookups inside the pipeline.
+- Regexes compile once via `lazy_static!`. Same pattern set, same behavior across runs.
+- Snapshot tests pin the byte-exact output of every rule against a real fixture.
+
+If you find an input that produces non-deterministic output, that's a bug. File an issue with the captured fixture.
+
+## Where to tune it
+
+Most users never write a line of pipeline config — the built-in rules cover ~250 commands. When you do need to override:
+
+- **Project-local:** drop a TOML rule in `.tok0/filters/` (requires explicit trust — see [Trust & safety](/docs/trust-and-safety/)).
+- **Global:** drop a TOML rule in `~/.config/tok0/filters/`.
+- **Built-in:** PR a `src/rules/<cmd>.toml` into the repo. CI will assert your savings floor.
+
+See [Writing TOML rules](/docs/writing-rules/) for the schema.

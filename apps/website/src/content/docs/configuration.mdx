@@ -1,0 +1,125 @@
+---
+title: Configuration
+description: Every knob tok0 exposes — config file, environment variables, project trust, opt-in features.
+section: Reference
+order: 1
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+After `tok0 init`, you shouldn't need to edit a config file. When you do, this is the reference.
+
+## Config file location
+
+```
+~/.config/tok0/config.toml
+```
+
+Windows: `%APPDATA%\tok0\config.toml`. macOS: same as Linux (XDG-style, not `~/Library/Application Support`).
+
+The file is created on first run if missing. Every field is optional.
+
+## Full schema with defaults
+
+```toml
+[general]
+# Where the SQLite token meter lives.
+database_path = "~/.config/tok0/meter.db"
+# Where snapshots get written when a filter falls back.
+snapshot_dir  = "~/.cache/tok0/snapshots"
+# Hard ceiling for any single command's output, post-pipeline.
+max_chars     = 8000
+
+[runtime]
+# Time budget for any single wrapped command before tok0 kills it.
+command_timeout_secs = 60
+# If a filter errors, write the raw stdout to snapshot_dir for debugging.
+snapshot_on_failure  = true
+
+[bridge]
+# Skip prompting on first run; useful in CI where stdin isn't interactive.
+non_interactive = false
+# Pin which AI tools tok0 should detect. Empty = all.
+tools = []  # ["claude-code", "cursor", "gemini-cli", ...]
+
+[telemetry]
+# Off by default. Even when on, this is anonymous instance metrics —
+# no command output, no paths, no identifiers.
+enabled = false
+
+[updater]
+# Check GitHub Releases for new versions.
+auto_check = true
+# Channel: "stable" | "beta"
+channel    = "stable"
+```
+
+## Environment variables
+
+Env vars override the config file when set.
+
+| Variable | Effect |
+|---|---|
+| `TOK0_CONFIG` | Path to an alternate config file. |
+| `TOK0_DB_PATH` | Override `general.database_path`. |
+| `TOK0_DISABLE` | Set to `1` and tok0 passes every command through unchanged. The bypass switch. |
+| `TOK0_QUIET` | Suppress non-error stderr output. |
+| `TOK0_LOG` | `error` (default), `warn`, `info`, `debug`, `trace`. |
+| `TOK0_TIMEOUT_SECS` | Override `runtime.command_timeout_secs`. |
+| `TOK0_NO_TELEMETRY` | If set, telemetry is forcibly off regardless of config. |
+| `NO_COLOR` | Standard. Disables tok0's own ANSI output. |
+
+<Callout type="tip">
+`TOK0_DISABLE=1` is the safest way to confirm whether a regression is caused by tok0. Set it, re-run, compare.
+</Callout>
+
+## Filter search paths
+
+Custom rules load from three locations in priority order:
+
+1. `.tok0/filters/*.toml` (project-local, requires `tok0 trust .`).
+2. `~/.config/tok0/filters/*.toml` (user-global, no trust prompt).
+3. Built-in rules embedded in the binary.
+
+See [Writing TOML rules](/docs/writing-rules/) for the schema.
+
+## Trust gating
+
+Project-local rules can ship arbitrary regexes that get applied to your shell output. tok0 treats them as untrusted by default:
+
+```bash
+cd ~/projects/my-repo
+tok0 trust .                   # opt this project in
+tok0 untrust .                 # revert
+tok0 trust list                # show all trusted projects
+```
+
+Trust lives in `~/.config/tok0/trust.toml`, keyed by absolute path. Moving or renaming the project invalidates the entry. Intentional — it matches VS Code's workspace trust model.
+
+## Bridge state
+
+Hooks land in each AI tool's own config dir, not in tok0's. Where they go:
+
+| Tool | Hook surface |
+|---|---|
+| Claude Code | `~/.claude/settings.json` (PreToolUse hook) |
+| Cursor | Settings → Rules (manual paste-in) |
+| Gemini CLI | `~/.gemini/GEMINI.md` |
+| Windsurf | `~/.codeium/windsurf/memories/...` |
+| Cline | `~/Documents/Cline/Rules/tok0.md` |
+| Amp | `~/.config/amp/AGENTS.md` |
+| OpenCode | `~/.config/opencode/AGENTS.md` |
+| Codex | `~/.codex/AGENTS.md` |
+| Kimi Code | `~/.kimi/tok0.md` |
+
+`tok0 status` shows which surfaces are wired and the integrity hash of each. `tok0 verify` re-checks every hook against tok0's signed manifest and catches drift, manual edits, or tampering.
+
+## Resetting
+
+```bash
+tok0 init --remove   # remove every hook tok0 installed
+rm -rf ~/.config/tok0 ~/.cache/tok0   # nuke local state
+```
+
+To keep historic stats but reset hooks, run `tok0 init --remove` on its own. The meter database stays.

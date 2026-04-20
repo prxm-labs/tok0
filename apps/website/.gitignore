@@ -1,0 +1,12 @@
+# Astro
+.astro/
+dist/
+
+# Node
+node_modules/
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local

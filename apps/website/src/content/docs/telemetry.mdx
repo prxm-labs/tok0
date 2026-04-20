@@ -1,0 +1,127 @@
+---
+title: Telemetry & privacy
+description: What tok0 collects (almost nothing), what it doesn't (your shell output), and how to verify the difference yourself.
+section: Operations
+order: 1
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` is local-first. Your shell output, your commands, the meter database — all of it stays on disk. The telemetry pinger sits behind the `cloud` Cargo feature flag; default builds (`cargo build`, the published binaries on Homebrew/`install.sh`/Cargo) compile it out entirely, so there's nothing to opt out of. To send anonymous daily metrics, you opt in (see below).
+
+## Always local
+
+These never leave your machine, regardless of any setting:
+
+- Raw command output (stdin and stdout).
+- Compressed command output.
+- The commands you ran.
+- File paths, project names, repo URLs.
+- Contents of your config or rule files.
+- Contents of your meter database.
+
+There is no "phone home" code path that handles any of these. The source tree is grep-able: search for `reqwest` or `ureq` and you'll find exactly two callsites, the optional telemetry pinger and the optional self-update checker. Both are gated behind explicit config.
+
+## What `tok0 stats` uses
+
+`tok0 stats` and friends (`tok0 costs`, `tok0 adoption`, `tok0 profile`) read from `~/.config/tok0/meter.db`. Local SQLite; nothing reads it but you. Inspect it directly:
+
+```bash
+sqlite3 ~/.config/tok0/meter.db ".schema"
+sqlite3 ~/.config/tok0/meter.db "SELECT * FROM events LIMIT 5;"
+```
+
+Schema:
+
+```
+events
+  id           INTEGER PRIMARY KEY
+  ts           INTEGER (unix epoch)
+  command      TEXT (the command name, e.g. "git diff" — not the args)
+  raw_bytes    INTEGER
+  filtered_bytes INTEGER
+  exit_code    INTEGER
+  filter_ms    INTEGER
+```
+
+No args, no paths, no output content. Just sizes.
+
+## Optional telemetry (off by default)
+
+When explicitly enabled, tok0 sends one anonymous **instance** ping per day to `api.tok0.dev/telemetry`. The full payload:
+
+```json
+{
+  "instance_id": "f1c2…",
+  "tok0_version": "0.4.2",
+  "os": "darwin",
+  "arch": "aarch64",
+  "events_today": 142,
+  "tokens_saved_today": 18402,
+  "compressors_used": ["git", "cargo", "npm"]
+}
+```
+
+That's everything. No field for command args, output content, paths, or any identifier that ties back to you or your projects. The `instance_id` is a random 128-bit value generated on first run; rotate or delete it any time:
+
+```bash
+rm ~/.config/tok0/instance_id
+```
+
+### Turning it on
+
+```bash
+tok0 telemetry on
+```
+
+Or in `config.toml`:
+
+```toml
+[telemetry]
+enabled = true
+```
+
+### Turning it off (and verifying)
+
+```bash
+tok0 telemetry off
+tok0 telemetry status   # prints "off"
+```
+
+Or set `TOK0_NO_TELEMETRY=1` in your shell rc. The env var forcibly disables telemetry regardless of config — the standard way to opt out across managed environments.
+
+### Auditing the wire
+
+Want to verify nothing leaks? Run tok0 with `TOK0_LOG=trace`:
+
+```bash
+TOK0_LOG=trace tok0 git diff 2>&1 | grep -i 'http\|request'
+```
+
+You'll see (a) zero network calls when telemetry is off, (b) exactly one POST to the telemetry endpoint per day when it's on, (c) the full request body printed before send.
+
+## Self-updater
+
+Separate from telemetry: tok0's self-updater periodically checks GitHub Releases for new versions. Single GET request, no payload, controlled by:
+
+```toml
+[updater]
+auto_check = true
+```
+
+Set to `false` to disable. No telemetry attached to the updater check; GitHub sees a request from your IP, the same as `git pull`.
+
+## Threat model
+
+tok0 is meant to be safe in environments where:
+
+- You can't trust arbitrary network calls (offline / restricted CI).
+- You handle proprietary code or PHI/PII.
+- Your security team needs to audit every byte that leaves the machine.
+
+CI asserts these properties on every release. A network-isolation test runs the binary in a sandbox with no network and verifies it never attempts a connection in the default config.
+
+<Callout type="note">
+The repo-root <a href="https://github.com/prxm-labs/tok0/blob/main/SECURITY.md">SECURITY.md</a> is the canonical source for vulnerability disclosure and the threat-model promises this page summarizes.
+</Callout>

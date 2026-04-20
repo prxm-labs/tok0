@@ -1,0 +1,45 @@
+---
+/**
+ * One-line install command with copy-to-clipboard.
+ * Used in the hero and the closing CTA panel.
+ */
+interface Props {
+  cmd?: string;
+}
+const {
+  cmd = "curl -fsSL https://tok0.dev/install.sh | sh",
+} = Astro.props;
+---
+
+<div class="install-row">
+  <div class="install-pill" data-cmd role="button" tabindex="0" aria-label="Copy install command">
+    <span class="prompt">$</span>
+    <span class="cmd">{cmd}</span>
+    <button type="button" class="copy" data-copy aria-label="Copy install command">COPY</button>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-cmd]").forEach((row) => {
+    const cmd = row.querySelector<HTMLElement>(".cmd")?.textContent?.trim();
+    const btn = row.querySelector<HTMLButtonElement>("[data-copy]");
+    if (!cmd || !btn) return;
+    const flash = () => {
+      const original = btn.textContent;
+      btn.textContent = "COPIED";
+      btn.classList.add("ok");
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove("ok");
+      }, 1400);
+    };
+    const copy = () => {
+      navigator.clipboard.writeText(cmd).then(flash).catch(() => {});
+    };
+    btn.addEventListener("click", (e) => { e.stopPropagation(); copy(); });
+    row.addEventListener("click", copy);
+    row.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copy(); }
+    });
+  });
+</script>

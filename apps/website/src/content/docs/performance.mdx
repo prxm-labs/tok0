@@ -1,0 +1,151 @@
+---
+title: Performance
+description: Cold start, per-command overhead, memory, binary size — the numbers and how to measure each yourself.
+section: Reference
+order: 4
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` adds overhead small enough that you won't feel it. Cold start under 5 ms, per-command compression under 1 ms, ~8 MB resident. CI gates every number on this page; a regression of >10% on any of them blocks the PR.
+
+## Headline numbers
+
+| Metric | Value | Test machine |
+|---|---|---|
+| Cold start (`tok0 --version`) | 4.2 ms | M2 Mac mini, 2024 |
+| Compression latency, p50 | 0.31 ms | git diff fixture, 8 KB |
+| Compression latency, p99 | 0.78 ms | docker build fixture, 50 KB |
+| Stripped binary size | 8.1 MB | x86_64-unknown-linux-gnu |
+| Resident memory (idle) | 6.3 MB | per-process |
+| Resident memory (active compression) | 11.2 MB | with rule cache loaded |
+
+Same numbers CI prints on every release. Replicate them locally with the recipes below.
+
+## Why it's fast
+
+- **No async runtime.** Pure synchronous Rust. tokio cold-starts add 5–10 ms; tok0 budgets &lt;5 ms total.
+- **Single-threaded.** No locks, no atomics, no thread spawning. The metering writer is the only background thread.
+- **Regex compiled once.** Every regex lives in `lazy_static!`. First use pays the cost; the rest are hash lookups.
+- **mtime-based rule cache.** Rules only re-parse when their TOML file changes. Steady-state rule loading is a handful of `stat()` calls.
+- **Pure pipeline functions.** Each stage takes `&str` and returns `String`. One allocation per stage, no shared state.
+
+## Measuring cold start
+
+```bash
+hyperfine --warmup 5 'tok0 --version'
+```
+
+Expected on a modern x86_64 / arm64 machine:
+
+```
+Benchmark 1: tok0 --version
+  Time (mean ± σ):       4.4 ms ±  0.3 ms
+  Range (min … max):     3.9 ms …  5.7 ms    593 runs
+```
+
+If you see >10 ms cold start, the usual cause is a bloated `~/.config/tok0/filters/` with thousands of TOML files. Check:
+
+```bash
+ls ~/.config/tok0/filters/ | wc -l
+```
+
+Realistic numbers are 0–50. Past 100 you should consolidate.
+
+## Measuring per-command overhead
+
+```bash
+hyperfine --warmup 3 'git diff' 'tok0 git diff'
+```
+
+The delta is tok0's overhead. On a 4 KB diff fixture:
+
+```
+Benchmark 1: git diff
+  Time (mean ± σ):     12.4 ms ±  1.1 ms
+
+Benchmark 2: tok0 git diff
+  Time (mean ± σ):     13.0 ms ±  1.2 ms
+
+Summary
+  'git diff' ran 1.05 ± 0.12 times faster than 'tok0 git diff'
+```
+
+~600 µs of overhead. The wrapped command's own runtime dominates by 20×.
+
+## Profiling individual compressors
+
+```bash
+tok0 profile run "<command>"
+```
+
+Prints raw size, compressed size, savings %, total pipeline time, per-stage time. Use it when a specific compressor feels slow.
+
+```bash
+tok0 profile           # aggregate over the last 30 days
+```
+
+Shows the slowest compressors in your actual workload, ordered by cumulative time. Useful when deciding what to optimize.
+
+## Memory
+
+`tok0` sits at ~6 MB resident at steady state (binary + libc + small heap). Active compression peaks at ~11 MB on the largest fixtures we test against (50 KB Docker build output).
+
+If you see >50 MB resident, it's almost certainly the SQLite meter database with millions of rows. Check:
+
+```bash
+ls -lh ~/.config/tok0/meter.db
+sqlite3 ~/.config/tok0/meter.db "SELECT COUNT(*) FROM events;"
+```
+
+The meter retains data forever by default. To prune:
+
+```bash
+sqlite3 ~/.config/tok0/meter.db "DELETE FROM events WHERE ts < strftime('%s', 'now', '-90 days');"
+sqlite3 ~/.config/tok0/meter.db "VACUUM;"
+```
+
+Or set `[general].meter_retention_days = 90` in your config and tok0 prunes on startup.
+
+## Binary size
+
+```
+$ size $(which tok0)
+   text	   data	    bss	    dec	    hex	filename
+8421376	  17280	    424	8439080	 80b768	tok0
+```
+
+8.1 MB stripped. CI gates this — any commit pushing it past 9 MB fails the build. Largest contributors:
+
+- `regex` and `regex-syntax` (~1.2 MB)
+- `rusqlite` + bundled SQLite (~2.4 MB)
+- 120 embedded TOML rule files (~85 KB total)
+- 52 native compressors (~600 KB)
+
+## Threading guarantee
+
+`tok0` is single-threaded plus one mpsc-fed metering writer. There is no thread spawning anywhere else in the binary. clippy enforces it — any new `std::thread::spawn` outside the metering module fails the build.
+
+Why it matters: deterministic test order, no lock contention, predictable cold-start, no surprise CPU pinning.
+
+## Regression gates
+
+Every PR runs:
+
+```bash
+cargo bench --features ci-bench
+```
+
+The bench suite asserts:
+
+- Cold start ≤ 5.0 ms (95th percentile across 100 runs)
+- Compression latency ≤ 1.0 ms (95th percentile, all built-in fixtures)
+- Binary size ≤ 9.0 MB stripped
+- No memory growth >5% across 1000 sequential compressions
+
+A >10% regression on any of them fails CI. Authors either restore parity or document the trade-off in the PR description.
+
+<Callout type="tip">
+The exact bench numbers from the latest release are at <a href="https://tok0.dev/bench">tok0.dev/bench</a> with raw csv output, so you can diff against your own machine.
+</Callout>

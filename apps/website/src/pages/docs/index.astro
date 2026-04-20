@@ -1,0 +1,69 @@
+---
+import { getCollection } from "astro:content";
+import Docs from "~/layouts/Docs.astro";
+
+// Build-time check: every entry-point href must resolve to an existing doc.
+const all = await getCollection("docs");
+const slugs = new Set(all.map((entry) => entry.id));
+
+const entryPoints = [
+  {
+    slug: "getting-started",
+    label: "Install",
+    promise: "Get tok0 wrapping your shell in 30 seconds.",
+  },
+  {
+    slug: "architecture",
+    label: "How it works",
+    promise: "The 8-stage pipeline, end to end.",
+  },
+  {
+    slug: "writing-rules",
+    label: "Write a rule",
+    promise: "Add compression for any command in TOML.",
+  },
+  {
+    slug: "cli-reference",
+    label: "CLI reference",
+    promise: "Every flag, every subcommand.",
+  },
+];
+
+for (const ep of entryPoints) {
+  if (!slugs.has(ep.slug)) {
+    throw new Error(
+      `docs/index.astro: hardcoded entry point '${ep.slug}' has no matching MDX file in src/content/docs/. ` +
+        `Either rename the entry point or restore the doc.`,
+    );
+  }
+}
+---
+
+<Docs
+  title="Documentation"
+  description="The full tok0 reference — install, configure, integrate, extend."
+  section="Docs"
+  order={0}
+  hideLede
+>
+  <p>
+    <code>tok0</code> is a high-performance CLI proxy that compresses verbose shell
+    output before it reaches an LLM. These docs walk through install, configuration,
+    and writing your own compression rules.
+  </p>
+
+  <div class="docs-entry-grid">
+    {
+      entryPoints.map((ep) => (
+        <a class="docs-entry" href={`/docs/${ep.slug}/`}>
+          <span class="docs-entry-label">{ep.label}</span>
+          <span class="docs-entry-promise">{ep.promise}</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <p class="docs-entry-fallback">
+    Looking for something specific? The full A–Z is in the sidebar.
+  </p>
+</Docs>

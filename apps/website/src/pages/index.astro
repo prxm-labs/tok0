@@ -1,0 +1,368 @@
+---
+import Marketing from "~/layouts/Marketing.astro";
+import Schematic from "~/components/Schematic.astro";
+import InstallRow from "~/components/InstallRow.astro";
+import StatsTiles from "~/components/StatsTiles.tsx";
+import StatsBreakdown from "~/components/StatsBreakdown.astro";
+import { fetchStatsSafe } from "~/lib/stats";
+
+/* Build-time fetch from api.tok0.dev/stats — backed by D1 (command_stats + instances). */
+const { stats, live } = await fetchStatsSafe();
+
+/* ── homepage data — sourced from apps/cli source-of-truth ───────────────── */
+
+const features = [
+  {
+    num: "01",
+    title: "Single static binary, no runtime.",
+    desc: "Pure Rust, single-threaded by design. Zero tokio, zero async-std. Cold start under 5 ms; every shell call stays cheap.",
+  },
+  {
+    num: "02",
+    title: "Deterministic compression pipeline.",
+    desc: "Strip ANSI · pattern replace · output match · line select · truncate · head/tail window · hard cap · empty fallback. Pure functions, snapshot-tested with a CI floor on min_savings_pct.",
+  },
+  {
+    num: "03",
+    title: "Declarative rules, embedded at build.",
+    desc: "100+ built-in TOML compression rules across git, cargo, npm, docker, kubectl, terraform, pytest, and more. Every rule ships with a CI-asserted savings floor; PRs that drop below it fail to merge.",
+  },
+  {
+    num: "04",
+    title: "Safe by default.",
+    desc: "Filter errors fall back to raw output. Exit codes propagate unchanged. Local SQLite meter — no account, no upload by default.",
+  },
+  {
+    num: "05",
+    title: "Trust-gated execution surface.",
+    desc: "Project rules and git-installed extensions are trust-prompted before they load. Bridge hooks are SHA-256 verified on every run against an embedded manifest; tok0 verify catches drift, manual edits, or tampering.",
+  },
+  {
+    num: "06",
+    title: "CI-enforced quality bar.",
+    desc: "cargo fmt + cargo clippy --all-targets -- -D warnings + cargo test on every PR. The matrix runs default and --features cloud; both have to pass before merge.",
+  },
+];
+
+const aiTools = [
+  {
+    name: "Claude Code",
+    surface: "~/.claude/settings.json",
+    integration: "PreToolUse hook",
+    status: "AUTO",
+    auto: true,
+  },
+  {
+    name: "Cursor",
+    surface: "Settings → Rules",
+    integration: "rules file paste-in",
+    status: "GUI",
+    auto: false,
+  },
+  {
+    name: "Gemini CLI",
+    surface: "~/.gemini/GEMINI.md",
+    integration: "auto-loaded instructions",
+    status: "AUTO",
+    auto: true,
+  },
+  {
+    name: "Windsurf",
+    surface: "~/.codeium/windsurf/memories/…",
+    integration: "global rules file",
+    status: "AUTO",
+    auto: true,
+  },
+  {
+    name: "Cline",
+    surface: "~/Documents/Cline/Rules/tok0.md",
+    integration: "Cline Rules toggle",
+    status: "AUTO",
+    auto: true,
+  },
+  {
+    name: "Amp",
+    surface: "~/.config/amp/AGENTS.md",
+    integration: "AGENTS.md auto-load",
+    status: "AUTO",
+    auto: true,
+  },
+  {
+    name: "OpenCode",
+    surface: "~/.config/opencode/AGENTS.md",
+    integration: "AGENTS.md auto-load",
+    status: "AUTO",
+    auto: true,
+  },
+  {
+    name: "Codex",
+    surface: "~/.codex/AGENTS.md",
+    integration: "AGENTS.md (manual)",
+    status: "MAN",
+    auto: false,
+  },
+  {
+    name: "Kimi Code",
+    surface: "~/.kimi/tok0.md",
+    integration: "manual paste-in",
+    status: "GUI",
+    auto: false,
+  },
+];
+
+---
+
+<Marketing
+  title="tok0 — compress every shell command before it hits the model"
+  description="An open-source CLI proxy that compresses verbose shell command output (git, cargo, npm, docker, kubectl…) before it reaches an LLM. Native Rust, 8 MB, single-threaded, ~80% savings on the commands your agent runs most."
+>
+  <!-- ═════════════════════════════════════════════════════════════════════
+       00 · HERO / MANIFESTO
+       ═════════════════════════════════════════════════════════════════════ -->
+  <section class="section hero-section" id="product">
+    <div class="hero">
+      <div>
+        <h1 class="h-display h-display-hero">
+          Strip the noise<br />
+          from every shell command<br />
+          <em class="ac">before it hits the model.</em>
+        </h1>
+        <InstallRow />
+      </div>
+
+      <Schematic />
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════
+       01 · LIVE FIELD TELEMETRY
+       ═════════════════════════════════════════════════════════════════════ -->
+  <section class="section" id="stats">
+    <div class="section-head">
+      <div class="section-id">
+        <span class="num">01 / 03</span>
+        <span>FIELD TELEMETRY</span>
+      </div>
+      <h2 class="h-section">
+        Live numbers<br />
+        <em class="ac">from the field.</em>
+      </h2>
+      <p class="lede">
+        Every tok0 install pushes anonymous compression counters to
+        api.tok0.dev. The four tiles below read straight from that database and
+        refresh on every page load.
+      </p>
+    </div>
+
+    <StatsTiles initial={stats} initialLive={live} client:load />
+
+    <StatsBreakdown stats={stats} live={live} />
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════
+       02 · FEATURES
+       ═════════════════════════════════════════════════════════════════════ -->
+  <section class="section" id="features">
+    <div class="section-head">
+      <div class="section-id">
+        <span class="num">02 / 03</span>
+        <span>SYSTEM SPECIFICATION</span>
+      </div>
+      <h2 class="h-section">
+        Built like a piece<br />
+        of <em>infrastructure</em>.
+      </h2>
+      <p class="lede">
+        Six rules. Each one enforced by <code>cargo clippy -D warnings</code>
+        and snapshot tests on every PR.
+      </p>
+    </div>
+
+    <div class="feat-grid">
+      {
+        features.map((f) => (
+          <article class="feat">
+            <div class="feat-head">
+              <span class="num">{f.num}</span>
+              <span>FEATURE</span>
+            </div>
+            <h3 class="feat-title">{f.title}</h3>
+            <p class="feat-desc">{f.desc}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════════════════════════════
+       03 · COMPATIBILITY MATRIX
+       ═════════════════════════════════════════════════════════════════════ -->
+  <section class="section" id="compatibility">
+    <div class="section-head">
+      <div class="section-id">
+        <span class="num">03 / 03</span>
+        <span>COMPATIBLE SYSTEMS</span>
+      </div>
+      <h2 class="h-section">
+        Drops into the<br />
+        <em class="ac">agent you already use.</em>
+      </h2>
+      <p class="lede">
+        One <span class="mono" style="color:var(--color-ink); font-weight:600;"
+          >tok0 init</span
+        > auto-detects every supported AI tool on your machine and installs the right
+        hook, rule file, or AGENTS.md entry. GUI-only tools (Cursor, Kimi Code)
+        print a paste-in step instead.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span><span class="ac">[</span> AI TOOLS <span class="ac">]</span></span>
+        <span>9 SUPPORTED · 7 AUTO-INSTALL</span>
+      </div>
+      <ul class="tool-list">
+        {
+          aiTools.map((t) => (
+            <li class="tool-row">
+              <div class="tool-main">
+                <div class="tool-head">
+                  <span class="tool-name">{t.name}</span>
+                  <span class={`pill ${t.auto ? "auto" : "gui"}`}>
+                    {t.status === "AUTO"
+                      ? "Auto-install"
+                      : t.status === "MAN"
+                        ? "Manual"
+                        : "Paste-in"}
+                  </span>
+                </div>
+                <div class="tool-integration">{t.integration}</div>
+                <code class="tool-surface">{t.surface}</code>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="panel-foot">
+        <span>SOURCE · /bridge/setup.rs</span>
+        <span class="ac panel-foot-mark"
+          ><span aria-hidden="true">▶</span> tok0 init</span
+        >
+      </div>
+    </div>
+  </section>
+
+</Marketing>
+
+<style>
+  .tool-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tool-row {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--color-rule);
+  }
+  .tool-row:last-child {
+    border-bottom: 0;
+  }
+  .tool-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tool-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .tool-name {
+    font: 700 15px/1.2 var(--font-sans);
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .tool-integration {
+    font: 500 12px/1.4 var(--font-mono);
+    letter-spacing: 0.04em;
+    color: var(--color-ink-4);
+  }
+  .tool-surface {
+    display: inline-block;
+    font: 500 12px/1.4 var(--font-mono);
+    color: var(--color-ink-3);
+    background: var(--color-paper-2);
+    padding: 4px 8px;
+    align-self: flex-start;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .tool-row .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    font: 600 10px/1 var(--font-mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border: 1px solid var(--color-ink);
+    background: var(--color-paper);
+    flex-shrink: 0;
+  }
+  .tool-row .pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.9;
+  }
+  .tool-row .pill.auto {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+  }
+  .tool-row .pill.gui {
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  .panel-foot .panel-foot-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+  }
+
+  .panel-foot-mark .live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 0 var(--color-accent);
+    animation: live-pulse 1.6s ease-out infinite;
+  }
+
+  @keyframes live-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 74, 28, 0.55);
+      transform: scale(1);
+    }
+    70% {
+      box-shadow: 0 0 0 8px rgba(255, 74, 28, 0);
+      transform: scale(1);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 74, 28, 0);
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .panel-foot-mark .live-dot {
+      animation: none;
+    }
+  }
+</style>

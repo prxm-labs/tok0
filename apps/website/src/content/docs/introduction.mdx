@@ -1,0 +1,62 @@
+---
+title: Introduction
+description: tok0 compresses verbose shell output before it reaches an LLM. Native Rust, single binary, ~80% savings on the commands your agent runs most.
+section: Start
+order: 1
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` sits between your AI agent and the shell. When the agent runs `git diff`, `cargo build`, or `kubectl get pods`, tok0 captures the output, drops the noise, and forwards what's left. The agent sees only lines that matter; you stop paying for tokens that read *"Compiling 142 of 1500 crates..."*.
+
+It's a single static Rust binary, ~8 MB. No runtime, no daemon, no account.
+
+## Why
+
+Coding agents spend tokens on shell output that is mostly noise: progress bars, ANSI codes, repeated banners, dependency trees, vendor warnings. A typical `npm install` is 2–5 KB of useful text wrapped in 30–50 KB of formatting. Compressing that before the model is the cheapest win available.
+
+`tok0` cuts real output by **60–90%** across ~250 commands. Each rule has a CI-asserted minimum baked into its tests.
+
+## How
+
+```
+agent → shell command → tok0 → model context
+```
+
+`tok0 init` finds the AI tools on your machine (Claude Code, Cursor, Gemini CLI, etc.) and wires up a hook for each. The hook intercepts a shell call, runs the command, runs the output through the matching compressor, and returns the result. Exit codes pass through. If a filter errors, you get the raw output.
+
+<Callout type="tip">
+Run `tok0 init` once. Every supported command compresses from then on. No prompt changes, no workflow changes.
+</Callout>
+
+## What's inside
+
+| Subsystem | What it does | Source |
+|---|---|---|
+| Compression pipeline | Eight stages: strip ANSI, pattern replace, output match, line select, truncate, head/tail window, hard cap, empty fallback. | `apps/cli/src/engine/compressor.rs` |
+| TOML rule engine | 120+ declarative rules across git, cargo, npm, docker, kubectl, terraform, pytest, brew, apt, and more. Each ships with a minimum-savings floor checked in CI. | `apps/cli/src/rules/*.toml` |
+| Native compressors | 52 hand-tuned Rust modules for commands that need real parsing (JSON reshaping, AST-aware filtering). | `apps/cli/src/compressors/` |
+| AI tool bridges | Auto-installs into Claude Code, Cursor, Gemini CLI, Windsurf, Cline, Amp, OpenCode, Codex, Kimi Code. | `apps/cli/src/bridge/setup.rs` |
+| Local meter | SQLite token counter at `~/.config/tok0/meter.db`. Stays on your machine unless you opt into telemetry with `--features cloud`. | `apps/cli/src/engine/meter.rs` |
+
+## Next
+
+<div class="docs-entry-grid">
+  <a class="docs-entry" href="/docs/getting-started/">
+    <span class="docs-entry-label">Getting started</span>
+    <span class="docs-entry-promise">Install tok0, run <code>tok0 init</code>, watch the next session compress.</span>
+  </a>
+  <a class="docs-entry" href="/docs/installation/">
+    <span class="docs-entry-label">Installation</span>
+    <span class="docs-entry-promise">Homebrew, shell script, Cargo, Scoop, Snap, Chocolatey, source.</span>
+  </a>
+  <a class="docs-entry" href="/docs/compression-pipeline/">
+    <span class="docs-entry-label">Compression pipeline</span>
+    <span class="docs-entry-promise">Eight pure stages. Same input, same output, every time.</span>
+  </a>
+  <a class="docs-entry" href="/docs/writing-rules/">
+    <span class="docs-entry-label">Writing TOML rules</span>
+    <span class="docs-entry-promise">Declarative filters with CI-checked savings floors. No Rust required.</span>
+  </a>
+</div>

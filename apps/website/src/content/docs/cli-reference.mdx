@@ -1,0 +1,157 @@
+---
+title: CLI reference
+description: Every tok0 command, flag, and exit code. The search-and-find page.
+section: Reference
+order: 2
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` is a single binary with subcommands. All of them respect the global flags `--config`, `--no-color`, `--quiet`.
+
+## Synopsis
+
+```bash
+tok0 [GLOBAL-FLAGS] <COMMAND> [ARGS]
+tok0 <wrapped-cmd> [WRAPPED-ARGS]   # passthrough form
+```
+
+The first form runs a tok0 subcommand (`tok0 init`, `tok0 stats`, …). The second is the proxy: any command tok0 knows about runs as `tok0 <cmd>` and gets compressed.
+
+## Global flags
+
+| Flag | Effect |
+|---|---|
+| `--config <path>` | Use an alternate config file (also `TOK0_CONFIG`). |
+| `--quiet` | Suppress non-error stderr (also `TOK0_QUIET=1`). |
+| `--no-color` | Disable tok0's own ANSI output (also `NO_COLOR`). |
+| `--log <level>` | `error`, `warn`, `info`, `debug`, `trace`. |
+| `--version` | Print version and build info. |
+| `--help` | Show help. |
+
+## Setup & maintenance
+
+### `tok0 init`
+Detect every supported AI tool on this machine and install the right hook, rules file, or paste-in. Idempotent.
+
+```bash
+tok0 init
+tok0 init --tools claude-code,cursor   # subset
+tok0 init --remove                      # uninstall all hooks
+tok0 init --dry-run                     # show what would happen
+```
+
+### `tok0 status`
+Per-tool bridge state: detected? wired? signature ok?
+
+### `tok0 doctor`
+Diagnostic: PATH wiring, config dir permissions, db reachability, hook signatures, AI tool detection, telemetry status. Run when something feels off.
+
+### `tok0 verify`
+SHA-256 every installed hook against the embedded manifest. Exits non-zero on mismatch.
+
+### `tok0 update`
+Self-update against GitHub Releases. Respects `[updater].channel`. No-op for package-manager installs.
+
+## Trust
+
+### `tok0 trust [path]`
+Opt a project into loading its `.tok0/filters/*.toml` rules. Defaults to `.`.
+
+### `tok0 untrust [path]`
+Revoke. Project-local rules go inert.
+
+### `tok0 trust list`
+Print every trusted project path.
+
+## Insights
+
+### `tok0 stats`
+Dashboard: total tokens saved, top-N commands by savings, 30-day rolling chart, all from the local SQLite meter.
+
+```bash
+tok0 stats               # default 30-day window
+tok0 stats --days 7
+tok0 stats --json        # machine-readable
+```
+
+### `tok0 costs`
+Token savings translated to $ at provider rates.
+
+### `tok0 adoption`
+Fraction of agent commands that hit a tok0 compressor.
+
+### `tok0 profile`
+Per-compressor performance and size breakdown.
+
+```bash
+tok0 profile                    # all compressors
+tok0 profile run "git diff"     # one-shot for a specific command
+```
+
+### `tok0 scan`
+Walk historical AI tool transcripts and report what tok0 *would have* saved if installed last month. Read-only — transcripts are never modified.
+
+## Rules
+
+### `tok0 rules list`
+Every rule loaded, with its source path (built-in / user / project).
+
+### `tok0 rules show <name>`
+The resolved TOML, after overrides.
+
+### `tok0 rules test <rule.toml> <fixture>`
+Run the rule against a captured fixture. Prints raw size, compressed size, savings %, and assertion results.
+
+## Extensions
+
+### `tok0 extensions install <git-url>`
+Clone a rule pack into `~/.config/tok0/extensions/<name>` after a trust prompt.
+
+### `tok0 extensions list`
+Installed extensions with their commit hashes.
+
+### `tok0 extensions remove <name>`
+Delete the extension and unload its rules.
+
+## Telemetry
+
+Off by default. All three forms work the same way and match setting `[telemetry].enabled` directly.
+
+```bash
+tok0 telemetry on
+tok0 telemetry off
+tok0 telemetry status
+```
+
+<Callout type="note">
+Telemetry is anonymous instance-level metrics only — no command output, no paths, no identifiers. See <a href="/docs/telemetry/">Telemetry &amp; privacy</a> for the exact payload.
+</Callout>
+
+## Proxy form
+
+For every supported command, `tok0 <cmd>` runs the underlying tool, captures its output, runs the matching compressor, and prints the result. Exit code passes through.
+
+```bash
+tok0 git diff
+tok0 cargo build --release
+tok0 npm install
+tok0 kubectl get pods -A
+tok0 docker build .
+```
+
+The full list (~250 commands) is at [Compressors](/docs/compressors/).
+
+## Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success. |
+| `1` | Wrapped command exit code passed through. |
+| `2` | Misuse: bad flags, missing args. |
+| `64` | I/O error (config dir not writable, db locked). |
+| `65` | Filter error AND raw fallback also failed (rare; should never happen in production). |
+| `127` | Wrapped command not found. |
+
+When wrapping a command, tok0 always passes the wrapped command's exit code through if it ran. tok0's own errors only surface when the wrapped command never executed.

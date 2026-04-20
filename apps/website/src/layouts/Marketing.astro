@@ -1,0 +1,174 @@
+---
+import "~/styles/global.css";
+import Nav from "~/components/Nav.astro";
+import { CLI_VERSION, CLI_VERSION_TAG } from "~/lib/version";
+
+interface Props {
+  title: string;
+  description: string;
+  /** OG image slug (without extension) — resolves to /og/<slug>.png. */
+  ogSlug?: string;
+  /** top-strip overrides */
+  stripLeft?: string;
+  stripCenter?: string;
+  stripRight?: string;
+  /** footer-strip overrides */
+  bottomLeft?: string;
+  bottomCenter?: string;
+  bottomRight?: string;
+}
+
+const {
+  title,
+  description,
+  ogSlug = "home",
+  stripLeft = "OPEN SOURCE — SHELL OUTPUT COMPRESSION PROXY",
+  stripCenter = "TOK0 · RUST CLI",
+  stripRight = "PRE-MODEL TOKEN REDUCTION",
+  bottomLeft = "BUILT IN RUST · SINGLE STATIC BINARY · 8 MB",
+  bottomCenter = `${CLI_VERSION_TAG} / MIT`,
+  bottomRight = "GITHUB.COM/PRXM-LABS/TOK0",
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const ogImage = new URL(`/og/${ogSlug}.png`, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#f4f1ea" />
+  </head>
+  <body>
+    <!-- corner registration brackets (full-bleed) -->
+    <div class="corner corner-tl">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+    <div class="corner corner-tr">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+    <div class="corner corner-br">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+    <div class="corner corner-bl">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+
+    <!-- vertical edge labels -->
+    <div class="edge-label edge-label-l">
+      PROJECT · TOK0 / FIELD COMPRESSION UNIT
+    </div>
+    <div class="edge-label edge-label-r">
+      SERIAL NO. {CLI_VERSION} · BUILT IN RUST · MIT
+    </div>
+
+    <div class="page-frame">
+      <!-- ── top industrial strip ──────────────────────────────────── -->
+      <div class="strip strip-top">
+        <div class="strip-row container">
+          <span>{stripLeft}</span>
+          <span class="center">{stripCenter}</span>
+          <span class="right"
+            ><span class="arrow">&gt;&gt;&gt;</span> {stripRight}</span
+          >
+        </div>
+      </div>
+
+      <!-- ── nav ──────────────────────────────────────────────────────── -->
+      <Nav />
+
+      <!-- ── body ─────────────────────────────────────────────────────── -->
+      <main class="container"><slot /></main>
+
+      <!-- ── footer ───────────────────────────────────────────────────── -->
+      <footer class="container">
+        <div class="foot-grid">
+          <div>
+            <p
+              style="max-width:36ch; margin:14px 0 0; line-height:1.55; font-family:var(--font-mono); font-size:13px; color:var(--color-ink-3);"
+            >
+              Open-source Rust CLI proxy. Compresses shell output before it
+              reaches the model. Typical savings 60–90% on git, cargo, npm,
+              docker, kubectl.
+            </p>
+            <div
+              style="margin-top:18px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--color-ink-4);"
+            >
+              MIT · {CLI_VERSION_TAG} · APR 2026
+            </div>
+          </div>
+          <div>
+            <h4>Source</h4>
+            <ul>
+              <li><a href="https://github.com/prxm-labs/tok0">GitHub</a></li>
+              <li>
+                <a href="https://github.com/prxm-labs/tok0/issues">Issues</a>
+              </li>
+              <li>
+                <a href="https://github.com/prxm-labs/tok0/releases"
+                  >Releases</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4>Install</h4>
+            <ul>
+              <li>
+                <a href="/docs/installation/#macos--homebrew">Homebrew</a>
+              </li>
+              <li>
+                <a href="/docs/installation/#quick-install-any-platform"
+                  >Shell script</a>
+              </li>
+              <li>
+                <a href="/docs/installation/#cargo-any-platform">Cargo</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4>Field</h4>
+            <ul>
+              <li>
+                <a href="https://github.com/prxm-labs/tok0#readme">README</a>
+              </li>
+              <li>
+                <a href="https://github.com/prxm-labs/tok0/blob/main/CLAUDE.md"
+                  >Conventions</a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/prxm-labs/tok0/blob/main/apps/cli/ROADMAP.md"
+                  >Roadmap</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </footer>
+
+      <!-- ── bottom industrial strip ──────────────────────────────────── -->
+      <div class="strip">
+        <div class="strip-row container">
+          <span>{bottomLeft}</span>
+          <span class="center">{bottomCenter}</span>
+          <span class="right">{bottomRight}</span>
+        </div>
+      </div>
+    </div><!-- /page-frame -->
+  </body>
+</html>

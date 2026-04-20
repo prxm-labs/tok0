@@ -1,0 +1,105 @@
+---
+title: Glossary
+description: Every tok0 term worth defining once — bridge, compressor, fallback pattern, instance ID, mpsc meter, rule pack, trust, and the rest.
+section: Reference
+order: 5
+updated: APR 2026
+---
+
+## A — F
+
+**Adapter.** A thin (~20 LOC) format translator at `apps/cli/src/bridge/adapters.rs` that converts an AI tool's hook payload into a canonical shape the rewriter understands. Format-only; no business logic.
+
+**AGENTS.md.** The community-standard markdown file (`~/.config/<tool>/AGENTS.md`) that several AI tools auto-load as system context. tok0 appends an instructions block to each one during `tok0 init`.
+
+**Assertion.** A `[[assertions]]` block inside a TOML rule that pins the rule's behavior on a captured fixture. CI runs every assertion on every change. See [Writing TOML rules](/docs/writing-rules/).
+
+**Bridge.** The subsystem at `apps/cli/src/bridge/` that connects tok0 to AI tools — installs hooks, signs them, verifies integrity, manages trust.
+
+**Cache miss.** When a TOML rule's mtime is newer than its cached parsed form, forcing re-parse. Cost: &lt;100 µs per rule. Triggers on every save when authoring.
+
+**Compressor.** A native Rust module at `apps/cli/src/compressors/<eco>/<cmd>_cmd.rs` that wraps one or more shell commands. Reserved for cases too complex for a TOML rule.
+
+**Cold start.** Time from process launch to first useful work. tok0's budget: 5 ms.
+
+**Dispatcher.** The function in `apps/cli/src/engine/dispatcher.rs` that maps a `(command, args)` pair to its compressor or TOML rule. Hash-lookup fast.
+
+**Empty fallback.** Stage 8 of the pipeline. If everything else collapsed the output to whitespace, the rule's `empty_message` fires (default: `ok`).
+
+**Extension.** A community rule pack distributed as a git repository. Installed via `tok0 extensions install <git-url>`, trust-prompted, version-pinned.
+
+**Fallback pattern.** The mandatory rule for every compressor: if the filter errors, output the raw command stdout unchanged. Never block the user. See [`apps/cli/CLAUDE.md`](https://github.com/prxm-labs/tok0/blob/main/apps/cli/CLAUDE.md) rule 5.
+
+**Filter.** Any function that transforms shell output. Used loosely to mean "TOML rule" or "stage of the pipeline."
+
+**Fixture.** A captured raw shell-command output (`*.raw`) used to seed assertions and snapshot tests.
+
+## H — N
+
+**Hard cap.** Stage 7 of the pipeline. Absolute byte ceiling on compressed output, regardless of what earlier stages did.
+
+**Head/tail window.** Stage 6 of the pipeline. Keeps first N + last N lines, replaces the middle with a one-line marker.
+
+**Hook.** A configuration entry in an AI tool's settings that fires before/after tool calls. Claude Code's `PreToolUse` is the canonical example. tok0 installs hooks during `tok0 init`.
+
+**Insights.** The subsystem at `apps/cli/src/insights/` that reads from the SQLite meter and renders summaries (`tok0 stats`, `tok0 costs`, `tok0 adoption`, `tok0 profile`).
+
+**Instance ID.** A random 128-bit identifier in `~/.config/tok0/instance_id`, generated on first run. Telemetry uses it to deduplicate pings without identifying a user. Rotate or delete it any time.
+
+**Integrity.** SHA-256 verification of installed hooks against the embedded manifest. Run by `tok0 verify`.
+
+**lazy_static!.** The macro every regex in tok0 lives inside. Compiles the pattern once, on first use. Recompiling regex per-call would dominate the pipeline's cost.
+
+**Manifest.** Two unrelated meanings: (1) extension manifest at `tok0-extension.toml`; (2) integrity manifest embedded in the tok0 binary, mapping each hook template to its expected SHA-256.
+
+**Meter.** The SQLite database at `~/.config/tok0/meter.db` storing per-event compression metrics. Local-only.
+
+**Min savings.** A floor — 0 to 100 — asserted by a rule's `[[assertions]]` block. CI fails if compression on the rule's fixture drops below it.
+
+**mpsc meter.** Multi-producer single-consumer channel feeding the SQLite writer. The only concurrency primitive in the entire binary.
+
+**Native compressor.** See **Compressor**. Used to disambiguate from TOML rules.
+
+## O — S
+
+**Output match.** Stage 3 of the pipeline. If patterns are defined, only blocks matching at least one survive. Useful when 95% of output is preamble.
+
+**Pattern replace.** Stage 2 of the pipeline. Ordered list of `(regex, replacement)` pairs.
+
+**Pipeline.** The 8-stage sequence every output flows through. See [Compression pipeline](/docs/compression-pipeline/).
+
+**PreToolUse hook.** Claude Code's hook fired before its `Bash` tool executes. tok0 wires itself into this.
+
+**Project trust.** A project at `<path>` is trusted iff `<path>` is in `~/.config/tok0/trust.toml`. Required to load project-local rules from `.tok0/filters/`.
+
+**Proxy.** The wrapping mode: `tok0 <cmd> [args]` runs `<cmd> [args]`, captures output, runs it through the matching compressor, propagates exit code.
+
+**Rewrite.** What the bridge does to AI tool payloads — replaces a raw shell-command call with `tok0 <cmd> …`. Implemented in `apps/cli/src/bridge/rewriter.rs`.
+
+**Rule.** Either a TOML compression spec (the common case) or a native Rust compressor (the exception). Both go through the same dispatcher.
+
+**Rule pack.** A directory of TOML rules, possibly distributed as an extension.
+
+**Section** (in this docs site). The top-level grouping a doc page belongs to: Start, Concepts, Reference, Integrations, Operations, Project.
+
+**Self-update.** `tok0 update` — checks GitHub Releases, downloads, swaps the binary in place. Disabled with `[updater].auto_check = false`.
+
+**Snapshot.** Two meanings: (1) `~/.cache/tok0/snapshots/` — raw outputs dumped when a filter falls back, for debugging; (2) `insta`-style test snapshots that pin compressor output byte-exact in CI.
+
+**Stage.** One of the eight pure functions in the pipeline. Each takes `&str`, returns `String`, never mutates shared state.
+
+**Strip ANSI.** Stage 1 of the pipeline. Removes color codes, cursor moves, hyperlink wrappers. Always applied.
+
+## T — Z
+
+**Telemetry.** Off-by-default anonymous instance ping. Payload contains version, OS, daily event count and tokens saved. Never command output.
+
+**Tool slug.** A short identifier for an AI tool, used in CLI flags: `claude-code`, `cursor`, `gemini-cli`, `windsurf`, `cline`, `amp`, `opencode`, `codex`, `kimi-code`.
+
+**Trust class.** One of: built-in (always trusted), user-global (always trusted), extension (prompt-on-install), project (prompt-per-project). See [Trust & safety](/docs/trust-and-safety/).
+
+**Truncate.** Stage 5 of the pipeline. Caps each line's length at `max_line_chars`, replaces the rest with `…`.
+
+**TOML rule.** The most common compression spec format. Declarative, embedded in or loaded from disk, schema at [Writing TOML rules](/docs/writing-rules/).
+
+**TOK0_DISABLE.** Environment variable. Set to `1` to fully bypass tok0; every wrapped command becomes a passthrough. The kill switch.

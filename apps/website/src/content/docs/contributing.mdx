@@ -1,0 +1,110 @@
+---
+title: Contributing
+description: How to land a TOML rule, a native compressor, an AI tool integration, or a bug fix. Conventions, CI gates, commit style.
+section: Project
+order: 1
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` is MIT-licensed and welcomes contributions. The repo is at <a href="https://github.com/prxm-labs/tok0">github.com/prxm-labs/tok0</a>. Most contributions land in one of four shapes:
+
+- A new TOML compression rule.
+- A native Rust compressor.
+- A new AI tool integration.
+- A bug fix or doc improvement.
+
+Each has a recipe below. CI gates are the same across all four.
+
+## Repo layout
+
+```
+tok0/
+├── apps/cli/          # the Rust binary (this is where most PRs go)
+├── apps/website/      # Astro site (this docs page lives here)
+├── packages/
+│   └── openclaw-plugin/   # IDE plugin
+└── docs/superpowers/  # design specs and ongoing-work plans
+```
+
+For CLI work: `cd apps/cli && cargo test`. CLI conventions live in [`apps/cli/CLAUDE.md`](https://github.com/prxm-labs/tok0/blob/main/apps/cli/CLAUDE.md). Read it before your first PR.
+
+## Quality gate (run before every commit)
+
+```bash
+cd apps/cli
+cargo fmt --all
+cargo clippy --all-targets -- -D warnings
+cargo test
+```
+
+Local toolchain: `rustup update stable` (1.95+).
+
+## Adding a TOML rule
+
+The most common contribution and the easiest. Use it whenever pattern-stripping is enough.
+
+1. **Capture a real fixture:**
+   ```bash
+   <command> 2>&1 > apps/cli/tests/fixtures/<eco>/<command>_raw.txt
+   ```
+2. **Write the rule** at `apps/cli/src/rules/<command>.toml`. Schema: [Writing TOML rules](/docs/writing-rules/).
+3. **Add at least one assertion** with `min_savings_pct`. CI gates it.
+4. **Run** `cargo test --test rules` to verify your assertion passes.
+5. **PR.**
+
+## Adding a native Rust compressor
+
+For cases where TOML isn't enough: multi-pass parsing, AST awareness, JSON reshaping.
+
+1. **Capture a fixture:**
+   ```bash
+   <cmd> 2>&1 > apps/cli/tests/fixtures/<eco>/<cmd>_raw.txt
+   ```
+2. **Create** `apps/cli/src/compressors/<eco>/<cmd>_cmd.rs` with `pub fn run(args: <Args>) -> Result<()>`.
+3. **All regex inside `lazy_static!`.** Never `Regex::new()` in a function body.
+4. **Add `assert_snapshot!`** + a token-savings test (≥60%).
+5. **Wire into** [`apps/cli/src/main.rs`](https://github.com/prxm-labs/tok0/blob/main/apps/cli/src/main.rs) `Commands` enum and [`apps/cli/src/engine/dispatcher.rs`](https://github.com/prxm-labs/tok0/blob/main/apps/cli/src/engine/dispatcher.rs) `match`.
+6. **PR.**
+
+Reference: [`apps/cli/.claude/skills/rust-dev/SKILL.md`](https://github.com/prxm-labs/tok0/blob/main/apps/cli/.claude/skills/rust-dev/SKILL.md).
+
+## Adding an AI tool integration
+
+1. New variant in `ToolTarget` (`apps/cli/src/bridge/setup.rs`).
+2. Cases in `config_dir_for()`, `instructions_filename()`, `tool_slug()`.
+3. A signal in `detect_tools_in()` (config dir or `which_binary()`).
+4. Optional `post_install_hint()` for manual steps.
+5. A parametric test in `bridge::setup::tests::all_instruction_tools()`.
+6. **PR with a screenshot** of the tool config surface for reviewer context.
+
+## Non-negotiable rules
+
+CI enforces all of them.
+
+1. **No async runtime.** Zero `tokio`, `async-std`, `futures`. Single-threaded.
+2. **`.context()?` on every `?`.** anyhow with a static or dynamic context string. Bare `?` only inside `lazy_static!` or test code.
+3. **All regex via `lazy_static!`.** Never `Regex::new()` in a function body.
+4. **No `unwrap()` in production paths.** `lazy_static!` init is fine; `expect("reason")` in tests.
+5. **Fallback pattern in compressors.** Filter error → raw output passthrough. Never block the user.
+6. **Exit-code propagation.** `std::process::exit(code)` when the wrapped command fails.
+
+## Commit style
+
+Conventional prefixes: `feat:`, `fix:`, `test:`, `docs:`, `chore:`, `perf:`, `refactor:`, `style:`. Optional scope: `fix(bridge): …`. First line ≤ 72 chars. Body explains *why*. release-please drives changelog generation off these prefixes.
+
+## Releasing
+
+Maintainers only:
+
+- **CLI** is released via release-please: merging the bot's release PR cuts a `vX.Y.Z` tag → matrix builds 5 binaries + `.deb` → updates Homebrew formula → publishes Docker image to GHCR.
+- **API and website** are continuously deployed: every merge to `main` ships, every PR gets a preview deploy.
+
+## Code of conduct
+
+The project follows the <a href="https://www.contributor-covenant.org/version/2/1/code_of_conduct/">Contributor Covenant</a>.
+
+<Callout type="tip">
+First-time contributors: pick an issue tagged <code>good-first-issue</code>. Most are TOML rules with a captured fixture already attached. Typical clone-to-PR time is under an hour.
+</Callout>

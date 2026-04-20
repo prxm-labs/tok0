@@ -1,0 +1,104 @@
+---
+title: Trust & safety
+description: tok0's threat model — why project-local rules and extensions are gated, how integrity verification works, and how to recover from a tampered install.
+section: Operations
+order: 2
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` runs regexes against the shell output your AI agent will read. Those regexes can collapse, mask, or rewrite content. Anyone shipping a rule has the power to change what your model sees. That's why tok0 enforces a layered trust model and signs every hook it installs.
+
+## Four trust classes
+
+| Source | Trust | Why |
+|---|---|---|
+| Built-in rules (embedded) | Implicit | Vetted in CI, signed at build, embedded by `include_str!`. Cannot be modified post-install. |
+| User-global rules (`~/.config/tok0/filters/`) | Implicit | You wrote them. tok0 trusts your home directory. |
+| Extensions (`~/.config/tok0/extensions/`) | Prompt-on-install | Prompted on first install and any time the rules change after `tok0 extensions update`. |
+| Project-local rules (`.tok0/filters/`) | Prompt-per-project | Inert until `tok0 trust .` runs. |
+
+Same layering VS Code uses for workspace settings. The strict default: "this code came in from someone else; ask before running it." If you'd be uncomfortable executing a shell script from a given source, you should be uncomfortable loading a rule from it.
+
+## Trusting a project
+
+```bash
+cd ~/projects/my-repo
+tok0 trust .
+```
+
+Trust is keyed by the project's **absolute path**. Renaming or moving the project invalidates the trust entry — that's intentional. An attacker who could place a malicious `.tok0/filters/` somewhere on your disk still couldn't get tok0 to load it without your knowledge.
+
+```bash
+tok0 trust list      # show every trusted path
+tok0 untrust .       # revoke
+```
+
+The trust ledger is at `~/.config/tok0/trust.toml`.
+
+## Hook integrity
+
+Every hook tok0 writes carries a signature. tok0 can verify each one against the embedded manifest:
+
+```bash
+tok0 verify
+```
+
+Sample output:
+
+```
+✓ ~/.claude/settings.json           sha256:a1b2c3…  ok
+✓ ~/.gemini/GEMINI.md               sha256:9f8e7d…  ok
+✗ ~/.codeium/windsurf/memories/...  sha256:00ff11…  expected b3a5c2…
+```
+
+Failures mean exactly one of:
+
+1. You manually edited the file. Re-run `tok0 init` to refresh.
+2. Another tool wrote to it. Investigate before re-running.
+3. The file was tampered with. Investigate; never re-run blind.
+
+`tok0 verify` is also runnable from CI; it exits non-zero on any drift.
+
+## Removing a tampered install
+
+If you suspect any part of tok0 has been compromised:
+
+```bash
+# 1. Remove every installed hook.
+tok0 init --remove
+
+# 2. Wipe local state — config, db, cached extensions.
+rm -rf ~/.config/tok0 ~/.cache/tok0
+
+# 3. Reinstall from a verified package source.
+brew reinstall tok0   # or your preferred manager
+
+# 4. Start fresh.
+tok0 init
+```
+
+The binary itself ships with checksums on every release artifact. The install script (`curl ... | sh`) verifies them automatically.
+
+## Why regex filters are sensitive
+
+A pattern like `"^Password:.*"` could conceal a secret. A pattern like `"foo"  →  "bar"` could rewrite it to something benign-looking. Neither is hypothetical in adversarial environments — supply-chain attacks against developer tools have repeatedly shipped this exact kind of substitution.
+
+tok0's built-in rules go through CI review (every PR has a human reviewer plus automated tests on real fixtures). Community extensions and project-local rules don't get that review, which is why they're prompted.
+
+## What tok0 will *not* protect you from
+
+- Running a malicious shell command in the first place (that's your AI agent's problem).
+- Deleting files that were already there.
+- Network egress from the wrapped command itself.
+
+tok0 only sees output. It never executes commands the agent didn't already intend to run, and it never modifies stdin / arguments going into a command. If your agent decides to run `rm -rf /`, tok0 will dutifully compress the resulting output.
+
+<Callout type="warn">
+None of tok0's filters should be relied on as a security boundary. They're an output-compression tool. Real security boundaries live in your shell, your kernel, and your AI agent's command-allowlist policy.
+</Callout>
+
+## Reporting a vulnerability
+
+See the repo-root <a href="https://github.com/prxm-labs/tok0/blob/main/SECURITY.md">SECURITY.md</a>. Coordinated disclosure via email to security@prxm-labs.dev. We respond within 72 hours.

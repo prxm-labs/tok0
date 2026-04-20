@@ -1,0 +1,318 @@
+---
+import type { StatsSnapshot } from "~/lib/stats";
+import { formatCount, formatTokens } from "~/lib/stats";
+
+interface Props {
+  stats: StatsSnapshot;
+  live: boolean;
+}
+const { stats, live } = Astro.props;
+
+/* sparkline path from daily.saved_tokens */
+const daily = stats.daily ?? [];
+const w = 560,
+  h = 80,
+  pad = 2;
+const max = Math.max(1, ...daily.map((d) => d.saved_tokens));
+const min = Math.min(0, ...daily.map((d) => d.saved_tokens));
+const span = Math.max(1, max - min);
+const stepX = daily.length > 1 ? (w - pad * 2) / (daily.length - 1) : 0;
+const points = daily.map((d, i) => {
+  const x = pad + i * stepX;
+  const y = h - pad - ((d.saved_tokens - min) / span) * (h - pad * 2);
+  return [x, y] as const;
+});
+const path = points.length
+  ? "M " + points.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(" L ")
+  : "";
+const area = points.length
+  ? `M ${points[0]![0].toFixed(1)} ${h - pad} L ` +
+    points.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(" L ") +
+    ` L ${points[points.length - 1]![0].toFixed(1)} ${h - pad} Z`
+  : "";
+
+/* Telemetry reports os as `<family>-<arch>` (e.g. `macos-aarch64`,
+ * `linux-x86_64`). Collapse to the family — users care that it works
+ * on their OS, not which build flavour they're running. */
+const OS_LABEL: Record<string, string> = {
+  macos: "macOS",
+  linux: "Linux",
+  windows: "Windows",
+};
+const byOsFamily = Object.entries(stats.by_os ?? {}).reduce<
+  Record<string, number>
+>((acc, [key, n]) => {
+  const family = key.split("-")[0]?.toLowerCase() ?? key;
+  const label = OS_LABEL[family] ?? family;
+  acc[label] = (acc[label] ?? 0) + n;
+  return acc;
+}, {});
+const topByOs = Object.entries(byOsFamily).sort((a, b) => b[1] - a[1]);
+const totalOs = topByOs.reduce((a, [, v]) => a + v, 0) || 1;
+
+const topByCountry = Object.entries(stats.by_country ?? {})
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 6);
+const totalCountry = topByCountry.reduce((a, [, v]) => a + v, 0) || 1;
+
+const topCommands = (stats.top_commands ?? []).slice(0, 6);
+
+/* Estimated $ saved at current published input-token rates ($/M).
+ * tok0 strips bytes from command output before it reaches the model's
+ * context window, so savings are billed at the input rate. We anchor
+ * the headline number at Claude Sonnet 4.6 ($3/M) — the most common
+ * production rate for agent workloads — and bracket it with the cheap
+ * (Haiku 4.5, $1/M) and premium (Opus 4.7, $15/M) tier rates. */
+const RATE_LOW = 1.0;
+const RATE_MID = 3.0;
+const RATE_HIGH = 15.0;
+
+const savedM = stats.total_saved_tokens / 1_000_000;
+const usdMid = savedM * RATE_MID;
+const usdLow = savedM * RATE_LOW;
+const usdHigh = savedM * RATE_HIGH;
+
+function formatUsd(n: number): string {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
+  if (n >= 10_000) return `$${(n / 1_000).toFixed(1)}K`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(2)}K`;
+  if (n >= 100) return `$${n.toFixed(0)}`;
+  if (n >= 1) return `$${n.toFixed(2)}`;
+  return `$${n.toFixed(3)}`;
+}
+---
+
+<div class="split-2 stats-split" style="gap:24px; margin-top:32px;">
+  <!-- ── 30-day saved-tokens trend + top commands ─────────────────────── -->
+  <div class="panel">
+    <div class="panel-head">
+      <span
+        ><span class="ac">[</span> 30-DAY SAVED TOKENS <span class="ac">]</span
+        ></span
+      >
+      <span
+        >{daily.length} POINTS · {
+          formatTokens(daily.reduce((a, d) => a + d.saved_tokens, 0))
+        } TOTAL</span
+      >
+    </div>
+    <div class="panel-body">
+      {
+        daily.length > 0 ? (
+          <svg
+            viewBox={`0 0 ${w} ${h}`}
+            preserveAspectRatio="none"
+            style="width:100%; height:96px; display:block;"
+          >
+            <path d={area} fill="rgba(255,74,28,0.10)" />
+            <path
+              d={path}
+              fill="none"
+              stroke="var(--color-accent)"
+              stroke-width="1.5"
+            />
+            {points.map(([x, y]) => (
+              <circle cx={x} cy={y} r="1.6" fill="var(--color-ink)" />
+            ))}
+          </svg>
+        ) : (
+          <div
+            class="mono"
+            style="font-size:12px; color:var(--color-ink-4); text-align:center; padding:24px 0;"
+          >
+            — no daily series available —
+          </div>
+        )
+      }
+
+      <div
+        style="display:flex; justify-content:space-between; margin-top:8px; font:500 10px/1 var(--font-mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--color-ink-4);"
+      >
+        <span>{daily[0]?.date ?? "—"}</span>
+        <span>{daily[daily.length - 1]?.date ?? "—"}</span>
+      </div>
+
+      <div style="margin-top:22px;">
+        <div class="label" style="margin-bottom:10px;">
+          Top commands · by tokens saved
+        </div>
+        <ul style="display:grid; gap:8px;">
+          {
+            topCommands.map((c) => {
+              const w =
+                (c.saved_tokens / (topCommands[0]?.saved_tokens || 1)) * 100;
+              return (
+                <li style="display:grid; grid-template-columns: 1fr auto; align-items:center; gap:12px; font:500 12px/1 var(--font-mono);">
+                  <div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; color:var(--color-ink-2);">
+                      <span style="font-weight:600; letter-spacing:0.02em;">
+                        {c.command}
+                      </span>
+                      <span style="color:var(--color-ink-4);">
+                        {formatCount(c.count)} runs
+                      </span>
+                    </div>
+                    <div style="height:6px; background:var(--color-paper-3); border:1px solid var(--color-rule);">
+                      <div
+                        style={`height:100%; width:${w}%; background:var(--color-accent);`}
+                      />
+                    </div>
+                  </div>
+                  <span style="font-weight:700; color:var(--color-ink); min-width:70px; text-align:right;">
+                    {formatTokens(c.saved_tokens)}
+                  </span>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </div>
+    </div>
+    <div class="panel-foot">
+      <span>SOURCE · D1 · command_stats</span>
+      <span class="ac panel-foot-mark"
+        ><span aria-hidden="true">▶</span> /stats</span
+      >
+    </div>
+  </div>
+
+  <!-- ── fleet breakdown ──────────────────────────────────────────────── -->
+  <div class="panel">
+    <div class="panel-head">
+      <span
+        ><span class="ac">[</span> FLEET BREAKDOWN <span class="ac">]</span
+        ></span
+      >
+      <span>{formatCount(stats.total_instances)} INSTANCES</span>
+    </div>
+    <div class="panel-body">
+      <div class="label" style="margin-bottom:14px;">By operating system</div>
+      <ul style="display:grid; gap:12px; margin-bottom:32px;">
+        {
+          topByOs.map(([os, n]) => {
+            const pct = (n / totalOs) * 100;
+            return (
+              <li style="display:grid; grid-template-columns: 140px 1fr 56px; gap:14px; align-items:center; font:500 12px/1 var(--font-mono); padding:4px 0;">
+                <span style="color:var(--color-ink-2); font-weight:600;">
+                  {os}
+                </span>
+                <span style="height:6px; background:var(--color-paper-3); border:1px solid var(--color-rule); display:block;">
+                  <span
+                    style={`display:block; height:100%; width:${pct}%; background:var(--color-ink);`}
+                  />
+                </span>
+                <span style="text-align:right; color:var(--color-ink-4);">
+                  {n} · {pct.toFixed(0)}%
+                </span>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      <div class="label" style="margin-bottom:14px;">By country</div>
+      <div class="chips" style="gap:10px; margin-bottom:32px;">
+        {
+          topByCountry.map(([cc, n]) => (
+            <span class="chip">
+              {cc} <span class="pct">{n}</span>
+            </span>
+          ))
+        }
+      </div>
+
+      <div class="label" style="margin-bottom:14px;">
+        Estimated savings · input-token rates
+      </div>
+      <div
+        style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;"
+      >
+        <span
+          style="font:700 32px/1 var(--font-sans); letter-spacing:-0.02em; color:var(--color-ink);"
+        >
+          {formatUsd(usdMid)}
+        </span>
+        <span
+          style="font:500 11px/1.4 var(--font-mono); letter-spacing:0.08em; color:var(--color-ink-4);"
+        >
+          @ ${RATE_MID.toFixed(2)}/M
+          <span style="color:var(--color-ink-3);">· Sonnet-tier</span>
+        </span>
+      </div>
+      <div
+        style="margin-top:8px; font:500 11px/1.4 var(--font-mono); letter-spacing:0.04em; color:var(--color-ink-4);"
+      >
+        Range {formatUsd(usdLow)} – {formatUsd(usdHigh)}
+        <span style="color:var(--color-ink-3);"
+          >· Haiku ${RATE_LOW.toFixed(2)}/M → Opus ${
+            RATE_HIGH.toFixed(2)
+          }/M</span
+        >
+      </div>
+    </div>
+    <div class="panel-foot">
+      <span>SOURCE · D2 · instances</span>
+      <span class={`panel-foot-mark ${live ? "ac" : ""}`}>
+        {
+          live ? (
+            <>
+              <span class="live-dot" aria-hidden="true" /> LIVE
+            </>
+          ) : (
+            <>
+              <span aria-hidden="true">○</span> SNAPSHOT
+            </>
+          )
+        }
+      </span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .stats-split > .panel {
+    display: flex;
+    flex-direction: column;
+  }
+  .stats-split > .panel > .panel-body {
+    flex: 1;
+  }
+
+  .panel-foot .panel-foot-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1;
+  }
+
+  .live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 0 var(--color-accent);
+    animation: live-pulse 1.6s ease-out infinite;
+  }
+
+  @keyframes live-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 74, 28, 0.55);
+      transform: scale(1);
+    }
+    70% {
+      box-shadow: 0 0 0 8px rgba(255, 74, 28, 0);
+      transform: scale(1);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 74, 28, 0);
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,147 @@
+---
+title: Troubleshooting
+description: Common failure modes, what they mean, how to fix them. Bookmark this page; everyone hits at least one.
+section: Operations
+order: 3
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0` fails loud, then falls back safely. If a filter errors, the raw output flows through unchanged and the failure lands in `~/.cache/tok0/snapshots/`. Below are the symptoms you'll actually see and what to do about each.
+
+## "My agent isn't using tok0."
+
+Diagnosis ladder:
+
+```bash
+tok0 doctor          # full diagnostic
+tok0 status          # which AI tools are wired
+tok0 verify          # are the hooks intact?
+```
+
+The most common cause is that the AI tool was running before `tok0 init`. **Restart the tool** (close every window, reopen) so it re-reads its hook config.
+
+If `tok0 status` shows "not wired" for a tool you use:
+
+```bash
+tok0 init --tools <tool-name>
+```
+
+If `tok0 verify` shows a hook signature mismatch, you (or another tool) edited the hook file by hand. Re-run `tok0 init` to refresh.
+
+## "Compression seems off — output is smaller than I expected."
+
+```bash
+tok0 profile run "<command>"
+```
+
+Shows raw vs compressed bytes plus per-stage timings. It tells you which stage stripped what.
+
+If you suspect the wrong rule is matching:
+
+```bash
+tok0 rules list | grep <command>
+tok0 rules show <name>
+```
+
+A project-local rule overrides user-global which overrides built-in. First match wins.
+
+## "The wrapped command is slow."
+
+`tok0` typically adds &lt;1ms per command. If a command got slow after installing tok0:
+
+1. Bypass to confirm: `TOK0_DISABLE=1 <your command>`. If still slow, tok0 isn't the cause.
+2. Check the timeout: tok0 kills any wrapped command at `runtime.command_timeout_secs` (default 60s). Long-running commands need `--timeout` or a config bump.
+3. Profile: `tok0 profile run "<cmd>"` shows pipeline time vs command time separately.
+
+## "Filter error — falling back to raw output."
+
+This is a deliberate safety message. A regex in a rule died on unusual input; rather than block your terminal, tok0 emitted the raw output and logged the offending rule.
+
+Recover the failure for debugging:
+
+```bash
+ls ~/.cache/tok0/snapshots/   # latest failures
+tok0 doctor --snapshots       # human summary
+```
+
+Each snapshot is a captured stdout + stderr + the rule name that errored. Open an issue with the snapshot attached if it's a built-in rule.
+
+## "tok0: command not found"
+
+The binary isn't on your PATH. Confirm it landed:
+
+```bash
+which tok0
+ls -l /usr/local/bin/tok0 ~/.local/bin/tok0 2>/dev/null
+```
+
+If it's in `~/.local/bin` and that directory isn't on your PATH, add it to your shell rc:
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+## "Permission denied" on config
+
+`tok0` writes to `~/.config/tok0/` and `~/.cache/tok0/`. If those exist with the wrong owner (common after running `sudo` once):
+
+```bash
+sudo chown -R "$USER" ~/.config/tok0 ~/.cache/tok0
+```
+
+**Never** run `tok0 init` with `sudo`. The bridge writes to user-scoped tool configs (`~/.claude/`, `~/.gemini/`, …); running as root creates root-owned files in your home directory and breaks every subsequent invocation.
+
+## "Database is locked"
+
+Two tok0 processes raced on the meter database. The mpsc writer should serialize writes, so this is rare in practice, but if it happens:
+
+```bash
+fuser ~/.config/tok0/meter.db   # who has it open?
+```
+
+Kill the offender. The db is durable; you won't lose history.
+
+## "Rule changed but tok0 is using the old version"
+
+The rule cache is mtime-based. Touching the file is enough:
+
+```bash
+touch ~/.config/tok0/filters/my-rule.toml
+```
+
+If you suspect a stale cache anyway:
+
+```bash
+rm -rf ~/.cache/tok0/rules-cache
+```
+
+Cache rebuilds on next dispatch; cost is negligible (&lt;1ms).
+
+## "I want to see exactly what tok0 sent to my model."
+
+The `--log` flag shows it:
+
+```bash
+TOK0_LOG=trace tok0 git diff 2>tok0.log
+cat tok0.log | grep 'filtered_output'
+```
+
+`trace` logs the byte-exact compressed output before it's printed to stdout.
+
+## "How do I revert everything tok0 did?"
+
+```bash
+tok0 init --remove                            # remove hooks
+tok0 untrust --all                            # revoke all project trusts
+rm -rf ~/.config/tok0 ~/.cache/tok0           # nuke state
+brew uninstall tok0   # or the manager you used
+```
+
+A complete uninstall. Your AI tool configs are restored to pre-tok0 state.
+
+<Callout type="tip">
+If you hit a problem not covered here, run <code>tok0 doctor --json</code> and attach the output to the issue. It includes versions, config, hook signatures, and recent meter activity (no command output) — enough to reproduce in roughly 90% of cases.
+</Callout>

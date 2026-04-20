@@ -1,0 +1,97 @@
+---
+title: FAQ
+description: Quick answers to the questions that come up most often. If yours isn't here, the issue tracker is the next stop.
+section: Project
+order: 2
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+## Does tok0 work with my AI tool?
+
+Probably yes. tok0 ships native integrations for Claude Code, Cursor, Gemini CLI, Windsurf, Cline, Amp, OpenCode, Codex, and Kimi Code. See the [coverage matrix](/docs/ai-tools/) for the full list and integration type.
+
+For tools without a native integration, you can still use tok0 manually by running commands as `tok0 <cmd>`. Compression works the same; you just lose the auto-rewrite from the agent's hook surface.
+
+## Will it slow down my commands?
+
+Pipeline overhead is **&lt; 0.5 ms per command** in benchmarks. The wrapped command runs as it normally would; tok0 just observes its stdout/stderr. You won't feel it.
+
+## Does compression affect what my agent can do?
+
+No. Every compressor's CI tests assert that the *signal* is preserved: the agent still sees error messages, exit codes, file paths, the trailing summary. Only redundant or formatting-only output is collapsed. If a model loses information it actually needed, the rule's `min_savings_pct` is too aggressive — patch the rule (or open a PR) with the captured fixture.
+
+## What about non-deterministic output?
+
+The pipeline itself is deterministic (no clock reads, no randomness). If a wrapped command emits non-deterministic output (timestamps, hashes, port numbers), the compression of that output will also vary run-to-run. Each invocation still produces a stable, valid result.
+
+To normalize timestamps or hashes for downstream comparison, add a pattern-replace stage:
+
+```toml
+[[replacements]]
+pattern = "[0-9a-f]{40}"     # 40-char hashes
+replacement = "<hash>"
+```
+
+## Does it cost anything?
+
+The CLI is MIT-licensed, free, and open-source.
+
+## Can I use it offline?
+
+Yes. With `[telemetry].enabled = false` (the default) and `[updater].auto_check = false`, tok0 makes zero network calls. Verify with:
+
+```bash
+TOK0_LOG=trace tok0 git diff 2>&1 | grep -i 'http\|request'
+# (no output means no network calls)
+```
+
+## Does it work in CI?
+
+Yes. Two patterns:
+
+- **Bypass mode:** set `TOK0_DISABLE=1` in CI to short-circuit tok0 and pass commands through unchanged. Useful when you only want compression locally.
+- **Active mode:** install tok0 as part of your CI image, run `tok0 init --tools none` (skip AI hooks), and invoke commands as `tok0 <cmd>`. Output is compressed and counted in stats.
+
+## How big is the binary?
+
+8 MB stripped on x86_64 Linux. Single static, no runtime dependencies.
+
+## Can I use it with my own internal CLI?
+
+Yes. Write a [TOML rule](/docs/writing-rules/) at `~/.config/tok0/filters/my-internal-tool.toml`, drop it in, and tok0 picks it up. No rebuild required.
+
+For team-wide rules, package them as an [extension](/docs/extensions/) and have your team `tok0 extensions install <git-url>`.
+
+## Does it support Windows?
+
+Yes. Native binaries for x86_64 and arm64 ship on every release. Most pipeline behavior is identical; bridge surfaces are Windows-specific where appropriate (`%APPDATA%` instead of `~/.config`).
+
+PowerShell prompts are detected and stripped like any other shell prompt.
+
+## Does it support remote shells / SSH / containers?
+
+Three flavors:
+
+- **Wrapping `ssh` itself:** yes, the `system/ssh` compressor reduces verbose connection diagnostics. The actual remote shell session passes through unchanged.
+- **Inside a remote shell:** install tok0 on the remote host. Bridge configuration is local-host-only.
+- **Inside a container:** the Docker image at `ghcr.io/prxm-labs/tok0:latest` is built for this.
+
+## How does it compare to piping through `grep` or `head`?
+
+`grep`/`head` are line-level filters; tok0's pipeline is content-aware. A `grep -v` will strip a banner line but keep the `==>` it's part of. tok0's TOML rules understand command-shaped output: where the verdict lives, where the noise lives, what to do with a JSON tree, what exit code semantics imply.
+
+The bigger difference is that tok0 ships with 250+ rules already tuned and tested. You don't need to figure out the right awk incantation per tool.
+
+## Where do compression numbers in the marketing copy come from?
+
+The `~80%` figure on the homepage is the median compression ratio across the top-N most-frequently-run commands in the deployed fleet, weighted by frequency. Each rule has a CI-asserted minimum floor; per-command numbers live in [Compressors](/docs/compressors/).
+
+## Why is it called tok0?
+
+`tok` for token, `0` for "shrunk to zero" / "field unit zero". Pronounced "tock-zero". The brand mark is `t0`.
+
+<Callout type="tip">
+Have a question that should live here? Open an issue tagged <code>question</code> on GitHub. We periodically promote the most-asked ones into this page.
+</Callout>

@@ -1,0 +1,122 @@
+---
+title: AI tool integrations
+description: How tok0 hooks into Claude Code, Cursor, Gemini CLI, Windsurf, Cline, Amp, OpenCode, Codex, and Kimi Code.
+section: Integrations
+order: 1
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+`tok0 init` finds every supported AI tool on your machine and installs the right integration. The hook contract is the same in every case: `tok0 rewrite` reads the tool's payload on stdin, parses out the shell command, writes back a `tok0 <cmd>` invocation. What changes is the surface — Claude Code accepts a `PreToolUse` JSON hook; Cursor needs a Settings paste-in; Amp, OpenCode, and Codex read an `AGENTS.md`.
+
+## Coverage matrix
+
+| Tool | Surface | Integration | Auto-install |
+|---|---|---|:---:|
+| Claude Code | `~/.claude/settings.json` | `PreToolUse` hook | ✓ |
+| Cursor | Settings → Rules | rules paste-in | – |
+| Gemini CLI | `~/.gemini/GEMINI.md` | auto-loaded instructions | ✓ |
+| Windsurf | `~/.codeium/windsurf/memories/...` | global rules file | ✓ |
+| Cline | `~/Documents/Cline/Rules/tok0.md` | Cline Rules toggle | ✓ |
+| Amp | `~/.config/amp/AGENTS.md` | `AGENTS.md` auto-load | ✓ |
+| OpenCode | `~/.config/opencode/AGENTS.md` | `AGENTS.md` auto-load | ✓ |
+| Codex | `~/.codex/AGENTS.md` | `AGENTS.md` (manual) | – |
+| Kimi Code | `~/.kimi/tok0.md` | manual paste-in | – |
+
+7 of 9 are fully automatic. The two manual ones are GUI-only tools where there's no programmatic config surface to write to.
+
+## Claude Code
+
+Hook at `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "tok0 rewrite --tool claude-code" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+When Claude Code is about to call its `Bash` tool, the hook intercepts the payload, hands it to `tok0 rewrite`, and the rewriter wraps the command in `tok0 …` so the executed command's output flows through the pipeline.
+
+The hook is signed; `tok0 verify` SHA-256s it against the embedded manifest on every run.
+
+## Cursor
+
+Cursor doesn't have a hook API. `tok0 init` prints a paste-in block:
+
+```
+You are running inside a Cursor workspace. When invoking shell commands,
+prefer `tok0 <cmd>` over `<cmd>` directly. tok0 is a transparent
+compression proxy that produces smaller, lossless output for the model
+without changing the executed behavior.
+```
+
+Paste it into **Settings → Rules**. Cursor injects it into every system prompt going forward.
+
+## Gemini CLI
+
+`~/.gemini/GEMINI.md` auto-loads on every Gemini CLI session. tok0 appends a section that biases the model toward `tok0 <cmd>` invocations.
+
+## Windsurf
+
+`~/.codeium/windsurf/memories/` accepts global rule files. tok0 drops a `tok0.md` instructing Windsurf to prefer `tok0 …` calls.
+
+## Cline
+
+A `tok0.md` lands in `~/Documents/Cline/Rules/`. Toggle it on once in the Cline Rules panel and Cline auto-applies it to every workspace.
+
+## Amp / OpenCode / Codex
+
+All three honor the `AGENTS.md` standard. tok0 appends a section to each tool's `AGENTS.md` (in `~/.config/amp/`, `~/.config/opencode/`, `~/.codex/`). The agents read it at session start.
+
+Codex is manual because its `AGENTS.md` location varies by install method. `tok0 init` prints the canonical path and the section to append.
+
+## Kimi Code
+
+Paste the printed block into Kimi's settings. Same biasing pattern as Cursor.
+
+## How the rewriter works
+
+When a hook fires, the payload goes to `tok0 rewrite`, which:
+
+1. Parses the AI tool's payload (each tool has a thin adapter — see `apps/cli/src/bridge/adapters.rs`).
+2. Identifies the underlying shell command.
+3. If tok0 has a compressor for it: rewrites the call to `tok0 <cmd> …`.
+4. If not: leaves the payload alone. The agent runs the raw command.
+
+The rewriter is single-pass, deterministic, and microsecond-fast. It never blocks the agent.
+
+<Callout type="tip">
+You can dry-run the rewriter against any AI tool payload with <code>tok0 rewrite --tool &lt;tool&gt; &lt; payload.json</code>. Useful when reporting an integration bug.
+</Callout>
+
+## Verification
+
+```bash
+tok0 status     # which tools are wired
+tok0 verify     # SHA-256-check installed hooks
+tok0 doctor     # full diagnostic across all tools
+```
+
+`tok0 verify` is the security-critical one. If the integrity check fails for any installed hook — manual edit, third-party tampering, partial install — the command exits non-zero and prints which file diverged.
+
+## Adding a new tool
+
+The supported set lives in `apps/cli/src/bridge/setup.rs`. The two functions to extend are `config_dir_for()` and `instructions_filename()`. Adding a new tool is mechanical:
+
+1. New variant in the `ToolTarget` enum.
+2. Cases in `config_dir_for()`, `instructions_filename()`, `tool_slug()`.
+3. A detection signal in `detect_tools_in()` (config dir presence or `which_binary()`).
+4. Optional `post_install_hint()` for manual steps.
+5. A parametric test in `bridge::setup::tests::all_instruction_tools()`.
+
+PRs welcome. See [Contributing](/docs/contributing/) for the full recipe and CI gates.

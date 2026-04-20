@@ -1,0 +1,142 @@
+---
+title: Compressors
+description: The full inventory of commands tok0 compresses out of the box. ~250 commands across 30 ecosystems, each with a CI-asserted minimum savings floor.
+section: Reference
+order: 3
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+The complete list of commands tok0 ships with built-in compression. Each row's "floor" is the **minimum savings** the rule must hit in CI on its captured fixture. Real-world savings are usually higher.
+
+Commands not on this list still work — they pass through tok0's generic ANSI-strip + hard-cap path, which typically saves 20–40% on any verbose tool.
+
+## Version control
+
+| Command | Floor | Type |
+|---|---|---|
+| `git diff` | 83% | native |
+| `git log` | 78% | native |
+| `git status` | 70% | TOML |
+| `gh pr list` | 68% | native |
+| `gh pr view` | 72% | native |
+| `gh issue list` | 65% | TOML |
+| `gt log` | 70% | TOML |
+| `jj log` | 70% | TOML |
+
+## Build & package — JavaScript / TypeScript
+
+| Command | Floor | Type |
+|---|---|---|
+| `npm install` | 80% | native |
+| `pnpm install` | 81% | native |
+| `bun install` | 79% | native |
+| `yarn install` | 78% | TOML |
+| `tsc` | 66% | native |
+| `vitest` | 71% | native |
+| `jest` | 70% | native |
+| `next build` | 70% | native |
+| `eslint` | 64% | TOML |
+| `prettier` | 60% | TOML |
+| `playwright test` | 68% | native |
+| `prisma migrate` | 70% | TOML |
+| `turbo run` | 70% | TOML |
+| `nx run` | 70% | TOML |
+| `esbuild` | 65% | TOML |
+
+## Build & package — Rust
+
+| Command | Floor | Type |
+|---|---|---|
+| `cargo build` | 72% | native |
+| `cargo test` | 68% | native |
+| `cargo clippy` | 74% | native |
+| `cargo bench` | 70% | TOML |
+| `cargo fmt` | 80% | TOML |
+
+## Build & package — Python
+
+| Command | Floor | Type |
+|---|---|---|
+| `pytest` | 73% | native |
+| `ruff check` | 65% | native |
+| `mypy` | 68% | native |
+| `pip install` | 72% | TOML |
+| `uv sync` | 70% | TOML |
+| `poetry install` | 70% | TOML |
+| `black` | 80% | TOML |
+| `flake8` | 65% | TOML |
+
+## Build & package — Go / Java / .NET / Ruby
+
+| Command | Floor | Type |
+|---|---|---|
+| `go build` | 67% | native |
+| `golangci-lint` | 65% | native |
+| `gradle build` | 76% | native |
+| `mvn install` | 72% | native |
+| `dotnet build` | 72% | TOML |
+| `dotnet test` | 68% | native |
+| `rake` | 65% | native |
+| `rspec` | 70% | native |
+| `rubocop` | 65% | native |
+
+## Build systems
+
+`make`, `cmake`, `bazel`, `ninja`, `meson`, `scons`, `pants`, `buck2` — all rule-driven, floors 65–75%.
+
+## Containers & cloud
+
+| Command | Floor | Type |
+|---|---|---|
+| `docker build` | 84% | native |
+| `docker compose up` | 75% | TOML |
+| `kubectl get` | 69% | native |
+| `kubectl describe` | 70% | TOML |
+| `helm install` | 70% | TOML |
+| `terraform plan` | 77% | native |
+| `terraform apply` | 75% | native |
+| `pulumi up` | 70% | TOML |
+| `aws s3 ls` | 72% | native |
+| `gcloud …` | 70% | TOML |
+| `az …` | 70% | TOML |
+| `ansible-playbook` | 75% | TOML |
+| `argocd …` | 70% | TOML |
+| `flux …` | 70% | TOML |
+
+## Package managers
+
+`brew`, `apt`, `dnf`, `pacman`, `snap`, `flatpak`, `nix`, `winget`, `scoop`, `choco`, `gem`, `nuget`, `vcpkg`, `conan` — floors 70–85%, mostly TOML rules.
+
+## Linters & formatters
+
+`shellcheck`, `hadolint`, `stylelint`, `yamllint`, `markdownlint`, `clang-format`, `shfmt`, `gofmt`, `swiftformat`, `ktlint`, `scalafmt`, `nixfmt` — floors 60–75%.
+
+## Security & supply chain
+
+`semgrep`, `trivy`, `bandit`, `snyk`, `grype`, `sonar` — floors 65–75%.
+
+## Other ecosystems
+
+Languages: Elixir (`mix`, `dialyzer`), Haskell (`cabal`, `stack`), PHP (`composer`, `artisan`, `phpunit`, `phpstan`), Scala (`sbt`, `mill`), Swift (`xcodebuild`, `swiftc`), Dart (`flutter`, `dart`), mobile (`expo`, `react-native`), Perl (`prove`, `cpanm`), exotic (`zig`, `nim`, `crystal`, `d`).
+
+System: `ls`, `grep`, `find`, `diff`, `wc`, `env`, `ssh`, `rsync`, `tar`, `unzip`, network tools, process tools, service managers.
+
+Databases: `mysql`, `psql`, `redis-cli`, `mongo`, `sqlite3`.
+
+API tools: `httpie`, `grpcurl`, `newman`, load testers.
+
+Version managers: `nvm`, `fnm`, `pyenv`, `rbenv`, `rustup`, `asdf`, `mise`, `volta`.
+
+## When a command isn't on the list
+
+Three options, in order of effort:
+
+1. **Run it through tok0 anyway.** The generic path strips ANSI and applies a hard cap, saving 20–40% on most verbose tools.
+2. **Write a TOML rule.** ~10 lines for a typical case. See [Writing TOML rules](/docs/writing-rules/).
+3. **Ship it as a built-in.** PR a `src/rules/<cmd>.toml` into the repo with an assertion. CI gates the floor.
+
+<Callout type="tip">
+Run `tok0 scan` to see which of your already-run commands would benefit from a compressor. It reads your AI tool session histories and ranks the misses by tokens you'd have saved.
+</Callout>

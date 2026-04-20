@@ -1,0 +1,304 @@
+---
+import "~/styles/global.css";
+import Nav from "~/components/Nav.astro";
+import { CLI_VERSION, CLI_VERSION_TAG } from "~/lib/version";
+import { getCollection } from "astro:content";
+
+interface Props {
+  title: string;
+  description: string;
+  section?: string;
+  order?: number;
+  updated?: string;
+  hideLede?: boolean;
+}
+
+const { title, description, section, hideLede } = Astro.props;
+
+const all = await getCollection("docs");
+all.sort((a, b) => {
+  const sa = a.data.section.localeCompare(b.data.section);
+  if (sa !== 0) return sa;
+  return a.data.order - b.data.order;
+});
+
+// group by section in stable, declared order
+const sectionOrder = [
+  "Start",
+  "Concepts",
+  "Reference",
+  "Integrations",
+  "Operations",
+  "Project",
+];
+const groups = new Map<string, typeof all>();
+for (const entry of all) {
+  const arr = groups.get(entry.data.section) ?? [];
+  arr.push(entry);
+  groups.set(entry.data.section, arr);
+}
+const ordered = sectionOrder
+  .filter((s) => groups.has(s))
+  .map((s) => [s, groups.get(s)!] as const)
+  .concat([...groups.entries()].filter(([s]) => !sectionOrder.includes(s)));
+
+const here = Astro.url.pathname.replace(/\/$/, "") || "/";
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const docTitle = `${title} — tok0 docs`;
+
+// OG image slug: docs index → "docs", per-doc page → the entry id.
+const docId = here.replace(/^\/docs\/?/, "");
+const ogSlug = docId === "" ? "docs" : docId;
+const ogImage = new URL(`/og/${ogSlug}.png`, Astro.site).toString();
+
+const breadcrumb = section ?? "Docs";
+
+// flat reading order for prev/next
+const flat = ordered.flatMap(([, items]) => items);
+const idx = flat.findIndex((e) => `/docs/${e.id}` === here);
+const prev = idx > 0 ? flat[idx - 1] : null;
+const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : null;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <title>{docTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={docTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#f4f1ea" />
+  </head>
+  <body>
+    <!-- corner registration brackets (full-bleed) -->
+    <div class="corner corner-tl">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+    <div class="corner corner-tr">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+    <div class="corner corner-br">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+    <div class="corner corner-bl">
+      <svg viewBox="0 0 22 22"><path d="M22 1 H1 V22"></path></svg>
+    </div>
+
+    <!-- vertical edge labels -->
+    <div class="edge-label edge-label-l">
+      PROJECT · TOK0 / FIELD COMPRESSION UNIT
+    </div>
+    <div class="edge-label edge-label-r">
+      SERIAL NO. {CLI_VERSION} · BUILT IN RUST · MIT
+    </div>
+
+    <div class="page-frame">
+      <!-- top strip -->
+      <div class="strip strip-top">
+        <div class="strip-row container">
+          <span>OPEN SOURCE — SHELL OUTPUT COMPRESSION PROXY</span>
+          <span class="center">TOK0 · DOCS</span>
+          <span class="right"
+            ><span class="arrow">&gt;&gt;&gt;</span>
+            {breadcrumb.toUpperCase()}</span
+          >
+        </div>
+      </div>
+
+      <!-- nav -->
+      <Nav />
+
+      <!-- docs body -->
+      <main class="container docs-shell">
+        <button
+          class="docs-side-trigger"
+          type="button"
+          aria-label="Open docs menu"
+          aria-expanded="false"
+          data-docs-toggle
+        >
+          <span class="docs-side-trigger-icon" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <span>Browse docs</span>
+          <span class="docs-side-trigger-current"
+            >{section ?? "Docs"} · {title}</span
+          >
+        </button>
+
+        <div class="docs-side-backdrop" data-docs-backdrop aria-hidden="true">
+        </div>
+
+        <aside class="docs-side" aria-label="Docs navigation" data-docs-side>
+          <div class="docs-side-mobile-head">
+            <span class="docs-side-mobile-title">Documentation</span>
+            <button
+              class="docs-side-close"
+              type="button"
+              aria-label="Close docs menu"
+              data-docs-close>×</button
+            >
+          </div>
+          <nav>
+            {
+              ordered.map(([sec, items]) => (
+                <div class="docs-side-group">
+                  <div class="docs-side-label">{sec}</div>
+                  <ul>
+                    {items.map((it) => {
+                      const href = `/docs/${it.id}/`;
+                      const active =
+                        here === `/docs/${it.id}` ||
+                        here === href.replace(/\/$/, "");
+                      return (
+                        <li>
+                          <a
+                            href={href}
+                            aria-current={active ? "true" : undefined}
+                          >
+                            {it.data.title}
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))
+            }
+          </nav>
+        </aside>
+
+        <article class="docs-article">
+          <header class="docs-article-head">
+            <h1>{title}</h1>
+            {!hideLede && <p class="lede">{description}</p>}
+          </header>
+          <div class="docs-prose">
+            <slot />
+          </div>
+          <footer class="docs-article-foot">
+            <nav class="docs-pager" aria-label="Doc navigation">
+              {
+                prev ? (
+                  <a
+                    class="docs-pager-item docs-pager-prev"
+                    href={`/docs/${prev.id}/`}
+                  >
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">{prev.data.title}</span>
+                  </a>
+                ) : (
+                  <span class="docs-pager-spacer" />
+                )
+              }
+              {
+                next ? (
+                  <a
+                    class="docs-pager-item docs-pager-next"
+                    href={`/docs/${next.id}/`}
+                  >
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">{next.data.title}</span>
+                  </a>
+                ) : (
+                  <span class="docs-pager-spacer" />
+                )
+              }
+            </nav>
+            <a
+              class="docs-edit"
+              href={`https://github.com/prxm-labs/tok0/edit/main/apps/website/src/content/docs/${Astro.url.pathname.replace(/^\/docs\//, "").replace(/\/$/, "")}.mdx`}
+              target="_blank"
+              rel="noopener">Edit this page</a
+            >
+          </footer>
+        </article>
+      </main>
+
+      <!-- bottom strip -->
+      <div class="strip">
+        <div class="strip-row container">
+          <span>BUILT IN RUST · SINGLE STATIC BINARY · 8 MB</span>
+          <span class="center">{CLI_VERSION_TAG} / MIT</span>
+          <span class="right">GITHUB.COM/PRXM-LABS/TOK0</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      // wrap every fenced code block + inject a copy button
+      document
+        .querySelectorAll<HTMLPreElement>(".docs-prose pre")
+        .forEach((pre) => {
+          if (pre.parentElement?.classList.contains("code-block")) return;
+          const wrap = document.createElement("div");
+          wrap.className = "code-block";
+          pre.parentNode?.insertBefore(wrap, pre);
+          wrap.appendChild(pre);
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "code-copy";
+          btn.setAttribute("aria-label", "Copy code");
+          btn.textContent = "Copy";
+          wrap.appendChild(btn);
+          btn.addEventListener("click", () => {
+            const text = pre.innerText;
+            navigator.clipboard.writeText(text).then(
+              () => {
+                btn.textContent = "Copied";
+                btn.classList.add("ok");
+                setTimeout(() => {
+                  btn.textContent = "Copy";
+                  btn.classList.remove("ok");
+                }, 1400);
+              },
+              () => {},
+            );
+          });
+        });
+
+      const trigger =
+        document.querySelector<HTMLButtonElement>("[data-docs-toggle]");
+      const side = document.querySelector<HTMLElement>("[data-docs-side]");
+      const backdrop = document.querySelector<HTMLElement>(
+        "[data-docs-backdrop]",
+      );
+      const closeBtn =
+        document.querySelector<HTMLButtonElement>("[data-docs-close]");
+      const open = () => {
+        side?.classList.add("open");
+        backdrop?.classList.add("open");
+        document.body.classList.add("docs-side-locked");
+        trigger?.setAttribute("aria-expanded", "true");
+      };
+      const close = () => {
+        side?.classList.remove("open");
+        backdrop?.classList.remove("open");
+        document.body.classList.remove("docs-side-locked");
+        trigger?.setAttribute("aria-expanded", "false");
+      };
+      trigger?.addEventListener("click", open);
+      backdrop?.addEventListener("click", close);
+      closeBtn?.addEventListener("click", close);
+      side
+        ?.querySelectorAll("a")
+        .forEach((a) => a.addEventListener("click", close));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && side?.classList.contains("open")) close();
+      });
+    </script>
+  </body>
+</html>

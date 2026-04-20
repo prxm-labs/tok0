@@ -1,0 +1,127 @@
+---
+title: Extensions
+description: Install community rule packs from arbitrary git URLs. Each one is trust-prompted, version-pinned, removable in one command.
+section: Integrations
+order: 2
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+Extensions let anyone ship a pack of TOML rules without forking tok0. They're plain git repositories with `.toml` rule files at the top level. tok0 clones them into `~/.config/tok0/extensions/<name>` and treats their rules as user-global with a third trust class.
+
+## Install
+
+```bash
+tok0 extensions install https://github.com/user/my-tok0-rules
+```
+
+The first time you install a given URL, tok0:
+
+1. Clones the repo into `~/.config/tok0/extensions/<derived-name>`.
+2. Pins it to a specific commit hash.
+3. Validates that every `.toml` is a parseable rule with at least one assertion.
+4. Prompts you to trust the extension (Y/n).
+5. Loads its rules on next dispatch.
+
+If you decline trust, the clone stays on disk but the rules are inert. Re-trust later with `tok0 extensions trust <name>`.
+
+## Listing & inspecting
+
+```bash
+tok0 extensions list
+```
+
+Output:
+
+```
+NAME                  COMMIT     RULES   TRUSTED
+acme-internal-tools   a1b2c3d    14      yes
+foo-toolchain         9f8e7d6    23      no
+```
+
+```bash
+tok0 extensions show acme-internal-tools
+```
+
+Prints the resolved rule files, their commit hashes, and any active overrides.
+
+## Updating
+
+Extensions are version-pinned for safety. Update explicitly:
+
+```bash
+tok0 extensions update                    # all
+tok0 extensions update acme-internal-tools
+```
+
+tok0 fetches the latest commit, re-runs validation, and re-prompts for trust **only if the rule files changed**. If only README/docs changed, the trust grant carries over.
+
+## Removing
+
+```bash
+tok0 extensions remove acme-internal-tools
+```
+
+Deletes the on-disk clone and invalidates any cached rules.
+
+## Building an extension
+
+An extension repo looks like:
+
+```
+my-tok0-rules/
+├── README.md
+├── LICENSE
+├── tok0-extension.toml      # required manifest
+├── rules/
+│   ├── acme-cli.toml
+│   ├── internal-build.toml
+│   └── deploy-tool.toml
+└── fixtures/
+    ├── acme-cli.raw
+    └── ...
+```
+
+`tok0-extension.toml` is the manifest:
+
+```toml
+[extension]
+name = "acme-internal-tools"
+description = "tok0 rules for ACME's internal build & deploy CLIs."
+version = "1.0.0"
+homepage = "https://github.com/acme/tok0-rules"
+license = "MIT"
+
+[compatibility]
+# Minimum tok0 version required for this extension's rule schema.
+tok0 = ">=0.4.0"
+```
+
+Every `.toml` under `rules/` follows the standard [TOML rule schema](/docs/writing-rules/). Fixtures under `fixtures/` are referenced by `[[assertions]]` blocks for CI on the extension's own repo.
+
+<Callout type="warn">
+Extensions can ship arbitrary regex patterns that get applied to your shell output. The trust prompt exists for exactly this reason. Only install extensions from sources you'd trust to ship a shell script.
+</Callout>
+
+## Trust levels recap
+
+tok0 has three trust levels, each more restrictive:
+
+| Source | Trust prompt | Why |
+|---|---|---|
+| Built-in rules (embedded in the binary) | None | Vetted in CI. |
+| User-global rules at `~/.config/tok0/filters/` | None | You wrote them. |
+| Extensions at `~/.config/tok0/extensions/` | On install, and again when rules change after `tok0 extensions update`. | You're running someone else's regexes. |
+| Project-local rules at `.tok0/filters/` | Per project, via `tok0 trust .`. | Same threat model as VS Code workspace settings. |
+
+[Trust & safety](/docs/trust-and-safety/) covers the full rationale.
+
+## Discovering extensions
+
+No centralized registry yet. Discovery is via:
+
+- The community-maintained list at <a href="https://github.com/prxm-labs/tok0/blob/main/EXTENSIONS.md">EXTENSIONS.md</a>.
+- Searching GitHub for the `tok0-extension` topic.
+
+There's deliberately no "marketplace". Every extension you install runs regexes against your shell output before it reaches the model; the trust burden is real and a marketplace would soften it.

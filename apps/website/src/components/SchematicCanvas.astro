@@ -1,0 +1,296 @@
+---
+---
+
+<div class="canvas-stage" aria-hidden="true">
+  <canvas id="tok0-schematic-canvas"></canvas>
+</div>
+
+<style>
+  .canvas-stage {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .canvas-stage canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const canvas = document.getElementById("tok0-schematic-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    const cs = getComputedStyle(document.documentElement);
+    const cssVar = (name, fb) =>
+      (cs.getPropertyValue(name).trim() || fb).trim();
+    const COLORS = {
+      ring: cssVar("--color-ink-4", "#6a6a66"),
+      dim: cssVar("--color-ink-4", "#6a6a66"),
+      base: cssVar("--color-ink-3", "#3a3a38"),
+      accent: cssVar("--color-accent", "#ff4a1c"),
+      blob: cssVar("--color-cyan", "#5bb8e5"),
+      core: cssVar("--color-ink", "#0a0a0a"),
+    };
+
+    const RING = [0.62, 0.45, 0.3, 0.15];
+    const PASS = [0.92, 0.78, 0.6, 0.42];
+    const REWARD = [1, 5, 25, 100];
+
+    let dpr = 1, W = 0, H = 0, cx = 0, cy = 0, scale = 1;
+
+    const ro = new ResizeObserver(([entry]) => {
+      const rect = entry.contentRect;
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      const w = Math.max(1, Math.floor(rect.width));
+      const h = Math.max(1, Math.floor(rect.height));
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      W = w; H = h; cx = w / 2; cy = h / 2;
+      scale = Math.min(w, h) / 2;
+    });
+    ro.observe(canvas);
+
+    const POOL = 220;
+    const particles = Array.from({ length: POOL }, () => ({ alive: false }));
+    const fragments = Array.from({ length: 240 }, () => ({ alive: false }));
+
+    function spawn() {
+      const p = particles.find((p) => !p.alive);
+      if (!p) return;
+      const a = Math.random() * Math.PI * 2;
+      const r = scale * 0.92;
+      p.x = cx + Math.cos(a) * r;
+      p.y = cy + Math.sin(a) * r;
+      const dx = (cx - p.x) / r, dy = (cy - p.y) / r;
+      const tx = -dy, ty = dx;
+      const off = (Math.random() - 0.5) * 0.55;
+      const speed = 0.022 + Math.random() * 0.014;
+      p.vx = (dx + tx * off) * speed;
+      p.vy = (dy + ty * off) * speed;
+      p.alive = true;
+      p.crossed = 0;
+      p.size = 1.1 + Math.random() * 1.1;
+      p.color = COLORS.base;
+      p.absorbed = false;
+      p.t = 0;
+      p.px = p.x; p.py = p.y;
+    }
+
+    function explode(x, y) {
+      for (let i = 0; i < 8; i++) {
+        const f = fragments.find((f) => !f.alive);
+        if (!f) break;
+        const a = Math.random() * Math.PI * 2;
+        const s = 0.6 + Math.random() * 1.2;
+        f.alive = true;
+        f.x = x; f.y = y;
+        f.vx = Math.cos(a) * s;
+        f.vy = Math.sin(a) * s;
+        f.life = 0;
+        f.maxLife = 26 + Math.random() * 22;
+      }
+    }
+
+    let blobPulse = 0;
+    function pulse(strength) {
+      blobPulse = Math.min(1.4, blobPulse + strength);
+    }
+
+    let last = performance.now();
+    let lastSpawn = 0;
+    let running = true;
+    let visible = true;
+    let reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function drawStaticFrame() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = COLORS.ring;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      for (const r of RING) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * scale, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 6);
+      ctx.moveTo(cx - 6, cy); ctx.lineTo(cx + 6, cy);
+      ctx.stroke();
+    }
+
+    function tick(now) {
+      if (!running || !visible || W === 0 || H === 0) {
+        last = now;
+        if (running) requestAnimationFrame(tick);
+        return;
+      }
+      const dt = Math.min(48, now - last);
+      last = now;
+
+      if (now - lastSpawn > 70) {
+        lastSpawn = now;
+        spawn();
+        if (Math.random() < 0.35) spawn();
+      }
+
+      ctx.clearRect(0, 0, W, H);
+
+      ctx.strokeStyle = COLORS.ring;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      for (const r of RING) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * scale, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      ctx.strokeStyle = COLORS.ring;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - 6); ctx.lineTo(cx, cy + 6);
+      ctx.moveTo(cx - 6, cy); ctx.lineTo(cx + 6, cy);
+      ctx.stroke();
+
+      for (const f of fragments) {
+        if (!f.alive) continue;
+        f.life += 1;
+        if (f.life >= f.maxLife) { f.alive = false; continue; }
+        f.x += f.vx;
+        f.y += f.vy;
+        f.vx *= 0.93;
+        f.vy *= 0.93;
+        const a = 1 - f.life / f.maxLife;
+        ctx.fillStyle = COLORS.dim;
+        ctx.globalAlpha = a * 0.55;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      for (const p of particles) {
+        if (!p.alive) continue;
+
+        if (p.absorbed) {
+          p.t += dt / 320;
+          if (p.t >= 1) { p.alive = false; pulse(0.45); continue; }
+          const k = p.t;
+          const ek = k * k * (3 - 2 * k);
+          p.x = p.sx + (cx - p.sx) * ek;
+          p.y = p.sy + (cy - p.sy) * ek;
+          const ang = Math.atan2(p.sy - cy, p.sx - cx) + ek * 1.6;
+          const rr = (1 - ek) * Math.hypot(p.sx - cx, p.sy - cy);
+          p.x = cx + Math.cos(ang) * rr;
+          p.y = cy + Math.sin(ang) * rr;
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = 1 - k;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * (1 - k * 0.5), 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          continue;
+        }
+
+        p.px = p.x; p.py = p.y;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+
+        const dx = cx - p.x, dy = cy - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        while (p.crossed < RING.length && dist < RING[p.crossed] * scale) {
+          if (Math.random() < PASS[p.crossed]) {
+            p.vx *= 0.78; p.vy *= 0.78;
+            if (p.crossed >= 1) p.color = COLORS.accent;
+            p.size = Math.min(2.6, p.size + 0.25);
+            window.dispatchEvent(
+              new CustomEvent("tok0:save", {
+                detail: { tokens: REWARD[p.crossed] },
+              })
+            );
+          } else {
+            explode(p.x, p.y);
+            p.alive = false;
+            break;
+          }
+          p.crossed++;
+        }
+        if (!p.alive) continue;
+
+        const blobHit = 5 + scale * 0.025;
+        if (dist < blobHit + p.size) {
+          p.absorbed = true;
+          p.t = 0;
+          p.sx = p.x;
+          p.sy = p.y;
+          continue;
+        }
+
+        const inv = 1 / Math.max(dist, 1);
+        p.vx += dx * inv * 0.000018 * dt;
+        p.vy += dy * inv * 0.000018 * dt;
+
+        if (dist > scale * 1.15) { p.alive = false; continue; }
+
+        ctx.strokeStyle = p.color;
+        ctx.globalAlpha = 0.35;
+        ctx.lineWidth = p.size * 0.9;
+        ctx.beginPath();
+        ctx.moveTo(p.px, p.py);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      blobPulse *= 0.9;
+      const blobR = 5 + scale * 0.025 + blobPulse * 6;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, blobR, 0, Math.PI * 2);
+      ctx.fillStyle = COLORS.blob;
+      ctx.globalAlpha = 0.22 + blobPulse * 0.3;
+      ctx.fill();
+      ctx.globalAlpha = 0.75;
+      ctx.strokeStyle = COLORS.blob;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      ctx.fillStyle = COLORS.core;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 1.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      requestAnimationFrame(tick);
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries[0].isIntersecting;
+        if (visible) last = performance.now();
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(canvas);
+
+    if (reduced) {
+      requestAnimationFrame(() => drawStaticFrame());
+    } else {
+      requestAnimationFrame(tick);
+    }
+  })();
+</script>

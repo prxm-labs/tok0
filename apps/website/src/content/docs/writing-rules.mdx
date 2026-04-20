@@ -1,0 +1,138 @@
+---
+title: Writing TOML rules
+description: The declarative rule schema used by every TOML compressor in tok0. Write a rule, drop it in, get CI-asserted savings.
+section: Concepts
+order: 3
+updated: APR 2026
+---
+
+import Callout from "~/components/Callout.astro";
+
+A TOML rule is a declarative spec for the eight pipeline stages. You write the spec, drop it under one of three search paths, and tok0 picks it up. No plugin API, no Rust, no rebuild.
+
+## 30-second example
+
+```toml
+# brew-install.toml
+[filter]
+name = "brew-install"
+commands = ["brew install", "brew upgrade"]
+strip_patterns = [
+  "^==>.*Downloading",
+  "^==>.*Pouring",
+  "^🍺.*",
+]
+head_lines = 5
+tail_lines = 3
+empty_message = "ok"
+
+[[assertions]]
+input = "==> Downloading\n==> Pouring foo\n🍺 foo installed"
+expected_contains = "ok"
+min_savings_pct = 60
+```
+
+That's a complete, CI-tested compressor. The `assertions` block runs in CI on every change.
+
+## Where rules live
+
+Loaded from three locations, in priority order:
+
+1. `.tok0/filters/*.toml` — project-local, requires explicit trust.
+2. `~/.config/tok0/filters/*.toml` — user-global.
+3. `apps/cli/src/rules/*.toml` — built-in, embedded at build time.
+
+First match wins. Project-local rules let you compress an in-house tool without forking tok0.
+
+<Callout type="warn">
+Project-local rules are silently ignored until you `tok0 trust .` in the project. Same trust model as VS Code workspace settings; details in <a href="/docs/trust-and-safety/">Trust &amp; safety</a>.
+</Callout>
+
+## Full schema
+
+```toml
+[filter]
+# Required. Stable identifier — also the suggested filename.
+name = "string"
+
+# Required. Command prefixes this rule applies to.
+# Matched against the full command line, longest-prefix-wins.
+commands = ["string", ...]
+
+# Stage 1 (always applied). No config needed.
+# strip_ansi: built-in.
+
+# Stage 2 — pattern replace.
+[[replacements]]
+pattern = "regex"
+replacement = "string"
+
+# Stage 3 — output match. If present, ONLY blocks matching at least one
+# of these patterns survive.
+output_match = ["regex", ...]
+
+# Stage 4 — line select.
+strip_patterns  = ["regex", ...]   # exclude
+keep_patterns   = ["regex", ...]   # include (excludes win on conflict)
+
+# Stage 5 — per-line truncation.
+max_line_chars = 240               # default
+
+# Stage 6 — head/tail window.
+head_lines = 30
+tail_lines = 15
+elided_message = "… {n} lines elided …"   # {n} = number of dropped lines
+
+# Stage 7 — hard cap.
+max_chars = 8000
+
+# Stage 8 — empty fallback.
+empty_message = "ok"
+
+# CI assertions. At least one is required for built-in rules.
+[[assertions]]
+input             = "raw output to feed the pipeline"
+expected_contains = "substring that must appear in compressed output"
+expected_excludes = "substring that must NOT appear"
+min_savings_pct   = 60                # fails CI if compression < 60%
+```
+
+## Authoring workflow
+
+Same recipe whether you're shipping a built-in or a project-local rule:
+
+1. **Capture a real fixture.** Pipe the tool to a file:
+   ```bash
+   brew install jq 2>&1 > /tmp/brew-install.raw
+   ```
+2. **Write the rule.** Start with `strip_patterns` for the obvious noise. Iterate with `tok0 rules test ./my-rule.toml /tmp/brew-install.raw`.
+3. **Add assertions.** Pin the savings floor so future edits can't silently regress.
+4. **Drop it in place.** Commit to `apps/cli/src/rules/` (PR welcome), `~/.config/tok0/filters/`, or `.tok0/filters/`.
+
+## Inspecting loaded rules
+
+```bash
+tok0 rules list                # every rule tok0 sees, with its source
+tok0 rules show brew-install   # the resolved rule, post-overrides
+tok0 rules test ./rule.toml fixture.txt
+```
+
+`tok0 rules test` is the loop for rule authoring. It re-runs every assertion and prints diffs.
+
+## When TOML isn't enough
+
+Reach for a native Rust compressor when you need:
+
+- Multi-pass parsing (apply rule A, then re-process with rule B based on what survived).
+- Structured input parsing (JSON reshaping, AST-aware filtering, binlog walking).
+- Anything stateful — tracking nesting depth, paired begin/end markers.
+
+Rare cases. Most compressions are "strip the obvious noise, keep the verdict", which is exactly what the pipeline does. See [Architecture](/docs/architecture/) for where native compressors live.
+
+## Performance
+
+Rules cache by file mtime. Loading 120 rules from disk happens once per process (cold start adds &lt;1ms). After that, dispatch to the matching rule is a hash lookup. The pipeline itself is a series of regex applies; typical end-to-end cost is **&lt; 0.5 ms per command**.
+
+<Callout type="tip">
+Run `tok0 profile run <cmd>` to see exactly where time goes for any command. It surfaces per-stage milliseconds and per-stage byte savings.
+</Callout>
