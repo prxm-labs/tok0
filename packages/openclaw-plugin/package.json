@@ -1,0 +1,27 @@
+{
+  "name": "@prxm-labs/tok0-rewrite",
+  "version": "0.1.0",
+  "description": "tok0 plugin for OpenClaw — rewrites shell commands for 60-90% LLM token savings",
+  "main": "index.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prxm-labs/tok0",
+    "directory": "packages/openclaw-plugin"
+  },
+  "homepage": "https://github.com/prxm-labs/tok0",
+  "keywords": [
+    "tok0",
+    "openclaw",
+    "openclaw-plugin",
+    "token-savings",
+    "llm",
+    "cli-proxy"
+  ],
+  "files": [
+    "index.ts",
+    "openclaw.plugin.json",
+    "README.md"
+  ],
+  "//peerNote": "This plugin requires the tok0 CLI (https://github.com/prxm-labs/tok0) to be installed on the system; it is not an npm dependency."
+}

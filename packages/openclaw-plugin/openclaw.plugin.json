@@ -1,0 +1,36 @@
+{
+  "id": "tok0-rewrite",
+  "name": "tok0 Token Optimizer",
+  "version": "0.1.0",
+  "description": "Transparently rewrites shell commands to their tok0 equivalents for 60-90% LLM token savings",
+  "homepage": "https://github.com/prxm-labs/tok0",
+  "license": "MIT",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable automatic command rewriting to tok0 equivalents"
+      },
+      "verbose": {
+        "type": "boolean",
+        "default": false,
+        "description": "Log rewrite decisions to console for debugging"
+      },
+      "timeout_ms": {
+        "type": "integer",
+        "default": 2000,
+        "minimum": 100,
+        "maximum": 30000,
+        "description": "Per-rewrite timeout in milliseconds; falls back to original command on timeout"
+      }
+    }
+  },
+  "uiHints": {
+    "enabled":    { "label": "Enable tok0 rewriting" },
+    "verbose":    { "label": "Verbose logging" },
+    "timeout_ms": { "label": "Rewrite timeout (ms)" }
+  }
+}
