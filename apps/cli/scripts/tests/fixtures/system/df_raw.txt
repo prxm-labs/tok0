@@ -1,0 +1,14 @@
+Filesystem                                                              Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk3s7s1                                                         228Gi    10Gi    10Gi    51%    426k  107M    0%   /
+devfs                                                                  208Ki   208Ki     0Bi   100%     719     0  100%   /dev
+/dev/disk3s6                                                           228Gi    10Gi    10Gi    50%      10  107M    0%   /System/Volumes/VM
+/dev/disk3s2                                                           228Gi   7.9Gi    10Gi    44%    1.8k  107M    0%   /System/Volumes/Preboot
+/dev/disk3s4                                                           228Gi   2.3Mi    10Gi     1%      67  107M    0%   /System/Volumes/Update
+/dev/disk1s2                                                           500Mi   6.0Mi   483Mi     2%       3  4.9M    0%   /System/Volumes/xarts
+/dev/disk1s1                                                           500Mi   5.6Mi   483Mi     2%      38  4.9M    0%   /System/Volumes/iSCPreboot
+/dev/disk1s3                                                           500Mi   1.1Mi   483Mi     1%      39  4.9M    0%   /System/Volumes/Hardware
+/dev/disk3s1                                                           228Gi   188Gi    10Gi    95%    2.9M  107M    3%   /System/Volumes/Data
+/dev/disk3s5                                                           228Gi   1.0Mi    10Gi     1%     130  107M    0%   /Volumes/Data
+map auto_home                                                            0Bi     0Bi     0Bi   100%       0     0     -   /System/Volumes/Data/home
+/Users/theodorevorillas/Library/PreferencePanes/Cursorcerer.prefPane   228Gi   180Gi    28Gi    87%    2.9M  295M    1%   /private/var/folders/2j/k85w_80s7kg8xjqbcqkypvlh0000gn/T/AppTranslocation/6F6974AA-E75D-42B1-8F59-5709BC2EF02A
+/dev/disk4s1                                                           157Mi   128Mi    29Mi    82%     307  4.3G    0%   /Volumes/Cap

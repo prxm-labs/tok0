@@ -1,0 +1,32 @@
+{
+  "version": "0.1.0",
+  "description": "Token-optimized CLI proxy for AI coding tools — 60-90% savings on LLM dev operations",
+  "homepage": "https://github.com/prxm-labs/tok0",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/prxm-labs/tok0/releases/download/v0.1.0/tok0-x86_64-pc-windows-msvc.exe",
+      "hash": "sha256:REPLACE_WITH_RELEASE_SHA256"
+    }
+  },
+  "bin": "tok0-x86_64-pc-windows-msvc.exe",
+  "shortcuts": [
+    ["tok0-x86_64-pc-windows-msvc.exe", "tok0"]
+  ],
+  "post_install": [
+    "Write-Host 'Run tok0 init to install hooks into your AI tools.'"
+  ],
+  "checkver": {
+    "github": "https://github.com/prxm-labs/tok0"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/prxm-labs/tok0/releases/download/v$version/tok0-x86_64-pc-windows-msvc.exe",
+        "hash": {
+          "url": "$url.sha256"
+        }
+      }
+    }
+  }
+}

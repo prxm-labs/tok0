@@ -1,0 +1,1231 @@
+diff --git a/completions/tok0.bash b/completions/tok0.bash
+index 6ad2271..a280b19 100644
+--- a/completions/tok0.bash
++++ b/completions/tok0.bash
+@@ -31,6 +31,9 @@ _tok0() {
+             tok0,discover)
+                 cmd="tok0__discover"
+                 ;;
++            tok0,doctor)
++                cmd="tok0__doctor"
++                ;;
+             tok0,ext)
+                 cmd="tok0__ext"
+                 ;;
+@@ -64,6 +67,9 @@ _tok0() {
+             tok0,rewrite)
+                 cmd="tok0__rewrite"
+                 ;;
++            tok0,rule)
++                cmd="tok0__rule"
++                ;;
+             tok0,smart)
+                 cmd="tok0__smart"
+                 ;;
+@@ -163,6 +169,9 @@ _tok0() {
+             tok0__help,discover)
+                 cmd="tok0__help__discover"
+                 ;;
++            tok0__help,doctor)
++                cmd="tok0__help__doctor"
++                ;;
+             tok0__help,ext)
+                 cmd="tok0__help__ext"
+                 ;;
+@@ -196,6 +205,9 @@ _tok0() {
+             tok0__help,rewrite)
+                 cmd="tok0__help__rewrite"
+                 ;;
++            tok0__help,rule)
++                cmd="tok0__help__rule"
++                ;;
+             tok0__help,smart)
+                 cmd="tok0__help__smart"
+                 ;;
+@@ -241,6 +253,15 @@ _tok0() {
+             tok0__help__ext,remove)
+                 cmd="tok0__help__ext__remove"
+                 ;;
++            tok0__help__rule,list)
++                cmd="tok0__help__rule__list"
++                ;;
++            tok0__help__rule,show)
++                cmd="tok0__help__rule__show"
++                ;;
++            tok0__help__rule,test)
++                cmd="tok0__help__rule__test"
++                ;;
+             tok0__help__telemetry,off)
+                 cmd="tok0__help__telemetry__off"
+                 ;;
+@@ -250,6 +271,30 @@ _tok0() {
+             tok0__help__telemetry,status)
+                 cmd="tok0__help__telemetry__status"
+                 ;;
++            tok0__rule,help)
++                cmd="tok0__rule__help"
++                ;;
++            tok0__rule,list)
++                cmd="tok0__rule__list"
++                ;;
++            tok0__rule,show)
++                cmd="tok0__rule__show"
++                ;;
++            tok0__rule,test)
++                cmd="tok0__rule__test"
++                ;;
++            tok0__rule__help,help)
++                cmd="tok0__rule__help__help"
++                ;;
++            tok0__rule__help,list)
++                cmd="tok0__rule__help__list"
++                ;;
++            tok0__rule__help,show)
++                cmd="tok0__rule__help__show"
++                ;;
++            tok0__rule__help,test)
++                cmd="tok0__rule__help__test"
++                ;;
+             tok0__telemetry,help)
+                 cmd="tok0__telemetry__help"
+                 ;;
+@@ -281,7 +326,7 @@ _tok0() {
+ 
+     case "${cmd}" in
+         tok0)
+-            opts="-v -u -h -V --verbose --ultra-compact --help --version stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help"
++            opts="-v -u -h -V --verbose --ultra-compact --help --version stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help"
+             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
+                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                 return 0
+@@ -544,6 +589,20 @@ _tok0() {
+             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+             return 0
+             ;;
++        tok0__doctor)
++            opts="-v -u -h --verbose --ultra-compact --help"
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
+         tok0__ext)
+             opts="-v -u -h --verbose --ultra-compact --help install list remove help"
+             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
+@@ -717,7 +776,7 @@ _tok0() {
+             return 0
+             ;;
+         tok0__help)
+-            opts="stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help"
++            opts="stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help"
+             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
+                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                 return 0
+@@ -856,6 +915,20 @@ _tok0() {
+             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+             return 0
+             ;;
++        tok0__help__doctor)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
+         tok0__help__ext)
+             opts="install list remove"
+             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
+@@ -1052,6 +1125,62 @@ _tok0() {
+             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+             return 0
+             ;;
++        tok0__help__rule)
++            opts="list show test"
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__help__rule__list)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__help__rule__show)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__help__rule__test)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
+         tok0__help__smart)
+             opts=""
+             if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
+@@ -1207,7 +1336,7 @@ _tok0() {
+             return 0
+             ;;
+         tok0__init)
+-            opts="-g -v -u -h --global --uninstall --show --verbose --ultra-compact --help"
++            opts="-g -v -u -h --global --uninstall --show --wizard --verbose --ultra-compact --help"
+             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
+                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+                 return 0
+@@ -1290,6 +1419,132 @@ _tok0() {
+             COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+             return 0
+             ;;
++        tok0__rule)
++            opts="-v -u -h --verbose --ultra-compact --help list show test help"
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__help)
++            opts="list show test help"
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__help__help)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__help__list)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__help__show)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__help__test)
++            opts=""
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 4 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__list)
++            opts="-v -u -h --verbose --ultra-compact --help"
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__show)
++            opts="-v -u -h --verbose --ultra-compact --help <NAME>"
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
++        tok0__rule__test)
++            opts="-v -u -h --verbose --ultra-compact --help <NAME>"
++            if [[ ${cur} == -* || ${COMP_CWORD} -eq 3 ]] ; then
++                COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++                return 0
++            fi
++            case "${prev}" in
++                *)
++                    COMPREPLY=()
++                    ;;
++            esac
++            COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
++            return 0
++            ;;
+         tok0__smart)
+             opts="-v -u -h --verbose --ultra-compact --help [ARGS]..."
+             if [[ ${cur} == -* || ${COMP_CWORD} -eq 2 ]] ; then
+diff --git a/completions/tok0.fish b/completions/tok0.fish
+index 88ae30b..3bd6a22 100644
+--- a/completions/tok0.fish
++++ b/completions/tok0.fish
+@@ -38,6 +38,8 @@ complete -c tok0 -n "__fish_tok0_needs_command" -f -a "diff" -d 'File diff'
+ complete -c tok0 -n "__fish_tok0_needs_command" -f -a "smart" -d 'Smart code summary'
+ complete -c tok0 -n "__fish_tok0_needs_command" -f -a "proxy" -d 'Proxy passthrough (no filtering, tracking only)'
+ complete -c tok0 -n "__fish_tok0_needs_command" -f -a "status" -d 'Show tok0 status: version, hooks, savings, trust, extensions'
++complete -c tok0 -n "__fish_tok0_needs_command" -f -a "doctor" -d 'Diagnose configuration + hook-health problems'
++complete -c tok0 -n "__fish_tok0_needs_command" -f -a "rule" -d 'Inspect and test compression rules'
+ complete -c tok0 -n "__fish_tok0_needs_command" -f -a "init" -d 'Initialize hooks for AI tools'
+ complete -c tok0 -n "__fish_tok0_needs_command" -f -a "update" -d 'Check for updates'
+ complete -c tok0 -n "__fish_tok0_needs_command" -f -a "discover" -d 'Discover missed savings opportunities'
+@@ -86,9 +88,33 @@ complete -c tok0 -n "__fish_tok0_using_subcommand proxy" -s h -l help -d 'Print
+ complete -c tok0 -n "__fish_tok0_using_subcommand status" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
+ complete -c tok0 -n "__fish_tok0_using_subcommand status" -s u -l ultra-compact -d 'Ultra-compact output mode'
+ complete -c tok0 -n "__fish_tok0_using_subcommand status" -s h -l help -d 'Print help'
++complete -c tok0 -n "__fish_tok0_using_subcommand doctor" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
++complete -c tok0 -n "__fish_tok0_using_subcommand doctor" -s u -l ultra-compact -d 'Ultra-compact output mode'
++complete -c tok0 -n "__fish_tok0_using_subcommand doctor" -s h -l help -d 'Print help'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and not __fish_seen_subcommand_from list show test help" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and not __fish_seen_subcommand_from list show test help" -s u -l ultra-compact -d 'Ultra-compact output mode'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and not __fish_seen_subcommand_from list show test help" -s h -l help -d 'Print help'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and not __fish_seen_subcommand_from list show test help" -f -a "list" -d 'List all active rules (builtin + extensions + project-local)'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and not __fish_seen_subcommand_from list show test help" -f -a "show" -d 'Show full config for a single rule by name'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and not __fish_seen_subcommand_from list show test help" -f -a "test" -d 'Apply a rule to stdin and print the before/after savings'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and not __fish_seen_subcommand_from list show test help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from list" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from list" -s u -l ultra-compact -d 'Ultra-compact output mode'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from list" -s h -l help -d 'Print help'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from show" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from show" -s u -l ultra-compact -d 'Ultra-compact output mode'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from show" -s h -l help -d 'Print help'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from test" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from test" -s u -l ultra-compact -d 'Ultra-compact output mode'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from test" -s h -l help -d 'Print help'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from help" -f -a "list" -d 'List all active rules (builtin + extensions + project-local)'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from help" -f -a "show" -d 'Show full config for a single rule by name'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from help" -f -a "test" -d 'Apply a rule to stdin and print the before/after savings'
++complete -c tok0 -n "__fish_tok0_using_subcommand rule; and __fish_seen_subcommand_from help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
+ complete -c tok0 -n "__fish_tok0_using_subcommand init" -s g -l global
+ complete -c tok0 -n "__fish_tok0_using_subcommand init" -l uninstall
+ complete -c tok0 -n "__fish_tok0_using_subcommand init" -l show
++complete -c tok0 -n "__fish_tok0_using_subcommand init" -l wizard -d 'Run the guided onboarding wizard'
+ complete -c tok0 -n "__fish_tok0_using_subcommand init" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
+ complete -c tok0 -n "__fish_tok0_using_subcommand init" -s u -l ultra-compact -d 'Ultra-compact output mode'
+ complete -c tok0 -n "__fish_tok0_using_subcommand init" -s h -l help -d 'Print help'
+@@ -192,30 +218,35 @@ complete -c tok0 -n "__fish_tok0_using_subcommand untrust" -s h -l help -d 'Prin
+ complete -c tok0 -n "__fish_tok0_using_subcommand verify" -s v -l verbose -d 'Increase verbosity (-v, -vv, -vvv)'
+ complete -c tok0 -n "__fish_tok0_using_subcommand verify" -s u -l ultra-compact -d 'Ultra-compact output mode'
+ complete -c tok0 -n "__fish_tok0_using_subcommand verify" -s h -l help -d 'Print help'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "stats" -d 'Token savings analytics'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "git" -d 'Git operations'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "read" -d 'Smart file reading'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "ls" -d 'Directory listing'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "grep" -d 'Search files'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "find" -d 'Find files'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "diff" -d 'File diff'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "smart" -d 'Smart code summary'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "proxy" -d 'Proxy passthrough (no filtering, tracking only)'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "status" -d 'Show tok0 status: version, hooks, savings, trust, extensions'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "init" -d 'Initialize hooks for AI tools'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "update" -d 'Check for updates'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "discover" -d 'Discover missed savings opportunities'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "rewrite" -d 'Rewrite command (used by hooks)'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "profile" -d 'Profile compression pipeline timing'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "ext" -d 'Manage extension rule packs'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "telemetry" -d 'Control anonymous telemetry (on/off/status)'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "auth" -d 'Authenticate with tok0 cloud for team analytics'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "cloud" -d 'View team dashboard (requires auth)'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "completions" -d 'Generate shell completions'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "trust" -d 'Trust a project directory for local filter rules'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "untrust" -d 'Remove trust from a project directory'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "verify" -d 'Verify hook file integrity'
+-complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "stats" -d 'Token savings analytics'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "git" -d 'Git operations'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "read" -d 'Smart file reading'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "ls" -d 'Directory listing'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "grep" -d 'Search files'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "find" -d 'Find files'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "diff" -d 'File diff'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "smart" -d 'Smart code summary'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "proxy" -d 'Proxy passthrough (no filtering, tracking only)'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "status" -d 'Show tok0 status: version, hooks, savings, trust, extensions'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "doctor" -d 'Diagnose configuration + hook-health problems'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "rule" -d 'Inspect and test compression rules'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "init" -d 'Initialize hooks for AI tools'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "update" -d 'Check for updates'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "discover" -d 'Discover missed savings opportunities'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "rewrite" -d 'Rewrite command (used by hooks)'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "profile" -d 'Profile compression pipeline timing'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "ext" -d 'Manage extension rule packs'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "telemetry" -d 'Control anonymous telemetry (on/off/status)'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "auth" -d 'Authenticate with tok0 cloud for team analytics'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "cloud" -d 'View team dashboard (requires auth)'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "completions" -d 'Generate shell completions'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "trust" -d 'Trust a project directory for local filter rules'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "untrust" -d 'Remove trust from a project directory'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "verify" -d 'Verify hook file integrity'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and not __fish_seen_subcommand_from stats git read ls grep find diff smart proxy status doctor rule init update discover rewrite profile ext telemetry auth cloud completions trust untrust verify help" -f -a "help" -d 'Print this message or the help of the given subcommand(s)'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and __fish_seen_subcommand_from rule" -f -a "list" -d 'List all active rules (builtin + extensions + project-local)'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and __fish_seen_subcommand_from rule" -f -a "show" -d 'Show full config for a single rule by name'
++complete -c tok0 -n "__fish_tok0_using_subcommand help; and __fish_seen_subcommand_from rule" -f -a "test" -d 'Apply a rule to stdin and print the before/after savings'
+ complete -c tok0 -n "__fish_tok0_using_subcommand help; and __fish_seen_subcommand_from ext" -f -a "install" -d 'Install extension from a git URL'
+ complete -c tok0 -n "__fish_tok0_using_subcommand help; and __fish_seen_subcommand_from ext" -f -a "list" -d 'List installed extensions'
+ complete -c tok0 -n "__fish_tok0_using_subcommand help; and __fish_seen_subcommand_from ext" -f -a "remove" -d 'Remove an installed extension'
+diff --git a/completions/tok0.ps1 b/completions/tok0.ps1
+index e070263..6b882c9 100644
+--- a/completions/tok0.ps1
++++ b/completions/tok0.ps1
+@@ -39,6 +39,8 @@ Register-ArgumentCompleter -Native -CommandName 'tok0' -ScriptBlock {
+             [CompletionResult]::new('smart', 'smart', [CompletionResultType]::ParameterValue, 'Smart code summary')
+             [CompletionResult]::new('proxy', 'proxy', [CompletionResultType]::ParameterValue, 'Proxy passthrough (no filtering, tracking only)')
+             [CompletionResult]::new('status', 'status', [CompletionResultType]::ParameterValue, 'Show tok0 status: version, hooks, savings, trust, extensions')
++            [CompletionResult]::new('doctor', 'doctor', [CompletionResultType]::ParameterValue, 'Diagnose configuration + hook-health problems')
++            [CompletionResult]::new('rule', 'rule', [CompletionResultType]::ParameterValue, 'Inspect and test compression rules')
+             [CompletionResult]::new('init', 'init', [CompletionResultType]::ParameterValue, 'Initialize hooks for AI tools')
+             [CompletionResult]::new('update', 'update', [CompletionResultType]::ParameterValue, 'Check for updates')
+             [CompletionResult]::new('discover', 'discover', [CompletionResultType]::ParameterValue, 'Discover missed savings opportunities')
+@@ -149,11 +151,80 @@ Register-ArgumentCompleter -Native -CommandName 'tok0' -ScriptBlock {
+             [CompletionResult]::new('--help', '--help', [CompletionResultType]::ParameterName, 'Print help')
+             break
+         }
++        'tok0;doctor' {
++            [CompletionResult]::new('-v', '-v', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('--verbose', '--verbose', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('-u', '-u', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('--ultra-compact', '--ultra-compact', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('-h', '-h', [CompletionResultType]::ParameterName, 'Print help')
++            [CompletionResult]::new('--help', '--help', [CompletionResultType]::ParameterName, 'Print help')
++            break
++        }
++        'tok0;rule' {
++            [CompletionResult]::new('-v', '-v', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('--verbose', '--verbose', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('-u', '-u', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('--ultra-compact', '--ultra-compact', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('-h', '-h', [CompletionResultType]::ParameterName, 'Print help')
++            [CompletionResult]::new('--help', '--help', [CompletionResultType]::ParameterName, 'Print help')
++            [CompletionResult]::new('list', 'list', [CompletionResultType]::ParameterValue, 'List all active rules (builtin + extensions + project-local)')
++            [CompletionResult]::new('show', 'show', [CompletionResultType]::ParameterValue, 'Show full config for a single rule by name')
++            [CompletionResult]::new('test', 'test', [CompletionResultType]::ParameterValue, 'Apply a rule to stdin and print the before/after savings')
++            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
++            break
++        }
++        'tok0;rule;list' {
++            [CompletionResult]::new('-v', '-v', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('--verbose', '--verbose', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('-u', '-u', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('--ultra-compact', '--ultra-compact', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('-h', '-h', [CompletionResultType]::ParameterName, 'Print help')
++            [CompletionResult]::new('--help', '--help', [CompletionResultType]::ParameterName, 'Print help')
++            break
++        }
++        'tok0;rule;show' {
++            [CompletionResult]::new('-v', '-v', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('--verbose', '--verbose', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('-u', '-u', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('--ultra-compact', '--ultra-compact', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('-h', '-h', [CompletionResultType]::ParameterName, 'Print help')
++            [CompletionResult]::new('--help', '--help', [CompletionResultType]::ParameterName, 'Print help')
++            break
++        }
++        'tok0;rule;test' {
++            [CompletionResult]::new('-v', '-v', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('--verbose', '--verbose', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
++            [CompletionResult]::new('-u', '-u', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('--ultra-compact', '--ultra-compact', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
++            [CompletionResult]::new('-h', '-h', [CompletionResultType]::ParameterName, 'Print help')
++            [CompletionResult]::new('--help', '--help', [CompletionResultType]::ParameterName, 'Print help')
++            break
++        }
++        'tok0;rule;help' {
++            [CompletionResult]::new('list', 'list', [CompletionResultType]::ParameterValue, 'List all active rules (builtin + extensions + project-local)')
++            [CompletionResult]::new('show', 'show', [CompletionResultType]::ParameterValue, 'Show full config for a single rule by name')
++            [CompletionResult]::new('test', 'test', [CompletionResultType]::ParameterValue, 'Apply a rule to stdin and print the before/after savings')
++            [CompletionResult]::new('help', 'help', [CompletionResultType]::ParameterValue, 'Print this message or the help of the given subcommand(s)')
++            break
++        }
++        'tok0;rule;help;list' {
++            break
++        }
++        'tok0;rule;help;show' {
++            break
++        }
++        'tok0;rule;help;test' {
++            break
++        }
++        'tok0;rule;help;help' {
++            break
++        }
+         'tok0;init' {
+             [CompletionResult]::new('-g', '-g', [CompletionResultType]::ParameterName, 'g')
+             [CompletionResult]::new('--global', '--global', [CompletionResultType]::ParameterName, 'global')
+             [CompletionResult]::new('--uninstall', '--uninstall', [CompletionResultType]::ParameterName, 'uninstall')
+             [CompletionResult]::new('--show', '--show', [CompletionResultType]::ParameterName, 'show')
++            [CompletionResult]::new('--wizard', '--wizard', [CompletionResultType]::ParameterName, 'Run the guided onboarding wizard')
+             [CompletionResult]::new('-v', '-v', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
+             [CompletionResult]::new('--verbose', '--verbose', [CompletionResultType]::ParameterName, 'Increase verbosity (-v, -vv, -vvv)')
+             [CompletionResult]::new('-u', '-u', [CompletionResultType]::ParameterName, 'Ultra-compact output mode')
+@@ -459,6 +530,8 @@ Register-ArgumentCompleter -Native -CommandName 'tok0' -ScriptBlock {
+             [CompletionResult]::new('smart', 'smart', [CompletionResultType]::ParameterValue, 'Smart code summary')
+             [CompletionResult]::new('proxy', 'proxy', [CompletionResultType]::ParameterValue, 'Proxy passthrough (no filtering, tracking only)')
+             [CompletionResult]::new('status', 'status', [CompletionResultType]::ParameterValue, 'Show tok0 status: version, hooks, savings, trust, extensions')
++            [CompletionResult]::new('doctor', 'doctor', [CompletionResultType]::ParameterValue, 'Diagnose configuration + hook-health problems')
++            [CompletionResult]::new('rule', 'rule', [CompletionResultType]::ParameterValue, 'Inspect and test compression rules')
+             [CompletionResult]::new('init', 'init', [CompletionResultType]::ParameterValue, 'Initialize hooks for AI tools')
+             [CompletionResult]::new('update', 'update', [CompletionResultType]::ParameterValue, 'Check for updates')
+             [CompletionResult]::new('discover', 'discover', [CompletionResultType]::ParameterValue, 'Discover missed savings opportunities')
+@@ -505,6 +578,24 @@ Register-ArgumentCompleter -Native -CommandName 'tok0' -ScriptBlock {
+         'tok0;help;status' {
+             break
+         }
++        'tok0;help;doctor' {
++            break
++        }
++        'tok0;help;rule' {
++            [CompletionResult]::new('list', 'list', [CompletionResultType]::ParameterValue, 'List all active rules (builtin + extensions + project-local)')
++            [CompletionResult]::new('show', 'show', [CompletionResultType]::ParameterValue, 'Show full config for a single rule by name')
++            [CompletionResult]::new('test', 'test', [CompletionResultType]::ParameterValue, 'Apply a rule to stdin and print the before/after savings')
++            break
++        }
++        'tok0;help;rule;list' {
++            break
++        }
++        'tok0;help;rule;show' {
++            break
++        }
++        'tok0;help;rule;test' {
++            break
++        }
+         'tok0;help;init' {
+             break
+         }
+diff --git a/completions/tok0.zsh b/completions/tok0.zsh
+index bf15519..91300e1 100644
+--- a/completions/tok0.zsh
++++ b/completions/tok0.zsh
+@@ -144,12 +144,109 @@ _arguments "${_arguments_options[@]}" : \
+ '--help[Print help]' \
+ && ret=0
+ ;;
++(doctor)
++_arguments "${_arguments_options[@]}" : \
++'*-v[Increase verbosity (-v, -vv, -vvv)]' \
++'*--verbose[Increase verbosity (-v, -vv, -vvv)]' \
++'-u[Ultra-compact output mode]' \
++'--ultra-compact[Ultra-compact output mode]' \
++'-h[Print help]' \
++'--help[Print help]' \
++&& ret=0
++;;
++(rule)
++_arguments "${_arguments_options[@]}" : \
++'*-v[Increase verbosity (-v, -vv, -vvv)]' \
++'*--verbose[Increase verbosity (-v, -vv, -vvv)]' \
++'-u[Ultra-compact output mode]' \
++'--ultra-compact[Ultra-compact output mode]' \
++'-h[Print help]' \
++'--help[Print help]' \
++":: :_tok0__rule_commands" \
++"*::: :->rule" \
++&& ret=0
++
++    case $state in
++    (rule)
++        words=($line[1] "${words[@]}")
++        (( CURRENT += 1 ))
++        curcontext="${curcontext%:*:*}:tok0-rule-command-$line[1]:"
++        case $line[1] in
++            (list)
++_arguments "${_arguments_options[@]}" : \
++'*-v[Increase verbosity (-v, -vv, -vvv)]' \
++'*--verbose[Increase verbosity (-v, -vv, -vvv)]' \
++'-u[Ultra-compact output mode]' \
++'--ultra-compact[Ultra-compact output mode]' \
++'-h[Print help]' \
++'--help[Print help]' \
++&& ret=0
++;;
++(show)
++_arguments "${_arguments_options[@]}" : \
++'*-v[Increase verbosity (-v, -vv, -vvv)]' \
++'*--verbose[Increase verbosity (-v, -vv, -vvv)]' \
++'-u[Ultra-compact output mode]' \
++'--ultra-compact[Ultra-compact output mode]' \
++'-h[Print help]' \
++'--help[Print help]' \
++':name -- Rule name (matches the `name` field in the \[filter\] section):_default' \
++&& ret=0
++;;
++(test)
++_arguments "${_arguments_options[@]}" : \
++'*-v[Increase verbosity (-v, -vv, -vvv)]' \
++'*--verbose[Increase verbosity (-v, -vv, -vvv)]' \
++'-u[Ultra-compact output mode]' \
++'--ultra-compact[Ultra-compact output mode]' \
++'-h[Print help]' \
++'--help[Print help]' \
++':name -- Rule name to exercise:_default' \
++&& ret=0
++;;
++(help)
++_arguments "${_arguments_options[@]}" : \
++":: :_tok0__rule__help_commands" \
++"*::: :->help" \
++&& ret=0
++
++    case $state in
++    (help)
++        words=($line[1] "${words[@]}")
++        (( CURRENT += 1 ))
++        curcontext="${curcontext%:*:*}:tok0-rule-help-command-$line[1]:"
++        case $line[1] in
++            (list)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++(show)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++(test)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++(help)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++        esac
++    ;;
++esac
++;;
++        esac
++    ;;
++esac
++;;
+ (init)
+ _arguments "${_arguments_options[@]}" : \
+ '-g[]' \
+ '--global[]' \
+ '--uninstall[]' \
+ '--show[]' \
++'--wizard[Run the guided onboarding wizard]' \
+ '*-v[Increase verbosity (-v, -vv, -vvv)]' \
+ '*--verbose[Increase verbosity (-v, -vv, -vvv)]' \
+ '-u[Ultra-compact output mode]' \
+@@ -611,6 +708,38 @@ _arguments "${_arguments_options[@]}" : \
+ _arguments "${_arguments_options[@]}" : \
+ && ret=0
+ ;;
++(doctor)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++(rule)
++_arguments "${_arguments_options[@]}" : \
++":: :_tok0__help__rule_commands" \
++"*::: :->rule" \
++&& ret=0
++
++    case $state in
++    (rule)
++        words=($line[1] "${words[@]}")
++        (( CURRENT += 1 ))
++        curcontext="${curcontext%:*:*}:tok0-help-rule-command-$line[1]:"
++        case $line[1] in
++            (list)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++(show)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++(test)
++_arguments "${_arguments_options[@]}" : \
++&& ret=0
++;;
++        esac
++    ;;
++esac
++;;
+ (init)
+ _arguments "${_arguments_options[@]}" : \
+ && ret=0
+@@ -777,6 +906,8 @@ _tok0_commands() {
+ 'smart:Smart code summary' \
+ 'proxy:Proxy passthrough (no filtering, tracking only)' \
+ 'status:Show tok0 status\: version, hooks, savings, trust, extensions' \
++'doctor:Diagnose configuration + hook-health problems' \
++'rule:Inspect and test compression rules' \
+ 'init:Initialize hooks for AI tools' \
+ 'update:Check for updates' \
+ 'discover:Discover missed savings opportunities' \
+@@ -895,6 +1026,11 @@ _tok0__discover_commands() {
+     local commands; commands=()
+     _describe -t commands 'tok0 discover commands' commands "$@"
+ }
++(( $+functions[_tok0__doctor_commands] )) ||
++_tok0__doctor_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 doctor commands' commands "$@"
++}
+ (( $+functions[_tok0__ext_commands] )) ||
+ _tok0__ext_commands() {
+     local commands; commands=(
+@@ -978,6 +1114,8 @@ _tok0__help_commands() {
+ 'smart:Smart code summary' \
+ 'proxy:Proxy passthrough (no filtering, tracking only)' \
+ 'status:Show tok0 status\: version, hooks, savings, trust, extensions' \
++'doctor:Diagnose configuration + hook-health problems' \
++'rule:Inspect and test compression rules' \
+ 'init:Initialize hooks for AI tools' \
+ 'update:Check for updates' \
+ 'discover:Discover missed savings opportunities' \
+@@ -1046,6 +1184,11 @@ _tok0__help__discover_commands() {
+     local commands; commands=()
+     _describe -t commands 'tok0 help discover commands' commands "$@"
+ }
++(( $+functions[_tok0__help__doctor_commands] )) ||
++_tok0__help__doctor_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 help doctor commands' commands "$@"
++}
+ (( $+functions[_tok0__help__ext_commands] )) ||
+ _tok0__help__ext_commands() {
+     local commands; commands=(
+@@ -1120,6 +1263,30 @@ _tok0__help__rewrite_commands() {
+     local commands; commands=()
+     _describe -t commands 'tok0 help rewrite commands' commands "$@"
+ }
++(( $+functions[_tok0__help__rule_commands] )) ||
++_tok0__help__rule_commands() {
++    local commands; commands=(
++'list:List all active rules (builtin + extensions + project-local)' \
++'show:Show full config for a single rule by name' \
++'test:Apply a rule to stdin and print the before/after savings' \
++    )
++    _describe -t commands 'tok0 help rule commands' commands "$@"
++}
++(( $+functions[_tok0__help__rule__list_commands] )) ||
++_tok0__help__rule__list_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 help rule list commands' commands "$@"
++}
++(( $+functions[_tok0__help__rule__show_commands] )) ||
++_tok0__help__rule__show_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 help rule show commands' commands "$@"
++}
++(( $+functions[_tok0__help__rule__test_commands] )) ||
++_tok0__help__rule__test_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 help rule test commands' commands "$@"
++}
+ (( $+functions[_tok0__help__smart_commands] )) ||
+ _tok0__help__smart_commands() {
+     local commands; commands=()
+@@ -1209,6 +1376,61 @@ _tok0__rewrite_commands() {
+     local commands; commands=()
+     _describe -t commands 'tok0 rewrite commands' commands "$@"
+ }
++(( $+functions[_tok0__rule_commands] )) ||
++_tok0__rule_commands() {
++    local commands; commands=(
++'list:List all active rules (builtin + extensions + project-local)' \
++'show:Show full config for a single rule by name' \
++'test:Apply a rule to stdin and print the before/after savings' \
++'help:Print this message or the help of the given subcommand(s)' \
++    )
++    _describe -t commands 'tok0 rule commands' commands "$@"
++}
++(( $+functions[_tok0__rule__help_commands] )) ||
++_tok0__rule__help_commands() {
++    local commands; commands=(
++'list:List all active rules (builtin + extensions + project-local)' \
++'show:Show full config for a single rule by name' \
++'test:Apply a rule to stdin and print the before/after savings' \
++'help:Print this message or the help of the given subcommand(s)' \
++    )
++    _describe -t commands 'tok0 rule help commands' commands "$@"
++}
++(( $+functions[_tok0__rule__help__help_commands] )) ||
++_tok0__rule__help__help_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 rule help help commands' commands "$@"
++}
++(( $+functions[_tok0__rule__help__list_commands] )) ||
++_tok0__rule__help__list_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 rule help list commands' commands "$@"
++}
++(( $+functions[_tok0__rule__help__show_commands] )) ||
++_tok0__rule__help__show_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 rule help show commands' commands "$@"
++}
++(( $+functions[_tok0__rule__help__test_commands] )) ||
++_tok0__rule__help__test_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 rule help test commands' commands "$@"
++}
++(( $+functions[_tok0__rule__list_commands] )) ||
++_tok0__rule__list_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 rule list commands' commands "$@"
++}
++(( $+functions[_tok0__rule__show_commands] )) ||
++_tok0__rule__show_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 rule show commands' commands "$@"
++}
++(( $+functions[_tok0__rule__test_commands] )) ||
++_tok0__rule__test_commands() {
++    local commands; commands=()
++    _describe -t commands 'tok0 rule test commands' commands "$@"
++}
+ (( $+functions[_tok0__smart_commands] )) ||
+ _tok0__smart_commands() {
+     local commands; commands=()
+diff --git a/src/insights/mod.rs b/src/insights/mod.rs
+index e0c6671..d196bdc 100644
+--- a/src/insights/mod.rs
++++ b/src/insights/mod.rs
+@@ -1,3 +1,5 @@
++pub mod doctor;
+ pub mod profiler;
++pub mod rules_cli;
+ pub mod stats;
+ pub mod status;
+diff --git a/src/main.rs b/src/main.rs
+index ce2e1fd..5973bae 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -62,6 +62,65 @@ fn get_extension_rules() -> &'static [engine::rules::FilterConfig] {
+     })
+ }
+ 
++/// Detect the user's shell from the $SHELL env value. Pure + testable.
++/// Returns None if unset or unrecognized.
++fn detect_shell(shell_env: Option<&str>) -> Option<&'static str> {
++    let path = shell_env?;
++    let name = path.rsplit('/').next().unwrap_or(path);
++    match name {
++        "bash" => Some("bash"),
++        "zsh" => Some("zsh"),
++        "fish" => Some("fish"),
++        _ => None,
++    }
++}
++
++/// Completion install path for a given shell, under the user's home.
++/// Pure + testable. Returns None for unrecognized shells.
++fn completions_install_path(shell: &str, home: &std::path::Path) -> Option<std::path::PathBuf> {
++    match shell {
++        "bash" => Some(
++            home.join(".local")
++                .join("share")
++                .join("bash-completion")
++                .join("completions")
++                .join("tok0"),
++        ),
++        "zsh" => Some(home.join(".zsh").join("completions").join("_tok0")),
++        "fish" => Some(
++            home.join(".config")
++                .join("fish")
++                .join("completions")
++                .join("tok0.fish"),
++        ),
++        _ => None,
++    }
++}
++
++/// Print the "install shell completions" hint for the detected shell.
++/// Pure + testable via a Writer injection.
++fn print_completions_hint<W: std::io::Write>(
++    writer: &mut W,
++    shell_env: Option<&str>,
++    home: &std::path::Path,
++) -> std::io::Result<()> {
++    let Some(shell) = detect_shell(shell_env) else {
++        return Ok(());
++    };
++    let Some(target) = completions_install_path(shell, home) else {
++        return Ok(());
++    };
++    writeln!(writer)?;
++    writeln!(writer, "Shell completions ({}):", shell)?;
++    writeln!(
++        writer,
++        "  Run: tok0 completions {} > {}",
++        shell,
++        target.display()
++    )?;
++    Ok(())
++}
++
+ /// Load project-local rules from `.tok0/filters/`, gated by trust.
+ /// Returns empty vec if project is untrusted or no rules exist.
+ fn load_project_local_rules() -> Vec<engine::rules::FilterConfig> {
+@@ -182,6 +241,13 @@ enum Commands {
+     },
+     /// Show tok0 status: version, hooks, savings, trust, extensions
+     Status,
++    /// Diagnose configuration + hook-health problems
++    Doctor,
++    /// Inspect and test compression rules
++    Rule {
++        #[command(subcommand)]
++        command: RuleCommands,
++    },
+     /// Initialize hooks for AI tools
+     Init {
+         #[arg(short, long)]
+@@ -265,6 +331,22 @@ enum TelemetryCommands {
+     Status,
+ }
+ 
++#[derive(Subcommand)]
++enum RuleCommands {
++    /// List all active rules (builtin + extensions + project-local)
++    List,
++    /// Show full config for a single rule by name
++    Show {
++        /// Rule name (matches the `name` field in the [filter] section)
++        name: String,
++    },
++    /// Apply a rule to stdin and print the before/after savings
++    Test {
++        /// Rule name to exercise
++        name: String,
++    },
++}
++
+ #[derive(Subcommand)]
+ enum AuthCommands {
+     /// Login with API token
+@@ -330,6 +412,12 @@ fn run(cli: Cli) -> Result<()> {
+             run_meta(|| insights::stats::run(graph, history, fmt))
+         }
+         Commands::Status => run_meta(insights::status::run),
++        Commands::Doctor => run_meta(insights::doctor::run),
++        Commands::Rule { command } => match command {
++            RuleCommands::List => run_meta(insights::rules_cli::run_list),
++            RuleCommands::Show { name } => run_meta(|| insights::rules_cli::run_show(&name)),
++            RuleCommands::Test { name } => run_meta(|| insights::rules_cli::run_test(&name)),
++        },
+         Commands::Init {
+             global,
+             uninstall,
+@@ -424,6 +512,9 @@ fn run(cli: Cli) -> Result<()> {
+                 println!();
+                 println!("Next: run any command through your AI tool \u{2014} tok0 compresses automatically.");
+                 println!("Run `tok0 stats` to see your savings.");
++                // Optional: shell completions hint
++                let shell_env = std::env::var("SHELL").ok();
++                let _ = print_completions_hint(&mut std::io::stdout(), shell_env.as_deref(), &home);
+             }
+             Ok(())
+         }
+@@ -712,4 +803,71 @@ mod tests {
+         clap_complete::generate(clap_complete::Shell::Fish, &mut cmd, "tok0", &mut buf);
+         assert!(!buf.is_empty());
+     }
++
++    #[test]
++    fn test_detect_shell_recognises_common_shells() {
++        assert_eq!(detect_shell(Some("/bin/bash")), Some("bash"));
++        assert_eq!(detect_shell(Some("/usr/bin/zsh")), Some("zsh"));
++        assert_eq!(detect_shell(Some("/opt/homebrew/bin/fish")), Some("fish"));
++        assert_eq!(detect_shell(Some("bash")), Some("bash"));
++    }
++
++    #[test]
++    fn test_detect_shell_returns_none_for_unknown_and_missing() {
++        assert_eq!(detect_shell(None), None);
++        assert_eq!(detect_shell(Some("")), None);
++        assert_eq!(detect_shell(Some("/bin/tcsh")), None);
++        assert_eq!(detect_shell(Some("/bin/nu")), None);
++    }
++
++    #[test]
++    fn test_completions_install_path_per_shell() {
++        let home = std::path::PathBuf::from("/home/test");
++        assert_eq!(
++            completions_install_path("bash", &home),
++            Some(home.join(".local/share/bash-completion/completions/tok0"))
++        );
++        assert_eq!(
++            completions_install_path("zsh", &home),
++            Some(home.join(".zsh/completions/_tok0"))
++        );
++        assert_eq!(
++            completions_install_path("fish", &home),
++            Some(home.join(".config/fish/completions/tok0.fish"))
++        );
++        assert_eq!(completions_install_path("tcsh", &home), None);
++    }
++
++    #[test]
++    fn test_print_completions_hint_includes_command() {
++        let mut buf: Vec<u8> = Vec::new();
++        let home = std::path::PathBuf::from("/home/test");
++        print_completions_hint(&mut buf, Some("/bin/zsh"), &home).expect("write");
++        let s = String::from_utf8(buf).expect("utf8");
++        assert!(s.contains("Shell completions (zsh)"));
++        assert!(s.contains("tok0 completions zsh"));
++        assert!(s.contains("/home/test/.zsh/completions/_tok0"));
++    }
++
++    #[test]
++    fn test_print_completions_hint_silent_for_unknown_shell() {
++        let mut buf: Vec<u8> = Vec::new();
++        let home = std::path::PathBuf::from("/home/test");
++        print_completions_hint(&mut buf, Some("/bin/tcsh"), &home).expect("write");
++        assert!(
++            buf.is_empty(),
++            "should not print anything for unknown shell"
++        );
++    }
++
++    #[test]
++    fn test_print_completions_hint_silent_when_shell_unset() {
++        let mut buf: Vec<u8> = Vec::new();
++        let home = std::path::PathBuf::from("/home/test");
++        print_completions_hint(&mut buf, None, &home).expect("write");
++        assert!(
++            buf.is_empty(),
++            "should not print anything when SHELL is unset"
++        );
++    }
+ }
+diff --git a/tests/cli_integration.rs b/tests/cli_integration.rs
+index 1afedc2..29f8d72 100644
+--- a/tests/cli_integration.rs
++++ b/tests/cli_integration.rs
+@@ -232,6 +232,135 @@ fn test_unknown_command_errors_cleanly() {
+     );
+ }
+ 
++#[test]
++fn test_doctor_command_runs_and_reports_summary() {
++    let (_tmp, db) = isolated_env();
++    let out = run_tok0(&["doctor"], &db);
++    // Exit may be 0 or 1 depending on whether dev environment has issues.
++    // Either way the report structure must be present.
++    let stdout = String::from_utf8_lossy(&out.stdout);
++    assert!(
++        stdout.contains("tok0 doctor"),
++        "doctor should print a report header: {}",
++        stdout
++    );
++    assert!(
++        stdout.contains("Summary:"),
++        "doctor should print a summary line: {}",
++        stdout
++    );
++}
++
++#[test]
++fn test_doctor_finds_invalid_extension() {
++    // Stage a bad extension under a fake config dir, then run tok0 doctor
++    // with TOK0_CONFIG_DIR overridden. Exit code must be non-zero.
++    let (_tmp, db) = isolated_env();
++    let cfg = TempDir::new().expect("tmp cfg");
++    let bad_rules = cfg.path().join("extensions").join("bad").join("rules");
++    std::fs::create_dir_all(&bad_rules).expect("mkdir");
++    std::fs::write(bad_rules.join("bad.toml"), b"this is {{ not valid toml").expect("write");
++
++    let out = Command::new(tok0_binary())
++        .args(["doctor"])
++        .env("TOK0_DB_PATH", &db)
++        .env("TOK0_CONFIG_DIR", cfg.path())
++        .output()
++        .expect("run");
++
++    let stdout = String::from_utf8_lossy(&out.stdout);
++    assert!(stdout.contains("extension: bad"), "stdout: {}", stdout);
++    assert!(
++        stdout.contains("error"),
++        "should flag invalid extension: {}",
++        stdout
++    );
++    assert!(!out.status.success(), "exit code must be non-zero on error");
++}
++
++#[test]
++fn test_rule_list_outputs_header_and_rules() {
++    let (_tmp, db) = isolated_env();
++    let out = run_tok0(&["rule", "list"], &db);
++    assert!(out.status.success(), "rule list should succeed");
++    let stdout = String::from_utf8_lossy(&out.stdout);
++    assert!(stdout.contains("rule(s) active"));
++    assert!(stdout.contains("SOURCE"));
++    assert!(stdout.contains("NAME"));
++    assert!(stdout.contains("builtin"));
++}
++
++#[test]
++fn test_rule_show_existing_builtin() {
++    let (_tmp, db) = isolated_env();
++    // Pick a rule we know ships as builtin — brew-install is committed.
++    let out = run_tok0(&["rule", "show", "brew-install"], &db);
++    assert!(
++        out.status.success(),
++        "rule show should succeed: stderr={}",
++        String::from_utf8_lossy(&out.stderr)
++    );
++    let stdout = String::from_utf8_lossy(&out.stdout);
++    assert!(stdout.contains("name:     brew-install"));
++    assert!(stdout.contains("source:   builtin"));
++    assert!(stdout.contains("commands:"));
++}
++
++#[test]
++fn test_rule_show_unknown_fails() {
++    let (_tmp, db) = isolated_env();
++    let out = run_tok0(&["rule", "show", "this-rule-does-not-exist-xyz"], &db);
++    assert!(!out.status.success(), "show of unknown rule should fail");
++    let stderr = String::from_utf8_lossy(&out.stderr);
++    assert!(
++        stderr.contains("No rule named") || stderr.contains("not found"),
++        "stderr: {}",
++        stderr
++    );
++}
++
++#[test]
++fn test_rule_test_applies_compression_to_stdin() {
++    let (_tmp, db) = isolated_env();
++    // Use brew-install which strips "^==> Downloading" lines.
++    let input = "==> Downloading foo\n==> Downloading bar\nreal content\nmore real\n";
++
++    let mut child = Command::new(tok0_binary())
++        .args(["rule", "test", "brew-install"])
++        .env("TOK0_DB_PATH", &db)
++        .stdin(std::process::Stdio::piped())
++        .stdout(std::process::Stdio::piped())
++        .stderr(std::process::Stdio::piped())
++        .spawn()
++        .expect("spawn");
++
++    use std::io::Write;
++    child
++        .stdin
++        .as_mut()
++        .expect("stdin")
++        .write_all(input.as_bytes())
++        .expect("write stdin");
++
++    let out = child.wait_with_output().expect("wait");
++    assert!(
++        out.status.success(),
++        "rule test should succeed: stderr={}",
++        String::from_utf8_lossy(&out.stderr)
++    );
++
++    let stdout = String::from_utf8_lossy(&out.stdout);
++    assert!(stdout.contains("rule: brew-install"));
++    assert!(stdout.contains("input:"));
++    assert!(stdout.contains("output:"));
++    assert!(stdout.contains("saved"));
++    assert!(stdout.contains("real content"));
++    assert!(
++        !stdout.contains("Downloading foo"),
++        "progress line should be stripped"
++    );
++}
++
+ #[test]
+ fn test_init_uninstall_is_clean_when_nothing_installed() {
+     let (_tmp, db) = isolated_env();

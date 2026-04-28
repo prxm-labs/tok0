@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>tok0</id>
+    <version>0.1.0</version>
+    <title>tok0</title>
+    <authors>prxm-labs</authors>
+    <owners>prxm-labs</owners>
+    <licenseUrl>https://github.com/prxm-labs/tok0/blob/main/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/prxm-labs/tok0</projectUrl>
+    <projectSourceUrl>https://github.com/prxm-labs/tok0</projectSourceUrl>
+    <docsUrl>https://github.com/prxm-labs/tok0/blob/main/README.md</docsUrl>
+    <bugTrackerUrl>https://github.com/prxm-labs/tok0/issues</bugTrackerUrl>
+    <tags>tok0 cli ai llm tokens compression claude cursor gemini windsurf</tags>
+    <summary>Token-optimized CLI proxy for AI coding tools</summary>
+    <description><![CDATA[
+tok0 is a high-performance CLI proxy that reduces LLM token consumption by
+60-90% on typical development operations (git, cargo, npm, docker, kubectl,
+and more).
+
+Install hooks into your AI coding tool and tok0 automatically compresses
+verbose command output before it reaches the model.
+
+## Install
+
+    choco install tok0
+
+Then:
+
+    tok0 init       # install hooks
+    tok0 status     # verify
+    tok0 stats      # see savings
+
+## Supported tools
+
+Claude Code, Cursor, Windsurf, Cline, Amp, OpenCode, Kimi Code, Gemini CLI,
+Codex. See the project README for per-tool integration details.
+]]></description>
+    <releaseNotes>https://github.com/prxm-labs/tok0/blob/main/CHANGELOG.md</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

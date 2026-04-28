@@ -1,0 +1,9 @@
+total 64
+drwxr-xr-x   8 theodorevorillas  staff    256 Apr 24 00:47 .
+drwxr-xr-x@ 21 theodorevorillas  staff    672 Apr 24 00:26 ..
+-rwxr-xr-x   1 theodorevorillas  staff   5713 Apr  7 16:57 benchmark.sh
+-rwxr-xr-x   1 theodorevorillas  staff   1263 Apr  7 14:13 capture-fixtures.sh
+-rwxr-xr-x   1 theodorevorillas  staff  10530 Apr  7 17:26 equivalence_test.sh
+-rwxr-xr-x   1 theodorevorillas  staff   2701 Apr 23 01:02 test-install-sh.sh
+drwxr-xr-x   3 theodorevorillas  staff     96 Apr 24 00:47 tests
+-rwxr-xr-x   1 theodorevorillas  staff   1689 Apr 23 00:47 update-formula.sh

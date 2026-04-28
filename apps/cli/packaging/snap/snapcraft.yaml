@@ -1,0 +1,41 @@
+name: tok0
+title: tok0
+version: "0.1.0"
+summary: Token-optimized CLI proxy for AI coding tools
+description: |
+  tok0 compresses verbose shell command output before it reaches a
+  Large Language Model, typically saving 60-90% of tokens on common
+  development operations (git, cargo, npm, docker, kubectl, and more).
+
+  It installs hooks into your AI coding tool (Claude Code, Cursor,
+  Windsurf, Cline, Amp, OpenCode, Gemini CLI, Kimi Code) so every
+  command routes through the compression pipeline transparently.
+
+  After install:
+    tok0 init     # install hooks into detected tools
+    tok0 status   # verify
+    tok0 stats    # see token savings
+
+base: core22
+grade: stable
+confinement: classic  # tok0 needs broad filesystem + subprocess access
+license: MIT
+
+parts:
+  tok0:
+    plugin: rust
+    source: .
+    rust-channel: stable
+    rust-features:
+      - ""  # default build (no `cloud` feature)
+    build-packages:
+      - pkg-config
+      - libssl-dev
+
+apps:
+  tok0:
+    command: bin/tok0
+    plugs:
+      - home
+      - network
+      - removable-media

@@ -1,0 +1,42 @@
+{
+  "name": "@prxm-labs/tok0",
+  "version": "0.1.0",
+  "description": "Token-optimized CLI proxy for AI coding tools — 60-90% savings on LLM dev operations",
+  "keywords": [
+    "ai",
+    "llm",
+    "cli",
+    "proxy",
+    "compression",
+    "tokens",
+    "claude",
+    "cursor",
+    "gemini",
+    "windsurf",
+    "cline",
+    "amp",
+    "opencode"
+  ],
+  "homepage": "https://github.com/prxm-labs/tok0",
+  "bugs": "https://github.com/prxm-labs/tok0/issues",
+  "license": "MIT",
+  "author": "prxm-labs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prxm-labs/tok0.git"
+  },
+  "bin": {
+    "tok0": "bin/tok0.js"
+  },
+  "files": [
+    "bin/tok0.js",
+    "install.js",
+    "README.md"
+  ],
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

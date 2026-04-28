@@ -1,0 +1,20 @@
+980353a docs: add ROADMAP.md — post-v0.1 hardening plan
+54115b1 fix(bridge): write to canonical per-tool config paths + add OpenCode
+dd75975 chore(release): populate Formula SHA-256 for v0.1.0
+3264ee1 fix(ci): rename release binaries with target triple
+e163d5f fix(clippy): satisfy Rust 1.95 lints
+4d4c48a test: property tests + CLI integration suite
+28b21ff fix(install): point all install scripts at prxm-labs/tok0
+ab3859a feat(onboarding): tok0 init --wizard guided setup
+7bba613 perf(meter): true async metering with mpsc background writer
+bd21d0a feat(security): zeroize API credentials on drop
+3b71c5a feat: full Tier 1 hooks, tok0 status, init --uninstall, deferred metering
+ca0c38c fix(install): Homebrew formula placeholders and release update script
+9587afa feat(security): enforce trust gating and extension name validation
+43d590f feat(meter): threshold-based rollup for metering DB
+e1f9185 feat(engine): cache regex, index rules, add 12 catch-all TOML rules
+1888d72 fix: more
+30c5ebe docs: add design spec for extending coverage and token savings
+4ea7967 feat: wire missing functionality and remove dead code
+1e08fd0 fix: make them pass
+5648537 fix: pass ci again
