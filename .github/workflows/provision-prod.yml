@@ -1,0 +1,205 @@
+name: Provision Prod (one-shot)
+
+# Manual workflow that idempotently provisions the production Cloudflare
+# resources both apps need:
+#
+#   1. tok0_prod          D1 database (for apps/api)
+#   2. STATS_CACHE_PROD   KV namespace (for apps/api)
+#   3. tok0.dev           custom domain on the tok0-website Pages project
+#   4. www.tok0.dev       custom domain on the tok0-website Pages project
+#
+# Uses the Cloudflare REST API directly (not wrangler) so we get
+# predictable JSON responses instead of parsing CLI output.
+#
+# After it succeeds, copy the printed D1 + KV IDs into apps/api/wrangler.toml
+# (env.production block), commit, then flip API_PROD_ENABLED and
+# WEBSITE_PROD_ENABLED repo variables to trigger the prod deploys on merge.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pages_project:
+        description: 'Cloudflare Pages project name'
+        required: true
+        default: 'tok0-website'
+      apex_domain:
+        description: 'Apex domain to bind to Pages'
+        required: true
+        default: 'tok0.dev'
+      www_domain:
+        description: 'www subdomain to bind to Pages'
+        required: true
+        default: 'www.tok0.dev'
+      zone_id:
+        description: 'Cloudflare zone ID for the apex domain'
+        required: true
+        default: '6eb9f9ef547344be74a731c3fda9081a'
+
+jobs:
+  provision:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v5
+      - name: Provision D1, KV, and Pages domains via CF REST API
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_PROJECT: ${{ inputs.pages_project }}
+          APEX: ${{ inputs.apex_domain }}
+          WWW: ${{ inputs.www_domain }}
+          ZONE_ID: ${{ inputs.zone_id }}
+        run: |
+          set -euo pipefail
+
+          API="https://api.cloudflare.com/client/v4"
+          AUTH=(-H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json")
+
+          summary() { printf '%s\n' "$1" >> "$GITHUB_STEP_SUMMARY"; }
+          summary "## Provision Prod Result"
+          summary ""
+
+          ##############################################################
+          # D1: tok0_prod
+          ##############################################################
+          echo "::group::D1 — tok0_prod"
+          LIST=$(curl -fsS "${AUTH[@]}" "$API/accounts/$CF_ACCOUNT/d1/database?per_page=100&name=tok0_prod")
+          DB_ID=$(echo "$LIST" | jq -r '.result[] | select(.name=="tok0_prod") | .uuid' | head -1)
+          if [ -z "${DB_ID:-}" ] || [ "$DB_ID" = "null" ]; then
+            echo "Creating tok0_prod..."
+            CREATE=$(curl -fsS "${AUTH[@]}" -X POST "$API/accounts/$CF_ACCOUNT/d1/database" \
+              -d '{"name":"tok0_prod"}')
+            echo "$CREATE" | jq .
+            DB_ID=$(echo "$CREATE" | jq -r '.result.uuid')
+            summary "* **D1 \`tok0_prod\`** — created: \`$DB_ID\`"
+          else
+            summary "* **D1 \`tok0_prod\`** — already exists: \`$DB_ID\`"
+          fi
+          if [ -z "$DB_ID" ] || [ "$DB_ID" = "null" ]; then
+            echo "ERROR: failed to obtain D1 id"; exit 1
+          fi
+          echo "DB_ID=$DB_ID"
+          echo "::endgroup::"
+
+          ##############################################################
+          # KV: STATS_CACHE_PROD
+          ##############################################################
+          echo "::group::KV — STATS_CACHE_PROD"
+          KV_LIST=$(curl -fsS "${AUTH[@]}" "$API/accounts/$CF_ACCOUNT/storage/kv/namespaces?per_page=100")
+          KV_ID=$(echo "$KV_LIST" | jq -r '.result[] | select(.title=="STATS_CACHE_PROD") | .id' | head -1)
+          if [ -z "${KV_ID:-}" ] || [ "$KV_ID" = "null" ]; then
+            echo "Creating STATS_CACHE_PROD..."
+            KV_CREATE=$(curl -fsS "${AUTH[@]}" -X POST "$API/accounts/$CF_ACCOUNT/storage/kv/namespaces" \
+              -d '{"title":"STATS_CACHE_PROD"}')
+            echo "$KV_CREATE" | jq .
+            KV_ID=$(echo "$KV_CREATE" | jq -r '.result.id')
+            summary "* **KV \`STATS_CACHE_PROD\`** — created: \`$KV_ID\`"
+          else
+            summary "* **KV \`STATS_CACHE_PROD\`** — already exists: \`$KV_ID\`"
+          fi
+          if [ -z "$KV_ID" ] || [ "$KV_ID" = "null" ]; then
+            echo "ERROR: failed to obtain KV id"; exit 1
+          fi
+          echo "KV_ID=$KV_ID"
+          echo "::endgroup::"
+
+          ##############################################################
+          # Pages custom domains
+          ##############################################################
+          for D in "$APEX" "$WWW"; do
+            echo "::group::Pages domain — $D"
+            EXISTING=$(curl -fsS "${AUTH[@]}" \
+              "$API/accounts/$CF_ACCOUNT/pages/projects/$PAGES_PROJECT/domains" \
+              | jq -r --arg d "$D" '.result[] | select(.name==$d) | .name' | head -1)
+            if [ -n "${EXISTING:-}" ]; then
+              summary "* **Pages domain \`$D\`** — already bound to \`$PAGES_PROJECT\`"
+            else
+              ADD=$(curl -sS "${AUTH[@]}" -X POST \
+                "$API/accounts/$CF_ACCOUNT/pages/projects/$PAGES_PROJECT/domains" \
+                -d "$(jq -n --arg n "$D" '{name:$n}')")
+              echo "$ADD" | jq .
+              SUCCESS=$(echo "$ADD" | jq -r '.success')
+              if [ "$SUCCESS" = "true" ]; then
+                summary "* **Pages domain \`$D\`** — bound to \`$PAGES_PROJECT\` (DNS propagating)"
+              else
+                ERR_CODE=$(echo "$ADD" | jq -r '.errors[0].code // empty')
+                ERR_MSG=$(echo "$ADD" | jq -r '.errors[0].message // empty')
+                if echo "$ERR_MSG" | grep -qiE "already (exists|assigned)"; then
+                  summary "* **Pages domain \`$D\`** — already bound (per CF response)"
+                else
+                  summary "* **Pages domain \`$D\`** — ⚠ failed: $ERR_CODE $ERR_MSG"
+                  echo "ERROR: domain bind failed for $D"; exit 1
+                fi
+              fi
+            fi
+            echo "::endgroup::"
+          done
+
+          ##############################################################
+          # DNS records for the Pages custom domains
+          # (POST /pages/projects/.../domains only registers the binding;
+          # the records have to be created separately via the DNS API.)
+          ##############################################################
+          add_cname() {
+            local NAME="$1" TARGET="$2" PROXIED="$3"
+            local SHORT
+            if [ "$NAME" = "$APEX" ]; then SHORT="@"; else SHORT="${NAME%.$APEX}"; fi
+            echo "::group::DNS — $NAME → CNAME $TARGET (proxied=$PROXIED)"
+            EXISTS=$(curl -fsS "${AUTH[@]}" \
+              "$API/zones/$ZONE_ID/dns_records?name=$NAME" \
+              | jq -r '.result[] | select(.type=="CNAME" or .type=="A" or .type=="AAAA") | .id' | head -1)
+            if [ -n "${EXISTS:-}" ]; then
+              summary "* **DNS \`$NAME\`** — record already present (\`$EXISTS\`)"
+            else
+              CREATE=$(curl -sS "${AUTH[@]}" -X POST \
+                "$API/zones/$ZONE_ID/dns_records" \
+                -d "$(jq -n --arg n "$SHORT" --arg t "$TARGET" --argjson p "$PROXIED" \
+                  '{type:"CNAME",name:$n,content:$t,proxied:$p,ttl:1}')")
+              echo "$CREATE" | jq .
+              if [ "$(echo "$CREATE" | jq -r '.success')" != "true" ]; then
+                CODE=$(echo "$CREATE" | jq -r '.errors[0].code // empty')
+                MSG=$(echo "$CREATE" | jq -r '.errors[0].message // empty')
+                if [ "$CODE" = "81053" ] || echo "$MSG" | grep -qi "already exists"; then
+                  summary "* **DNS \`$NAME\`** — already present (race)"
+                else
+                  summary "* **DNS \`$NAME\`** — ⚠ failed: $CODE $MSG"
+                  echo "ERROR: DNS create failed for $NAME"; exit 1
+                fi
+              else
+                summary "* **DNS \`$NAME\`** — created CNAME → \`$TARGET\` (proxied)"
+              fi
+            fi
+            echo "::endgroup::"
+          }
+
+          PAGES_TARGET="${PAGES_PROJECT}.pages.dev"
+          add_cname "$APEX" "$PAGES_TARGET" true
+          add_cname "$WWW"  "$PAGES_TARGET" true
+
+          ##############################################################
+          # Patch instructions + outputs
+          ##############################################################
+          summary ""
+          summary "### Patch \`apps/api/wrangler.toml\` env.production:"
+          summary ""
+          summary "\`\`\`toml"
+          summary "[[env.production.d1_databases]]"
+          summary "binding = \"DB\""
+          summary "database_name = \"tok0_prod\""
+          summary "database_id = \"$DB_ID\""
+          summary "migrations_dir = \"migrations\""
+          summary ""
+          summary "[[env.production.kv_namespaces]]"
+          summary "binding = \"STATS_CACHE\""
+          summary "id = \"$KV_ID\""
+          summary "\`\`\`"
+
+          {
+            echo "d1_id=$DB_ID"
+            echo "kv_id=$KV_ID"
+          } >> "$GITHUB_OUTPUT"
+        id: provision
+      - name: Echo IDs to log
+        run: |
+          echo "D1 tok0_prod        = ${{ steps.provision.outputs.d1_id }}"
+          echo "KV STATS_CACHE_PROD = ${{ steps.provision.outputs.kv_id }}"

@@ -1,0 +1,51 @@
+name: CI (Website)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/website/**'
+      # apps/cli/Cargo.toml feeds the homepage version banner via
+      # apps/website/src/lib/version.ts. CLI version bumps must
+      # re-typecheck the site so a malformed bump fails CI.
+      - 'apps/cli/Cargo.toml'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/ci-website.yml'
+  pull_request:
+    paths:
+      - 'apps/website/**'
+      - 'apps/cli/Cargo.toml'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - '.github/workflows/ci-website.yml'
+
+concurrency:
+  group: ci-website-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck (astro check)
+        run: pnpm --filter @tok0/website typecheck
+      - name: Build
+        run: pnpm --filter @tok0/website build
+        env:
+          PUBLIC_TOK0_API_URL: https://api.tok0.dev
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-dist-${{ github.sha }}
+          path: apps/website/dist
+          retention-days: 7

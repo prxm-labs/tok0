@@ -1,0 +1,114 @@
+name: Deploy Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/website/**'
+      # The homepage version banner is read from apps/cli/Cargo.toml at
+      # build time (see apps/website/src/lib/version.ts). Trigger on CLI
+      # version bumps so release-please pushes propagate to the site.
+      - 'apps/cli/Cargo.toml'
+      - '.github/workflows/deploy-website.yml'
+  pull_request:
+    paths:
+      - 'apps/website/**'
+      - 'apps/cli/Cargo.toml'
+      - '.github/workflows/deploy-website.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-website-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request' || github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: preview
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm --filter @tok0/website build
+        env:
+          PUBLIC_TOK0_API_URL: https://api.tok0.dev
+      - name: Ensure Pages project exists
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          API="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/pages/projects/tok0-website"
+          STATUS=$(curl -sS -o /tmp/cf-resp.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CF_TOKEN" "$API")
+          if [ "$STATUS" = "200" ]; then
+            echo "Pages project tok0-website already exists; skipping create."
+          elif [ "$STATUS" = "404" ]; then
+            echo "Creating Cloudflare Pages project tok0-website..."
+            CREATE=$(curl -sS -X POST \
+              -H "Authorization: Bearer $CF_TOKEN" -H "Content-Type: application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/pages/projects" \
+              -d '{"name":"tok0-website","production_branch":"main"}')
+            echo "$CREATE" | jq .
+            if [ "$(echo "$CREATE" | jq -r '.success')" != "true" ]; then
+              CODE=$(echo "$CREATE" | jq -r '.errors[0].code // empty')
+              if [ "$CODE" = "8000002" ]; then
+                echo "Project already exists (race); continuing."
+              else
+                echo "ERROR: failed to create Pages project"; exit 1
+              fi
+            fi
+          else
+            echo "Unexpected CF API status $STATUS"; cat /tmp/cf-resp.json; exit 1
+          fi
+      - name: Deploy preview to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/website
+          command: pages deploy dist --project-name=tok0-website --branch=${{ github.head_ref || github.ref_name }} --commit-dirty=true
+
+  production:
+    # Three guards: branch is main, push event (not PR), and the repo
+    # variable WEBSITE_PROD_ENABLED is true. Defaults to false until the
+    # tok0-website Pages project + tok0.dev custom domain are wired up.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.WEBSITE_PROD_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.12.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm --filter @tok0/website build
+        env:
+          PUBLIC_TOK0_API_URL: https://api.tok0.dev
+      - name: Deploy production to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/website
+          command: pages deploy dist --project-name=tok0-website --branch=main
+      - name: Smoke check (production)
+        run: |
+          for i in 1 2 3 4 5; do
+            if curl -fsS https://tok0.dev/ -o /dev/null; then
+              exit 0
+            fi
+            echo "tok0.dev not ready yet, retry $i/5..."
+            sleep 5
+          done
+          exit 1
