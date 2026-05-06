@@ -502,7 +502,8 @@ fn run(cli: Cli) -> Result<()> {
                 return Ok(());
             }
 
-            let home = dirs::home_dir().context("Could not determine home directory")?;
+            let home = bridge::setup::home_dir_or_default()
+                .context("Could not determine home directory")?;
             let cwd = std::env::current_dir().context("Could not determine current directory")?;
 
             // Per-tool config dir. Only ClaudeCode supports per-project

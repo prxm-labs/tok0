@@ -465,7 +465,24 @@ fn uninstall_instructions_file(
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-fn home_dir_or_default() -> Option<PathBuf> {
+/// Resolve the user's home directory.
+///
+/// On Unix this delegates to `dirs::home_dir()`, which reads `$HOME` —
+/// allowing test harnesses to redirect detection by overriding the env
+/// var. On Windows, `dirs` v5 calls `SHGetKnownFolderPath` directly and
+/// ignores `USERPROFILE`/`HOME`, so we read those env vars ourselves
+/// first and fall back to `dirs` only when they're absent.
+pub fn home_dir_or_default() -> Option<PathBuf> {
+    #[cfg(windows)]
+    {
+        for key in ["USERPROFILE", "HOME"] {
+            if let Some(val) = std::env::var_os(key) {
+                if !val.is_empty() {
+                    return Some(PathBuf::from(val));
+                }
+            }
+        }
+    }
     dirs::home_dir()
 }
 

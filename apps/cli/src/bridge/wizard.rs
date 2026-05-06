@@ -171,7 +171,7 @@ pub fn run_wizard<R: BufRead, W: Write>(
 
 /// CLI entry point: `tok0 init --wizard`.
 pub fn run() -> Result<WizardOutcome> {
-    let home = dirs::home_dir().context("Could not determine home directory")?;
+    let home = super::setup::home_dir_or_default().context("Could not determine home directory")?;
     let config_path = crate::engine::config::config_path();
     let stdin = std::io::stdin();
     let mut reader = stdin.lock();

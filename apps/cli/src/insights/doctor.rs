@@ -330,7 +330,7 @@ pub fn run_all(
 
 /// CLI: `tok0 doctor`. Returns the process exit code.
 pub fn run() -> Result<()> {
-    let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
+    let home = crate::bridge::setup::home_dir_or_default().unwrap_or_else(|| PathBuf::from("."));
     let config_path = crate::engine::config::config_path();
     let db_path = crate::engine::config::db_path();
     let extensions_dir = crate::extensions::catalog::extensions_dir();

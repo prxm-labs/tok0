@@ -2,7 +2,8 @@ use anyhow::Result;
 use std::path::PathBuf;
 
 use crate::bridge::setup::{
-    config_dir_for, detect_tools, instructions_filename, ToolTarget, HOOK_MARKER,
+    config_dir_for, detect_tools, home_dir_or_default, instructions_filename, ToolTarget,
+    HOOK_MARKER,
 };
 use crate::bridge::trust;
 use crate::engine::{config, meter::Tracker};
@@ -53,7 +54,7 @@ pub fn gather() -> Result<StatusReport> {
     let project_dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
     let project_trusted = trust::is_trusted(&project_dir).unwrap_or(false);
 
-    let home = dirs::home_dir();
+    let home = home_dir_or_default();
     let detected = detect_tools();
     let tools = detected
         .into_iter()

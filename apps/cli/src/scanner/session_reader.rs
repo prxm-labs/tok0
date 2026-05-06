@@ -10,7 +10,7 @@ pub struct SessionCommand {
 
 /// Find Claude Code session JSONL files
 pub fn find_claude_sessions() -> Vec<PathBuf> {
-    let base = dirs::home_dir()
+    let base = crate::bridge::setup::home_dir_or_default()
         .unwrap_or_default()
         .join(".claude")
         .join("projects");
