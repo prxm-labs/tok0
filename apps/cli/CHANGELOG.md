@@ -11,6 +11,19 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9](https://github.com/prxm-labs/tok0/compare/v0.1.8...v0.1.9) (2026-05-06)
+
+
+### Features
+
+* **cli:** compress `curl -v` output ([5562dcf](https://github.com/prxm-labs/tok0/commit/5562dcf6bdfefff32226541a4459bdeef1ba1293))
+* **cli:** cover ~25 unix/dev commands missing from compressor map ([2090fe0](https://github.com/prxm-labs/tok0/commit/2090fe0046e67664afa028346bb22332e101df34))
+
+
+### Bug Fixes
+
+* **cli:** preflight write access for tok0 update ([29dc4fa](https://github.com/prxm-labs/tok0/commit/29dc4fabb3ba15fb830e9b5310312d0ae0763541))
+
 ## [0.1.8](https://github.com/prxm-labs/tok0/compare/v0.1.7...v0.1.8) (2026-05-06)
 
 
