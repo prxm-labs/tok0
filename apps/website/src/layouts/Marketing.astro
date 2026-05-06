@@ -100,16 +100,12 @@ const ogImage = new URL(`/og/${ogSlug}.png`, Astro.site).toString();
       <footer class="container">
         <div class="foot-grid">
           <div>
-            <p
-              style="max-width:36ch; margin:14px 0 0; line-height:1.55; font-family:var(--font-mono); font-size:13px; color:var(--color-ink-3);"
-            >
+            <p class="foot-desc">
               Open-source Rust CLI proxy. Compresses shell output before it
               reaches the model. Typical savings 60–90% on git, cargo, npm,
               docker, kubectl.
             </p>
-            <div
-              style="margin-top:18px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--color-ink-4);"
-            >
+            <div class="foot-stamp">
               MIT · {CLI_VERSION_TAG} · APR 2026
             </div>
           </div>
@@ -121,8 +117,8 @@ const ogImage = new URL(`/og/${ogSlug}.png`, Astro.site).toString();
                 <a href="https://github.com/prxm-labs/tok0/issues">Issues</a>
               </li>
               <li>
-                <a href="https://github.com/prxm-labs/tok0/releases"
-                  >Releases</a>
+                <a href="https://github.com/prxm-labs/tok0/releases">Releases</a
+                >
               </li>
             </ul>
           </div>
@@ -134,27 +130,11 @@ const ogImage = new URL(`/og/${ogSlug}.png`, Astro.site).toString();
               </li>
               <li>
                 <a href="/docs/installation/#quick-install-any-platform"
-                  >Shell script</a>
+                  >Shell script</a
+                >
               </li>
               <li>
                 <a href="/docs/installation/#cargo-any-platform">Cargo</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4>Field</h4>
-            <ul>
-              <li>
-                <a href="https://github.com/prxm-labs/tok0#readme">README</a>
-              </li>
-              <li>
-                <a href="https://github.com/prxm-labs/tok0/blob/main/CLAUDE.md"
-                  >Conventions</a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/prxm-labs/tok0/blob/main/apps/cli/ROADMAP.md"
-                  >Roadmap</a>
               </li>
             </ul>
           </div>
@@ -170,5 +150,23 @@ const ogImage = new URL(`/og/${ogSlug}.png`, Astro.site).toString();
         </div>
       </div>
     </div><!-- /page-frame -->
+
+    <style>
+      .foot-desc {
+        max-width: 36ch;
+        line-height: 1.55;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--color-ink-3);
+      }
+      .foot-stamp {
+        margin-top: 18px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--color-ink-4);
+      }
+    </style>
   </body>
 </html>

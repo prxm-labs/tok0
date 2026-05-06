@@ -82,7 +82,7 @@ function formatUsd(n: number): string {
 }
 ---
 
-<div class="split-2 stats-split" style="gap:24px; margin-top:32px;">
+<div class="split-2 stats-split">
   <!-- ── 30-day saved-tokens trend + top commands ─────────────────────── -->
   <div class="panel">
     <div class="panel-head">
@@ -102,7 +102,7 @@ function formatUsd(n: number): string {
           <svg
             viewBox={`0 0 ${w} ${h}`}
             preserveAspectRatio="none"
-            style="width:100%; height:96px; display:block;"
+            class="spark-svg"
           >
             <path d={area} fill="rgba(255,74,28,0.10)" />
             <path
@@ -116,51 +116,37 @@ function formatUsd(n: number): string {
             ))}
           </svg>
         ) : (
-          <div
-            class="mono"
-            style="font-size:12px; color:var(--color-ink-4); text-align:center; padding:24px 0;"
-          >
-            — no daily series available —
-          </div>
+          <div class="mono spark-empty">— no daily series available —</div>
         )
       }
 
-      <div
-        style="display:flex; justify-content:space-between; margin-top:8px; font:500 10px/1 var(--font-mono); letter-spacing:0.14em; text-transform:uppercase; color:var(--color-ink-4);"
-      >
+      <div class="spark-axis">
         <span>{daily[0]?.date ?? "—"}</span>
         <span>{daily[daily.length - 1]?.date ?? "—"}</span>
       </div>
 
-      <div style="margin-top:22px;">
-        <div class="label" style="margin-bottom:10px;">
-          Top commands · by tokens saved
-        </div>
-        <ul style="display:grid; gap:8px;">
+      <div class="cmd-block">
+        <div class="label cmd-label">Top commands · by tokens saved</div>
+        <ul class="cmd-list">
           {
             topCommands.map((c) => {
               const w =
                 (c.saved_tokens / (topCommands[0]?.saved_tokens || 1)) * 100;
               return (
-                <li style="display:grid; grid-template-columns: 1fr auto; align-items:center; gap:12px; font:500 12px/1 var(--font-mono);">
+                <li class="cmd-row">
                   <div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; color:var(--color-ink-2);">
-                      <span style="font-weight:600; letter-spacing:0.02em;">
-                        {c.command}
-                      </span>
-                      <span style="color:var(--color-ink-4);">
-                        {formatCount(c.count)} runs
-                      </span>
+                    <div class="cmd-row-head">
+                      <span class="cmd-name">{c.command}</span>
+                      <span class="cmd-runs">{formatCount(c.count)} runs</span>
                     </div>
-                    <div style="height:6px; background:var(--color-paper-3); border:1px solid var(--color-rule);">
+                    <div class="bar-track">
                       <div
-                        style={`height:100%; width:${w}%; background:var(--color-accent);`}
+                        class="bar-fill bar-fill-accent"
+                        style={`width:${w}%;`}
                       />
                     </div>
                   </div>
-                  <span style="font-weight:700; color:var(--color-ink); min-width:70px; text-align:right;">
-                    {formatTokens(c.saved_tokens)}
-                  </span>
+                  <span class="cmd-saved">{formatTokens(c.saved_tokens)}</span>
                 </li>
               );
             })
@@ -186,22 +172,21 @@ function formatUsd(n: number): string {
       <span>{formatCount(stats.total_instances)} INSTANCES</span>
     </div>
     <div class="panel-body">
-      <div class="label" style="margin-bottom:14px;">By operating system</div>
-      <ul style="display:grid; gap:12px; margin-bottom:32px;">
+      <div class="label fleet-label">By operating system</div>
+      <ul class="os-list">
         {
           topByOs.map(([os, n]) => {
             const pct = (n / totalOs) * 100;
             return (
-              <li style="display:grid; grid-template-columns: 140px 1fr 56px; gap:14px; align-items:center; font:500 12px/1 var(--font-mono); padding:4px 0;">
-                <span style="color:var(--color-ink-2); font-weight:600;">
-                  {os}
-                </span>
-                <span style="height:6px; background:var(--color-paper-3); border:1px solid var(--color-rule); display:block;">
+              <li class="os-row">
+                <span class="os-name">{os}</span>
+                <span class="bar-track os-bar">
                   <span
-                    style={`display:block; height:100%; width:${pct}%; background:var(--color-ink);`}
+                    class="bar-fill bar-fill-ink"
+                    style={`width:${pct}%;`}
                   />
                 </span>
-                <span style="text-align:right; color:var(--color-ink-4);">
+                <span class="os-meta">
                   {n} · {pct.toFixed(0)}%
                 </span>
               </li>
@@ -210,8 +195,8 @@ function formatUsd(n: number): string {
         }
       </ul>
 
-      <div class="label" style="margin-bottom:14px;">By country</div>
-      <div class="chips" style="gap:10px; margin-bottom:32px;">
+      <div class="label fleet-label">By country</div>
+      <div class="chips country-chips">
         {
           topByCountry.map(([cc, n]) => (
             <span class="chip">
@@ -221,29 +206,19 @@ function formatUsd(n: number): string {
         }
       </div>
 
-      <div class="label" style="margin-bottom:14px;">
+      <div class="label fleet-label">
         Estimated savings · input-token rates
       </div>
-      <div
-        style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;"
-      >
-        <span
-          style="font:700 32px/1 var(--font-sans); letter-spacing:-0.02em; color:var(--color-ink);"
-        >
-          {formatUsd(usdMid)}
-        </span>
-        <span
-          style="font:500 11px/1.4 var(--font-mono); letter-spacing:0.08em; color:var(--color-ink-4);"
-        >
+      <div class="usd-row">
+        <span class="usd-headline">{formatUsd(usdMid)}</span>
+        <span class="usd-rate">
           @ ${RATE_MID.toFixed(2)}/M
-          <span style="color:var(--color-ink-3);">· Sonnet-tier</span>
+          <span class="usd-tier">· Sonnet-tier</span>
         </span>
       </div>
-      <div
-        style="margin-top:8px; font:500 11px/1.4 var(--font-mono); letter-spacing:0.04em; color:var(--color-ink-4);"
-      >
+      <div class="usd-range">
         Range {formatUsd(usdLow)} – {formatUsd(usdHigh)}
-        <span style="color:var(--color-ink-3);"
+        <span class="usd-tier"
           >· Haiku ${RATE_LOW.toFixed(2)}/M → Opus ${
             RATE_HIGH.toFixed(2)
           }/M</span
@@ -270,12 +245,156 @@ function formatUsd(n: number): string {
 </div>
 
 <style>
+  .stats-split {
+    gap: 24px;
+    margin-top: 32px;
+  }
   .stats-split > .panel {
     display: flex;
     flex-direction: column;
   }
   .stats-split > .panel > .panel-body {
     flex: 1;
+  }
+
+  /* ── 30-day sparkline ───────────────────────────────────────────────── */
+  .spark-svg {
+    width: 100%;
+    height: 96px;
+    display: block;
+  }
+  .spark-empty {
+    font-size: 12px;
+    color: var(--color-ink-4);
+    text-align: center;
+    padding: 24px 0;
+  }
+  .spark-axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font: 500 10px/1 var(--font-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-4);
+  }
+
+  /* ── top-commands list ──────────────────────────────────────────────── */
+  .cmd-block {
+    margin-top: 22px;
+  }
+  .cmd-label {
+    margin-bottom: 10px;
+  }
+  .cmd-list {
+    display: grid;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .cmd-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    font: 500 12px/1 var(--font-mono);
+  }
+  .cmd-row-head {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    color: var(--color-ink-2);
+  }
+  .cmd-name {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .cmd-runs {
+    color: var(--color-ink-4);
+  }
+  .cmd-saved {
+    font-weight: 700;
+    color: var(--color-ink);
+    min-width: 70px;
+    text-align: right;
+  }
+
+  /* ── reusable bar (track + fill) ────────────────────────────────────── */
+  .bar-track {
+    height: 6px;
+    background: var(--color-paper-3);
+    border: 1px solid var(--color-rule);
+  }
+  .bar-fill {
+    display: block;
+    height: 100%;
+  }
+  .bar-fill-accent {
+    background: var(--color-accent);
+  }
+  .bar-fill-ink {
+    background: var(--color-ink);
+  }
+
+  /* ── fleet breakdown ────────────────────────────────────────────────── */
+  .fleet-label {
+    margin-bottom: 14px;
+  }
+  .os-list {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 32px;
+    list-style: none;
+    padding: 0;
+  }
+  .os-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 56px;
+    gap: 14px;
+    align-items: center;
+    font: 500 12px/1 var(--font-mono);
+    padding: 4px 0;
+  }
+  .os-name {
+    color: var(--color-ink-2);
+    font-weight: 600;
+  }
+  .os-bar {
+    display: block;
+  }
+  .os-meta {
+    text-align: right;
+    color: var(--color-ink-4);
+  }
+  .country-chips {
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .usd-row {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .usd-headline {
+    font: 700 32px/1 var(--font-sans);
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+  }
+  .usd-rate {
+    font: 500 11px/1.4 var(--font-mono);
+    letter-spacing: 0.08em;
+    color: var(--color-ink-4);
+  }
+  .usd-range {
+    margin-top: 8px;
+    font: 500 11px/1.4 var(--font-mono);
+    letter-spacing: 0.04em;
+    color: var(--color-ink-4);
+  }
+  .usd-tier {
+    color: var(--color-ink-3);
   }
 
   .panel-foot .panel-foot-mark {
