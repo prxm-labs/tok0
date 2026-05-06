@@ -1,0 +1,9 @@
+[filter]
+name = "glab"
+commands = ["glab"]
+strip_patterns = [
+  "^\\s*$",
+  "^Showing \\d+ ",
+]
+head_lines = 30
+max_line_chars = 200

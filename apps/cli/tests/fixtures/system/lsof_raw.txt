@@ -1,0 +1,200 @@
+COMMAND     PID             USER   FD      TYPE             DEVICE   SIZE/OFF                NODE NAME
+loginwind   397 theodorevorillas  cwd       DIR               1,13        704                   2 /
+loginwind   397 theodorevorillas  txt       REG               1,13    3037184 1152921500312090550 /System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow
+loginwind   397 theodorevorillas  txt       REG               1,13      67496           135196472 /Library/Preferences/Logging/.plist-cache.ebpYR6ph
+loginwind   397 theodorevorillas  txt       REG               1,13        688 1152921500312090621 /System/Library/CoreServices/loginwindow.app/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13     167896           135196958 /private/var/db/analyticsd/events.allowlist
+loginwind   397 theodorevorillas  txt       REG               1,13        110 1152921500312088362 /System/Library/CoreServices/SystemVersion.bundle/English.lproj/SystemVersion.strings
+loginwind   397 theodorevorillas  txt       REG               1,13     139240 1152921500312088063 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/SystemAppearance.car
+loginwind   397 theodorevorillas  txt       REG               1,13     193408 1152921500312198283 /System/Library/LoginPlugins/FSDisconnect.loginPlugin/Contents/MacOS/FSDisconnect
+loginwind   397 theodorevorillas  txt       REG               1,13     305456 1152921500312198232 /System/Library/LoginPlugins/DisplayServices.loginPlugin/Contents/MacOS/DisplayServices
+loginwind   397 theodorevorillas  txt       REG               1,13    2289328 1152921500312524573 /usr/lib/dyld
+loginwind   397 theodorevorillas  txt       REG               1,13   33979312 1152921500312535083 /usr/share/icu/icudt76l.dat
+loginwind   397 theodorevorillas  txt       REG               1,13     234944           123824889 /private/var/db/timezone/tz/2025c.1.0/icutz/icutz44l.dat
+loginwind   397 theodorevorillas  txt       REG               1,13    7919192 1152921500312088024 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/Aqua.car
+loginwind   397 theodorevorillas  txt       REG               1,13      47574 1152921500312140271 /System/Library/Frameworks/LocalAuthentication.framework/Support/SharedUtils.framework/Versions/A/Resources/Shared.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       9346 1152921500312126792 /System/Library/Frameworks/AppKit.framework/Versions/C/Resources/Placeholders.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13     357312 1152921500312120140 /System/Library/Extensions/IOHIDFamily.kext/Contents/PlugIns/IOHIDLib.plugin/Contents/MacOS/IOHIDLib
+loginwind   397 theodorevorillas  txt       REG               1,13     156112 1152921500312524616 /usr/lib/pam/pam_opendirectory.so.2
+loginwind   397 theodorevorillas  txt       REG               1,13    2369592 1152921500312124609 /System/Library/Fonts/Helvetica.ttc
+loginwind   397 theodorevorillas  txt       REG               1,13     294744 1152921500312301259 /System/Library/PrivateFrameworks/LoginUIKit.framework/Versions/A/Resources/Assets.car
+loginwind   397 theodorevorillas  txt       REG               1,13     110553 1152921500312301299 /System/Library/PrivateFrameworks/LoginUIKit.framework/Versions/A/Resources/Localizable.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      16384              517753 /private/var/folders/2j/k85w_80s7kg8xjqbcqkypvlh0000gn/C/com.apple.loginwindow/com.apple.metal/16777235_322/functions.data
+loginwind   397 theodorevorillas  txt       REG               1,13      60672 1152921500312126604 /System/Library/Frameworks/AppKit.framework/Versions/C/Resources/Common.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13     265952 1152921500312088510 /System/Library/CoreServices/TextInputMenuCore.bundle/Contents/MacOS/TextInputMenuCore
+loginwind   397 theodorevorillas  txt       REG               1,13    1393328 1152921500312126512 /System/Library/Frameworks/AppKit.framework/Versions/C/Resources/Assets.car
+loginwind   397 theodorevorillas  txt       REG               1,13     862424 1152921500312260040 /System/Library/PrivateFrameworks/CoreWLANKit.framework/Versions/A/Resources/Assets.car
+loginwind   397 theodorevorillas  txt       REG               1,13     138876           110123216 /System/Library/Caches/com.apple.IntlDataCache.le.kbdx
+loginwind   397 theodorevorillas  txt       REG               1,13    3397824 1152921500312088030 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/Assets.car
+loginwind   397 theodorevorillas  txt       REG               1,13       6780 1152921500312190535 /System/Library/Input Methods/CharacterPalette.app/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      13811 1152921500312301283 /System/Library/PrivateFrameworks/LoginUIKit.framework/Versions/A/Resources/LUI2PasswordHelpViewController.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      10426 1152921500312301018 /System/Library/PrivateFrameworks/LoginUIKit.framework/Versions/A/Frameworks/LoginUICore.framework/Versions/A/Resources/Localizable.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13     218688 1152921500312124687 /System/Library/Fonts/SFNSMono.ttf
+loginwind   397 theodorevorillas  txt       REG               1,13    2976648 1152921500312088052 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/FauxVibrantLight.car
+loginwind   397 theodorevorillas  txt       REG               1,13    1493020 1152921500312193489 /System/Library/Keyboard Layouts/AppleKeyboardLayouts.bundle/Contents/Resources/AppleKeyboardLayouts-L.dat
+loginwind   397 theodorevorillas  txt       REG               1,13     242340 1152921500312193491 /System/Library/Keyboard Layouts/AppleKeyboardLayouts.bundle/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13     256960 1152921500312142602 /System/Library/Frameworks/OpenDirectory.framework/Versions/A/Frameworks/CFOpenDirectory.framework/Versions/A/Resources/Localizable.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13     507129 1152921500312090681 /System/Library/CoreServices/loginwindow.app/Contents/Resources/loginwindow.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13     718976 1152921500312198168 /System/Library/LoginPlugins/BezelServices.loginPlugin/Contents/MacOS/BezelServices
+loginwind   397 theodorevorillas  txt       REG               1,13      73240 1152921500312088048 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/FauxVibrantDark.car
+loginwind   397 theodorevorillas  txt       REG               1,13     248480 1152921500312524589 /usr/lib/libobjc-trampolines.dylib
+loginwind   397 theodorevorillas  txt       REG               1,13    1516176 1152921500312111900 /System/Library/Extensions/AGXMetal13_3.bundle/Contents/Resources/ds.g13g
+loginwind   397 theodorevorillas  txt       REG               1,13      28169 1152921500312132472 /System/Library/Frameworks/ColorSync.framework/Versions/A/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13    1675796 1152921500312124569 /System/Library/Fonts/ADTNumeric.ttc
+loginwind   397 theodorevorillas  txt       REG               1,13      29814 1152921500312088516 /System/Library/CoreServices/TextInputMenuCore.bundle/Contents/Resources/Localizable.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13         85 1152921500311880858 /System/Library/Input Methods/PressAndHold.app/Contents/PlugIns/PAH_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       4171 1152921500312191236 /System/Library/Input Methods/EmojiFunctionRowIM.app/Contents/PlugIns/EmojiFunctionRowIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       9170 1152921500312193079 /System/Library/Input Methods/VietnameseIM.app/Contents/PlugIns/VIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      17587 1152921500312191773 /System/Library/Input Methods/KoreanIM.app/Contents/PlugIns/KIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       6060 1152921500312189600 /System/Library/Input Methods/AinuIM.app/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      14855 1152921500312192145 /System/Library/Input Methods/SCIM.app/Contents/PlugIns/SCIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      11570 1152921500312192761 /System/Library/Input Methods/TrackpadIM.app/Contents/PlugIns/TIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       2426 1152921500312189535 /System/Library/Input Methods/50onPaletteServer.app/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13    6222152 1152921500312088077 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/VibrantLight.car
+loginwind   397 theodorevorillas  txt       REG               1,13    8330740 1152921500312124683 /System/Library/Fonts/SFNS.ttf
+loginwind   397 theodorevorillas  txt       REG               1,13      20236 1152921500312191315 /System/Library/Input Methods/JapaneseIM-KanaTyping.app/Contents/PlugIns/JapaneseIM-KanaTyping.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       5168 1152921500312189665 /System/Library/Input Methods/Assistive Control.app/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       4570 1152921500312190623 /System/Library/Input Methods/DictationIM.app/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      21302 1152921500312191496 /System/Library/Input Methods/JapaneseIM-RomajiTyping.app/Contents/PlugIns/JapaneseIM-RomajiTyping.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      11085 1152921500312192517 /System/Library/Input Methods/TYIM.app/Contents/PlugIns/TYIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       5043 1152921500312192693 /System/Library/Input Methods/TamilIM.app/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      29976 1152921500312192942 /System/Library/Input Methods/TransliterationIM.app/Contents/PlugIns/TransliterationIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      15037 1152921500312192328 /System/Library/Input Methods/TCIM.app/Contents/PlugIns/TCIM_Extension.appex/Contents/Resources/InfoPlist.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13       4136           110125554 /Library/Caches/com.apple.iconservices.store/EF38DFEE-452C-38A8-8233-491474D49E6F.isdata
+loginwind   397 theodorevorillas  txt       REG               1,13     638976           134247468 /private/var/folders/2j/k85w_80s7kg8xjqbcqkypvlh0000gn/C/com.apple.iconservices/store.index
+loginwind   397 theodorevorillas  txt       REG               1,13      50176 1152921500312126832 /System/Library/Frameworks/AppKit.framework/Versions/C/Resources/Undo.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13      95176 1152921500312242023 /System/Library/PrivateFrameworks/BatteryUIKit.framework/Versions/A/Resources/Assets.car
+loginwind   397 theodorevorillas  txt       REG               1,13    7801576 1152921500312088036 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/DarkAqua.car
+loginwind   397 theodorevorillas  txt       REG               1,13    6741096 1152921500312088067 /System/Library/CoreServices/SystemAppearance.bundle/Contents/Resources/VibrantDark.car
+loginwind   397 theodorevorillas  txt       REG               1,13     180791 1152921500312126686 /System/Library/Frameworks/AppKit.framework/Versions/C/Resources/MenuCommands.loctable
+loginwind   397 theodorevorillas  txt       REG               1,13   18572464 1152921500312111891 /System/Library/Extensions/AGXMetal13_3.bundle/Contents/MacOS/AGXMetal13_3
+loginwind   397 theodorevorillas  txt       REG               1,13  144493736 1152921500312322626 /System/Library/PrivateFrameworks/SFSymbols.framework/Versions/A/Resources/CoreGlyphs.bundle/Contents/Resources/Assets.car
+loginwind   397 theodorevorillas    0r      CHR                3,2        0t0                 341 /dev/null
+loginwind   397 theodorevorillas    1u      CHR                3,2        0t0                 341 /dev/null
+loginwind   397 theodorevorillas    2u      CHR                3,2    0t25980                 341 /dev/null
+loginwind   397 theodorevorillas    3u     unix  0x14deb279a147413        0t0                     ->0x4a1116f6ea80920d
+loginwind   397 theodorevorillas    4r      REG               1,13    2383908 1152921500312182840 /System/Library/Frameworks/SceneKit.framework/Versions/A/Resources/default.metallib
+loginwind   397 theodorevorillas    5r      REG               1,13    8685732 1152921500312234817 /System/Library/PrivateFrameworks/AvatarKit.framework/Versions/A/Resources/default.metallib
+loginwind   397 theodorevorillas    7u      REG               1,13      16384              517753 /private/var/folders/2j/k85w_80s7kg8xjqbcqkypvlh0000gn/C/com.apple.loginwindow/com.apple.metal/16777235_322/functions.data
+loginwind   397 theodorevorillas    8u      REG               1,13        268           135262927 /private/var/folders/2j/k85w_80s7kg8xjqbcqkypvlh0000gn/C/com.apple.loginwindow/com.apple.metal/16777235_322/functions.list
+distnoted   608 theodorevorillas  cwd       DIR               1,13        704                   2 /
+distnoted   608 theodorevorillas  txt       REG               1,13     291552 1152921500312527095 /usr/sbin/distnoted
+distnoted   608 theodorevorillas  txt       REG               1,13      67496           135196472 /Library/Preferences/Logging/.plist-cache.ebpYR6ph
+distnoted   608 theodorevorillas  txt       REG               1,13    2289328 1152921500312524573 /usr/lib/dyld
+distnoted   608 theodorevorillas    0r      CHR                3,2        0t0                 341 /dev/null
+distnoted   608 theodorevorillas    1u      CHR                3,2        0t0                 341 /dev/null
+distnoted   608 theodorevorillas    2u      CHR                3,2      0t165                 341 /dev/null
+distnoted   608 theodorevorillas    3u     unix 0x33ab60964717fd85        0t0                     ->0x4a1116f6ea80920d
+cfprefsd    609 theodorevorillas  cwd       DIR               1,13        704                   2 /
+cfprefsd    609 theodorevorillas  txt       REG               1,13     135792 1152921500312527047 /usr/sbin/cfprefsd
+cfprefsd    609 theodorevorillas  txt       REG               1,13      67496           135196472 /Library/Preferences/Logging/.plist-cache.ebpYR6ph
+cfprefsd    609 theodorevorillas  txt       REG               1,13    2289328 1152921500312524573 /usr/lib/dyld
+cfprefsd    609 theodorevorillas    0r      CHR                3,2        0t0                 341 /dev/null
+cfprefsd    609 theodorevorillas    1u      CHR                3,2        0t0                 341 /dev/null
+cfprefsd    609 theodorevorillas    2u      CHR                3,2        0t0                 341 /dev/null
+cfprefsd    609 theodorevorillas    3       DIR               1,13      15712               35421 /Users/theodorevorillas/Library/Preferences
+UserEvent   614 theodorevorillas  cwd       DIR               1,13        704                   2 /
+UserEvent   614 theodorevorillas  txt       REG               1,13     178736 1152921500312525890 /usr/libexec/UserEventAgent
+UserEvent   614 theodorevorillas  txt       REG               1,13      67496           135196472 /Library/Preferences/Logging/.plist-cache.ebpYR6ph
+UserEvent   614 theodorevorillas  txt       REG               1,13    2289328 1152921500312524573 /usr/lib/dyld
+UserEvent   614 theodorevorillas  txt       REG               1,13     143488 1152921500312495448 /System/Library/UserEventPlugins/SCMonitor.plugin/Contents/MacOS/SCMonitor
+UserEvent   614 theodorevorillas  txt       REG               1,13     123280 1152921500312495286 /System/Library/UserEventPlugins/AppleHIDMouseAgent.plugin/Contents/MacOS/AppleHIDMouseAgent
+UserEvent   614 theodorevorillas  txt       REG               1,13     121232 1152921500312495298 /System/Library/UserEventPlugins/BluetoothUserAgent-Plugin.plugin/Contents/MacOS/BluetoothUserAgent-Plugin
+UserEvent   614 theodorevorillas  txt       REG               1,13     122400 1152921500312495310 /System/Library/UserEventPlugins/BonjourEvents.plugin/Contents/MacOS/BonjourEvents
+UserEvent   614 theodorevorillas  txt       REG               1,13     123664 1152921500312495322 /System/Library/UserEventPlugins/CaptiveUserAgent.plugin/Contents/MacOS/CaptiveUserAgent
+UserEvent   614 theodorevorillas  txt       REG               1,13     126304 1152921500312495334 /System/Library/UserEventPlugins/EAPOLMonitor.plugin/Contents/MacOS/EAPOLMonitor
+UserEvent   614 theodorevorillas  txt       REG               1,13     104320 1152921500312495389 /System/Library/UserEventPlugins/GSSNotificationForwarder.plugin/Contents/MacOS/GSSNotificationForwarder
+UserEvent   614 theodorevorillas  txt       REG               1,13     121568 1152921500312495437 /System/Library/UserEventPlugins/PrinterMonitor.plugin/Contents/MacOS/PrinterMonitor
+UserEvent   614 theodorevorillas  txt       REG               1,13      51905 1152921500312185939 /System/Library/Frameworks/SystemConfiguration.framework/Versions/A/Resources/NetworkInterface.loctable
+UserEvent   614 theodorevorillas  txt       REG               1,13     158112 1152921500312495633 /System/Library/UserEventPlugins/com.apple.fsevents.matching.plugin/Contents/MacOS/com.apple.fsevents.matching
+UserEvent   614 theodorevorillas  txt       REG               1,13     119376 1152921500312495503 /System/Library/UserEventPlugins/SystemPolicyEvents.plugin/Contents/MacOS/SystemPolicyEvents
+UserEvent   614 theodorevorillas  txt       REG               1,13     123552 1152921500312495564 /System/Library/UserEventPlugins/com.apple.alarm.plugin/Contents/MacOS/com.apple.alarm
+UserEvent   614 theodorevorillas  txt       REG               1,13     120800 1152921500312495576 /System/Library/UserEventPlugins/com.apple.bonjour.plugin/Contents/MacOS/com.apple.bonjour
+UserEvent   614 theodorevorillas  txt       REG               1,13     103776 1152921500312495588 /System/Library/UserEventPlugins/com.apple.cfnotification.plugin/Contents/MacOS/com.apple.cfnotification
+UserEvent   614 theodorevorillas  txt       REG               1,13     103248 1152921500312495611 /System/Library/UserEventPlugins/com.apple.diskarbitration.plugin/Contents/MacOS/com.apple.diskarbitration
+UserEvent   614 theodorevorillas  txt       REG               1,13     103088 1152921500312495622 /System/Library/UserEventPlugins/com.apple.dispatch.vfs.plugin/Contents/MacOS/com.apple.dispatch.vfs
+UserEvent   614 theodorevorillas  txt       REG               1,13     279104 1152921500312495679 /System/Library/UserEventPlugins/com.apple.netsvcproxy.plugin/Contents/MacOS/com.apple.netsvcproxy
+UserEvent   614 theodorevorillas  txt       REG               1,13     281856 1152921500312495599 /System/Library/UserEventPlugins/com.apple.cts.plugin/Contents/MacOS/com.apple.cts
+UserEvent   614 theodorevorillas  txt       REG               1,13     119824 1152921500312495644 /System/Library/UserEventPlugins/com.apple.iokit.matching.plugin/Contents/MacOS/com.apple.iokit.matching
+UserEvent   614 theodorevorillas  txt       REG               1,13     120240 1152921500312495656 /System/Library/UserEventPlugins/com.apple.launchd.helper.plugin/Contents/MacOS/com.apple.launchd.helper
+UserEvent   614 theodorevorillas  txt       REG               1,13     120480 1152921500312495667 /System/Library/UserEventPlugins/com.apple.lockout.lifecycle.plugin/Contents/MacOS/com.apple.lockout.lifecycle
+UserEvent   614 theodorevorillas  txt       REG               1,13     157392 1152921500312495738 /System/Library/UserEventPlugins/com.apple.rcdevent.matching.plugin/Contents/MacOS/com.apple.rcdevent.matching
+UserEvent   614 theodorevorillas  txt       REG               1,13     103664 1152921500312495703 /System/Library/UserEventPlugins/com.apple.nsurlsessiond.plugin/Contents/MacOS/com.apple.nsurlsessiond
+UserEvent   614 theodorevorillas  txt       REG               1,13     101952 1152921500312495727 /System/Library/UserEventPlugins/com.apple.rapport.events.plugin/Contents/MacOS/com.apple.rapport.events
+UserEvent   614 theodorevorillas  txt       REG               1,13     122848 1152921500312495798 /System/Library/UserEventPlugins/com.apple.time.plugin/Contents/MacOS/com.apple.time
+UserEvent   614 theodorevorillas  txt       REG               1,13   33979312 1152921500312535083 /usr/share/icu/icudt76l.dat
+UserEvent   614 theodorevorillas  txt       REG               1,13     102576 1152921500312495753 /System/Library/UserEventPlugins/com.apple.reachability.plugin/Contents/MacOS/com.apple.reachability
+UserEvent   614 theodorevorillas  txt       REG               1,13     103184 1152921500312495764 /System/Library/UserEventPlugins/com.apple.systemconfiguration.plugin/Contents/MacOS/com.apple.systemconfiguration
+UserEvent   614 theodorevorillas  txt       REG               1,13     120368 1152921500312495809 /System/Library/UserEventPlugins/com.apple.touchbar.matching.plugin/Contents/MacOS/com.apple.touchbar.matching
+UserEvent   614 theodorevorillas  txt       REG               1,13     123216 1152921500312495821 /System/Library/UserEventPlugins/com.apple.universalaccess.events.plugin/Contents/MacOS/com.apple.universalaccess.events
+UserEvent   614 theodorevorillas  txt       REG               1,13     120128 1152921500312495876 /System/Library/UserEventPlugins/com.apple.usernotificationcenter.matching.plugin/Contents/MacOS/com.apple.usernotificationcenter.matching
+UserEvent   614 theodorevorillas  txt       REG               1,13     120240 1152921500312495891 /System/Library/UserEventPlugins/routined.events.plugin/Contents/MacOS/routined.events
+UserEvent   614 theodorevorillas  txt       REG               1,13     234944           123824889 /private/var/db/timezone/tz/2025c.1.0/icutz/icutz44l.dat
+UserEvent   614 theodorevorillas    0r      CHR                3,2        0t0                 341 /dev/null
+UserEvent   614 theodorevorillas    1u      CHR                3,2        0t0                 341 /dev/null
+UserEvent   614 theodorevorillas    2u      CHR                3,2      0t368                 341 /dev/null
+UserEvent   614 theodorevorillas    3u     unix 0x8c5464567b2a7323        0t0                     ->0xefe7349abe548a5
+UserEvent   614 theodorevorillas    4   NPOLICY                                                   
+UserEvent   614 theodorevorillas    5u     unix 0x4830f0dc7d642b36        0t0                     ->0x3eebf1e0792267a8
+UserEvent   614 theodorevorillas    6r      DIR               1,13         96               36145 /private/var/folders/2j/k85w_80s7kg8xjqbcqkypvlh0000gn/0/com.apple.lockoutagent
+UserEvent   614 theodorevorillas    7u   KQUEUE                                                   count=0, state=0x8
+UserEvent   614 theodorevorillas    8r      DIR               1,13       3392               35418 /Users/theodorevorillas/Library
+UserEvent   614 theodorevorillas    9r      DIR               1,13       3392               35418 /Users/theodorevorillas/Library
+UserEvent   614 theodorevorillas   10r      DIR               1,13       3488               35411 /Users/theodorevorillas
+UserEvent   614 theodorevorillas   11r      DIR               1,13        160               25276 /Users
+UserEvent   614 theodorevorillas   12r      DIR               1,13        736 1152921500311879682 /System/Volumes/Data
+UserEvent   614 theodorevorillas   13r      DIR               1,13        448 1152921500312499106 /System/Volumes
+UserEvent   614 theodorevorillas   14r      DIR               1,13         64               57130 /Users/theodorevorillas/Library/studentd
+UserEvent   614 theodorevorillas   15r      DIR               1,13        544            70890318 /Users/theodorevorillas/Library/Caches/com.apple.appstoreagent
+UserEvent   614 theodorevorillas   16u   KQUEUE                                                   count=0, state=0x8
+UserEvent   614 theodorevorillas   17   NPOLICY                                                   
+UserEvent   614 theodorevorillas   18r      DIR               1,13       3392               35418 /Users/theodorevorillas/Library
+UserEvent   614 theodorevorillas   19r      DIR               1,13       3488               35411 /Users/theodorevorillas
+UserEvent   614 theodorevorillas   20r      DIR               1,13        160               25276 /Users
+UserEvent   614 theodorevorillas   21r      DIR               1,13         64            89210731 /Users/theodorevorillas/Library/Application Support/Samsung/Samsung Magician/SamsungMagician.app/Contents/Service
+UserEvent   614 theodorevorillas   22r      DIR               1,13         64            89210731 /Users/theodorevorillas/Library/Application Support/Samsung/Samsung Magician/SamsungMagician.app/Contents/Service
+UserEvent   614 theodorevorillas   23r      DIR               1,13         96            89210729 /Users/theodorevorillas/Library/Application Support/Samsung/Samsung Magician/SamsungMagician.app/Contents
+UserEvent   614 theodorevorillas   24r      DIR               1,13         96            89210728 /Users/theodorevorillas/Library/Application Support/Samsung/Samsung Magician/SamsungMagician.app
+UserEvent   614 theodorevorillas   25r      DIR               1,13        448            88614755 /Users/theodorevorillas/Library/Application Support/Samsung/Samsung Magician
+UserEvent   614 theodorevorillas   26r      DIR               1,13        320 1152921500311879703 /System
+UserEvent   614 theodorevorillas   27r      DIR               1,13         96            88614754 /Users/theodorevorillas/Library/Application Support/Samsung
+UserEvent   614 theodorevorillas   28r      DIR               1,13        736 1152921500311879682 /System/Volumes/Data
+UserEvent   614 theodorevorillas   29r      DIR               1,13        448 1152921500312499106 /System/Volumes
+UserEvent   614 theodorevorillas   30u   KQUEUE                                                   count=0, state=0x8
+UserEvent   614 theodorevorillas   31r      DIR               1,13       2176           110106115 /Library
+UserEvent   614 theodorevorillas   32r      DIR               1,13         64           110122406 /private/var/db/DiagnosticsReporter
+UserEvent   614 theodorevorillas   33r      DIR               1,13       4192           110122347 /private/var/db
+UserEvent   614 theodorevorillas   34r      DIR               1,13       1088           110122296 /private/var
+UserEvent   614 theodorevorillas   35r      DIR               1,13        192           110121876 /private
+UserEvent   614 theodorevorillas   36r      DIR               1,13        736 1152921500311879682 /System/Volumes/Data
+UserEvent   614 theodorevorillas   37r      DIR               1,13        448 1152921500312499106 /System/Volumes
+UserEvent   614 theodorevorillas   38r      DIR               1,13        320 1152921500311879703 /System
+UserEvent   614 theodorevorillas   39r      DIR               1,13         64           110122422 /private/var/db/PanicReporter
+UserEvent   614 theodorevorillas   40r      DIR               1,13       4192           110122347 /private/var/db
+UserEvent   614 theodorevorillas   41r      DIR               1,13       1088           110122296 /private/var
+UserEvent   614 theodorevorillas   42r      DIR               1,13        192           110121876 /private
+UserEvent   614 theodorevorillas   43r      DIR               1,13        736 1152921500311879682 /System/Volumes/Data
+UserEvent   614 theodorevorillas   44r      DIR               1,13        448 1152921500312499106 /System/Volumes
+UserEvent   614 theodorevorillas   45r      DIR               1,13        320 1152921500311879703 /System
+UserEvent   614 theodorevorillas   46r      DIR               1,13       4704               35419 /Users/theodorevorillas/Library/Application Support
+UserEvent   614 theodorevorillas   47r      DIR               1,13       3392               35418 /Users/theodorevorillas/Library
+UserEvent   614 theodorevorillas   48r      DIR               1,13       2176           110106115 /Library
+UserEvent   614 theodorevorillas   49r      DIR               1,13        736 1152921500311879682 /System/Volumes/Data
+UserEvent   614 theodorevorillas   50r      DIR               1,13        448 1152921500312499106 /System/Volumes
+UserEvent   614 theodorevorillas   51r      DIR               1,13        320 1152921500311879703 /System
+UserEvent   614 theodorevorillas   52r      DIR               1,13        224            14021227 /Users/theodorevorillas/Library/LaunchAgents
+UserEvent   614 theodorevorillas   53r      DIR               1,13       3392               35418 /Users/theodorevorillas/Library
+UserEvent   614 theodorevorillas   54r      DIR               1,13       3488               35411 /Users/theodorevorillas
+UserEvent   614 theodorevorillas   55r      DIR               1,13        160               25276 /Users
+UserEvent   614 theodorevorillas   56r      DIR               1,13        736 1152921500311879682 /System/Volumes/Data
+UserEvent   614 theodorevorillas   57r      DIR               1,13        448 1152921500312499106 /System/Volumes
+UserEvent   614 theodorevorillas   58r      DIR               1,13        320 1152921500311879703 /System
+UserEvent   614 theodorevorillas   59r      DIR               1,13        320           110112591 /Library/ColorSync/Profiles
+UserEvent   614 theodorevorillas   60r      DIR               1,13         96           110112590 /Library/ColorSync
+UserEvent   614 theodorevorillas   61r      DIR               1,13       2176           110106115 /Library
+UserEvent   614 theodorevorillas   62r      DIR               1,13        736 1152921500311879682 /System/Volumes/Data
+UserEvent   614 theodorevorillas   63r      DIR               1,13        448 1152921500312499106 /System/Volumes
+UserEvent   614 theodorevorillas   64r      DIR               1,13        320 1152921500311879703 /System
+UserEvent   614 theodorevorillas   65r      DIR               1,13         96            24901201 /Users/theodorevorillas/Library/CloudStorage
+UserEvent   614 theodorevorillas   66r      DIR               1,13       3392               35418 /Users/theodorevorillas/Library
+UserEvent   614 theodorevorillas   67r      DIR               1,13       3488               35411 /Users/theodorevorillas

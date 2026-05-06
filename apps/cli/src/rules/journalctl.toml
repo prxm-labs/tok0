@@ -1,0 +1,11 @@
+[filter]
+name = "journalctl"
+commands = ["journalctl"]
+strip_patterns = [
+  "^\\s*$",
+  "^-- Logs begin",
+  "^-- No entries --",
+  "^-- Boot ",
+]
+tail_lines = 50
+max_line_chars = 300

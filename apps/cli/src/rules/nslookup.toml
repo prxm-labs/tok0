@@ -1,0 +1,11 @@
+[filter]
+name = "nslookup"
+commands = ["nslookup"]
+strip_patterns = [
+  "^\\s*$",
+  "^Server:\\s+",
+  "^Address:\\s+\\S+#\\d+",
+  "^Non-authoritative answer:",
+]
+head_lines = 20
+max_line_chars = 200

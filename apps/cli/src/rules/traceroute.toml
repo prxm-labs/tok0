@@ -1,0 +1,9 @@
+[filter]
+name = "traceroute"
+commands = ["traceroute", "tracepath", "tracert"]
+strip_patterns = [
+  "^\\s*$",
+  "^traceroute to ",
+]
+head_lines = 30
+max_line_chars = 200

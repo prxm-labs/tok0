@@ -11,6 +11,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ),
     ("argocd", include_str!("../../src/rules/argocd.toml")),
     ("ava", include_str!("../../src/rules/ava.toml")),
+    ("awk", include_str!("../../src/rules/awk.toml")),
     (
         "basedpyright",
         include_str!("../../src/rules/basedpyright.toml"),
@@ -39,14 +40,17 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("cosign", include_str!("../../src/rules/cosign.toml")),
     ("crane", include_str!("../../src/rules/crane.toml")),
     ("cypress", include_str!("../../src/rules/cypress.toml")),
+    ("dasel", include_str!("../../src/rules/dasel.toml")),
     ("deno", include_str!("../../src/rules/deno.toml")),
     ("df", include_str!("../../src/rules/df.toml")),
+    ("dmesg", include_str!("../../src/rules/dmesg.toml")),
     (
         "dotnet-build",
         include_str!("../../src/rules/dotnet-build.toml"),
     ),
     ("du", include_str!("../../src/rules/du.toml")),
     ("esbuild", include_str!("../../src/rules/esbuild.toml")),
+    ("eza", include_str!("../../src/rules/eza.toml")),
     (
         "fail2ban-client",
         include_str!("../../src/rules/fail2ban-client.toml"),
@@ -55,13 +59,22 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("format", include_str!("../../src/rules/format.toml")),
     ("gcc", include_str!("../../src/rules/gcc.toml")),
     ("gcloud", include_str!("../../src/rules/gcloud.toml")),
+    ("glab", include_str!("../../src/rules/glab.toml")),
     ("gradle", include_str!("../../src/rules/gradle.toml")),
+    ("grpcurl", include_str!("../../src/rules/grpcurl.toml")),
     ("hadolint", include_str!("../../src/rules/hadolint.toml")),
     ("helm", include_str!("../../src/rules/helm.toml")),
+    ("htop", include_str!("../../src/rules/htop.toml")),
+    ("httpie", include_str!("../../src/rules/httpie.toml")),
+    ("ip", include_str!("../../src/rules/ip.toml")),
     ("iptables", include_str!("../../src/rules/iptables.toml")),
     ("jest", include_str!("../../src/rules/jest.toml")),
     ("jira", include_str!("../../src/rules/jira.toml")),
     ("jj", include_str!("../../src/rules/jj.toml")),
+    (
+        "journalctl",
+        include_str!("../../src/rules/journalctl.toml"),
+    ),
     ("jq", include_str!("../../src/rules/jq.toml")),
     ("just", include_str!("../../src/rules/just.toml")),
     ("kustomize", include_str!("../../src/rules/kustomize.toml")),
@@ -80,8 +93,10 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
         include_str!("../../src/rules/mix-format.toml"),
     ),
     ("mocha", include_str!("../../src/rules/mocha.toml")),
+    ("mtr", include_str!("../../src/rules/mtr.toml")),
     ("mvn-build", include_str!("../../src/rules/mvn-build.toml")),
     ("npx", include_str!("../../src/rules/npx.toml")),
+    ("nslookup", include_str!("../../src/rules/nslookup.toml")),
     ("nx", include_str!("../../src/rules/nx.toml")),
     ("ollama", include_str!("../../src/rules/ollama.toml")),
     ("oxlint", include_str!("../../src/rules/oxlint.toml")),
@@ -110,6 +125,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ),
     ("rollup", include_str!("../../src/rules/rollup.toml")),
     ("rsync", include_str!("../../src/rules/rsync.toml")),
+    ("sed", include_str!("../../src/rules/sed.toml")),
     (
         "shellcheck",
         include_str!("../../src/rules/shellcheck.toml"),
@@ -121,6 +137,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("skaffold", include_str!("../../src/rules/skaffold.toml")),
     ("skopeo", include_str!("../../src/rules/skopeo.toml")),
     ("sops", include_str!("../../src/rules/sops.toml")),
+    ("sort", include_str!("../../src/rules/sort.toml")),
     (
         "spring-boot",
         include_str!("../../src/rules/spring-boot.toml"),
@@ -128,6 +145,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("ssh", include_str!("../../src/rules/ssh.toml")),
     ("stat", include_str!("../../src/rules/stat.toml")),
     ("swc", include_str!("../../src/rules/swc.toml")),
+    ("sysctl", include_str!("../../src/rules/sysctl.toml")),
     (
         "swift-build",
         include_str!("../../src/rules/swift-build.toml"),
@@ -142,6 +160,11 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
         include_str!("../../src/rules/terraform-plan.toml"),
     ),
     ("tilt", include_str!("../../src/rules/tilt.toml")),
+    ("top", include_str!("../../src/rules/top.toml")),
+    (
+        "traceroute",
+        include_str!("../../src/rules/traceroute.toml"),
+    ),
     ("tofu-fmt", include_str!("../../src/rules/tofu-fmt.toml")),
     ("tofu-init", include_str!("../../src/rules/tofu-init.toml")),
     ("tofu-plan", include_str!("../../src/rules/tofu-plan.toml")),
@@ -149,6 +172,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
         "tofu-validate",
         include_str!("../../src/rules/tofu-validate.toml"),
     ),
+    ("tree", include_str!("../../src/rules/tree.toml")),
     (
         "trunk-build",
         include_str!("../../src/rules/trunk-build.toml"),
@@ -156,8 +180,10 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("tsup", include_str!("../../src/rules/tsup.toml")),
     ("turbo", include_str!("../../src/rules/turbo.toml")),
     ("ty", include_str!("../../src/rules/ty.toml")),
+    ("uniq", include_str!("../../src/rules/uniq.toml")),
     ("uv-sync", include_str!("../../src/rules/uv-sync.toml")),
     ("webpack", include_str!("../../src/rules/webpack.toml")),
+    ("wget", include_str!("../../src/rules/wget.toml")),
     (
         "xcodebuild",
         include_str!("../../src/rules/xcodebuild.toml"),
@@ -165,6 +191,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("yadm", include_str!("../../src/rules/yadm.toml")),
     ("yamllint", include_str!("../../src/rules/yamllint.toml")),
     ("yarn", include_str!("../../src/rules/yarn.toml")),
+    ("yq", include_str!("../../src/rules/yq.toml")),
 ];
 
 static BUILTIN_CONFIGS: OnceLock<Vec<FilterConfig>> = OnceLock::new();

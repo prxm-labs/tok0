@@ -1,0 +1,17 @@
+[filter]
+name = "wget"
+commands = ["wget"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*\\d+%\\s+\\[",
+  "^\\s+\\d+K \\.+",
+  "^\\s*\\d+K\\s",
+  "^Resolving ",
+  "^Connecting to ",
+  "^HTTP request sent",
+  "^Length: ",
+  "^Saving to: ",
+  "^--\\d{4}-\\d{2}-\\d{2}",
+]
+tail_lines = 10
+max_line_chars = 200

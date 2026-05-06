@@ -49,12 +49,15 @@ pub fn dispatch(cmd: &str, args: &[&str], stdout: &str) -> Option<String> {
             let path = args.last().copied().unwrap_or("");
             Some(compressors::system::read_cmd::filter_read(stdout, path))
         }
-        "grep" | "rg" => Some(compressors::system::grep_cmd::filter_grep(stdout, 200, 50)),
+        "grep" | "rg" | "ag" => Some(compressors::system::grep_cmd::filter_grep(stdout, 200, 50)),
         "find" | "fd" => Some(compressors::system::find_cmd::filter_find(stdout)),
         "diff" => Some(compressors::system::diff_cmd::filter_diff(stdout)),
         "du" => Some(compressors::system::du_cmd::filter_du(stdout, 20)),
         "df" => Some(compressors::system::df_cmd::filter_df(stdout)),
         "wc" => Some(compressors::system::wc_cmd::filter_wc(stdout)),
+        "dig" => Some(compressors::system::dig_cmd::filter_dig(stdout)),
+        "lsof" => Some(compressors::system::lsof_cmd::filter_lsof(stdout)),
+        "netstat" | "ss" => Some(compressors::system::netstat_cmd::filter_netstat(stdout)),
         "smart" => Some(compressors::system::smart_cmd::filter_smart(stdout)),
         "env" | "printenv" => Some(compressors::system::env_cmd::filter_env(stdout, None)),
 

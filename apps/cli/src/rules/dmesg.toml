@@ -1,0 +1,6 @@
+[filter]
+name = "dmesg"
+commands = ["dmesg"]
+strip_patterns = ["^\\s*$"]
+tail_lines = 50
+max_line_chars = 300

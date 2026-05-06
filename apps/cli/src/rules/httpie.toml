@@ -1,0 +1,19 @@
+[filter]
+name = "httpie"
+commands = ["http", "https", "httpie"]
+strip_patterns = [
+  "^\\s*$",
+  "^Cookie: ",
+  "^Set-Cookie: ",
+  "^X-Csrf-Token: ",
+  "^Cf-",
+  "^X-Request-Id: ",
+  "^X-Trace-Id: ",
+  "^Strict-Transport-Security: ",
+  "^Public-Key-Pins: ",
+  "^Report-To: ",
+  "^Nel: ",
+]
+head_lines = 60
+tail_lines = 10
+max_line_chars = 300

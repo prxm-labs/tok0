@@ -1,0 +1,11 @@
+[filter]
+name = "ip"
+commands = ["ip addr", "ip link", "ip route", "ip a", "ip l", "ip r", "ip -s"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s+valid_lft ",
+  "^\\s+RX: ",
+  "^\\s+TX: ",
+]
+head_lines = 40
+max_line_chars = 200

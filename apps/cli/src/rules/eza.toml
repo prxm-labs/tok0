@@ -1,0 +1,9 @@
+[filter]
+name = "eza"
+commands = ["eza", "exa"]
+strip_patterns = [
+  "^\\s*$",
+  "^total \\d+",
+]
+head_lines = 40
+max_line_chars = 200

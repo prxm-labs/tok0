@@ -1,0 +1,5 @@
+---
+source: src/compressors/system/dig_cmd.rs
+expression: output
+---
+google.com.		293	IN	A	172.217.16.142

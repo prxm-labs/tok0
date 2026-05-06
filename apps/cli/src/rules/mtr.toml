@@ -1,0 +1,10 @@
+[filter]
+name = "mtr"
+commands = ["mtr"]
+strip_patterns = [
+  "^\\s*$",
+  "^Start: ",
+  "^HOST: ",
+]
+tail_lines = 30
+max_line_chars = 200

@@ -1,0 +1,7 @@
+[filter]
+name = "sort"
+commands = ["sort"]
+strip_patterns = ["^\\s*$"]
+head_lines = 50
+tail_lines = 10
+max_line_chars = 200

@@ -1,0 +1,9 @@
+[filter]
+name = "tree"
+commands = ["tree"]
+strip_patterns = [
+  "^\\s*$",
+]
+head_lines = 60
+tail_lines = 5
+max_line_chars = 200

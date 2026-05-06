@@ -1,0 +1,10 @@
+---
+source: src/compressors/system/lsof_cmd.rs
+expression: output
+---
+COMMAND PID USER FD TYPE NAME
+(190 rows across 4 processes; showing top by fd count)
+  UserEvent        98 fds
+  loginwind        77 fds
+  cfprefsd         8 fds
+  distnoted        7 fds

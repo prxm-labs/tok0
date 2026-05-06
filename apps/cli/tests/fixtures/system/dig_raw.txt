@@ -1,0 +1,20 @@
+
+; <<>> DiG 9.10.6 <<>> google.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 39944
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;google.com.			IN	A
+
+;; ANSWER SECTION:
+google.com.		293	IN	A	172.217.16.142
+
+;; Query time: 6 msec
+;; SERVER: 1.1.1.1#53(1.1.1.1)
+;; WHEN: Thu May 07 00:09:22 EEST 2026
+;; MSG SIZE  rcvd: 55
+

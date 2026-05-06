@@ -1,0 +1,16 @@
+[filter]
+name = "top"
+commands = ["top", "btm", "btop"]
+strip_patterns = [
+  "^\\s*$",
+  "^Processes:",
+  "^Load Avg:",
+  "^SharedLibs:",
+  "^MemRegions:",
+  "^PhysMem:",
+  "^VM:",
+  "^Networks:",
+  "^Disks:",
+]
+head_lines = 30
+max_line_chars = 200
