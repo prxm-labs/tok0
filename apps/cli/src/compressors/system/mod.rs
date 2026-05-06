@@ -11,6 +11,7 @@ pub mod json_cmd;
 pub mod ls_cmd;
 pub mod lsof_cmd;
 pub mod netstat_cmd;
+pub mod openssl_cmd;
 pub mod read_cmd;
 pub mod silent_cmd;
 pub mod smart_cmd;

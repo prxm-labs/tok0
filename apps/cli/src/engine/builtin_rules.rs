@@ -61,6 +61,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("gcc", include_str!("../../src/rules/gcc.toml")),
     ("gcloud", include_str!("../../src/rules/gcloud.toml")),
     ("glab", include_str!("../../src/rules/glab.toml")),
+    ("gpg", include_str!("../../src/rules/gpg.toml")),
     ("gradle", include_str!("../../src/rules/gradle.toml")),
     ("grpcurl", include_str!("../../src/rules/grpcurl.toml")),
     ("hadolint", include_str!("../../src/rules/hadolint.toml")),
@@ -78,6 +79,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ),
     ("jq", include_str!("../../src/rules/jq.toml")),
     ("just", include_str!("../../src/rules/just.toml")),
+    ("keytool", include_str!("../../src/rules/keytool.toml")),
     ("kustomize", include_str!("../../src/rules/kustomize.toml")),
     ("make", include_str!("../../src/rules/make.toml")),
     (
@@ -145,6 +147,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ),
     ("ssh", include_str!("../../src/rules/ssh.toml")),
     ("stat", include_str!("../../src/rules/stat.toml")),
+    ("step", include_str!("../../src/rules/step.toml")),
     ("swc", include_str!("../../src/rules/swc.toml")),
     ("sysctl", include_str!("../../src/rules/sysctl.toml")),
     (
@@ -183,6 +186,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("ty", include_str!("../../src/rules/ty.toml")),
     ("uniq", include_str!("../../src/rules/uniq.toml")),
     ("unzip", include_str!("../../src/rules/unzip.toml")),
+    ("vault", include_str!("../../src/rules/vault.toml")),
     ("uv-sync", include_str!("../../src/rules/uv-sync.toml")),
     ("webpack", include_str!("../../src/rules/webpack.toml")),
     ("wget", include_str!("../../src/rules/wget.toml")),

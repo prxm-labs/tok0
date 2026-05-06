@@ -1,0 +1,24 @@
+---
+source: src/compressors/system/openssl_cmd.rs
+expression: output
+---
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=GB, O=Sectigo Limited, CN=Sectigo Public Server Authentication CA DV E36
+        Validity
+            Not Before: May  5 00:00:00 2026 GMT
+            Not After : Aug  2 23:59:59 2026 GMT
+        Subject: CN=github.com
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Extended Key Usage: 
+                TLS Web Server Authentication
+            X509v3 Subject Alternative Name: 
+                DNS:github.com, DNS:www.github.com

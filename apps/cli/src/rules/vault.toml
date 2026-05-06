@@ -1,0 +1,11 @@
+[filter]
+name = "vault"
+commands = ["vault"]
+strip_patterns = [
+  "^\\s*$",
+  "^WARNING! ",
+  "^Success! ",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200

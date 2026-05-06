@@ -1,0 +1,12 @@
+[filter]
+name = "keytool"
+commands = ["keytool"]
+strip_patterns = [
+  "^\\s*$",
+  "^Keystore type: ",
+  "^Keystore provider: ",
+  "^\\*+$",
+]
+head_lines = 40
+tail_lines = 10
+max_line_chars = 200

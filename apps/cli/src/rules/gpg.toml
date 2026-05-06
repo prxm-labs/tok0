@@ -1,0 +1,13 @@
+[filter]
+name = "gpg"
+commands = ["gpg", "gpg2"]
+strip_patterns = [
+  "^\\s*$",
+  "^gpg: keybox ",
+  "^gpg: trustdb ",
+  "^gpg: WARNING: ",
+  "^uid\\s+\\[",
+]
+head_lines = 30
+tail_lines = 10
+max_line_chars = 200

@@ -1,0 +1,7 @@
+[filter]
+name = "step"
+commands = ["step"]
+strip_patterns = ["^\\s*$"]
+head_lines = 40
+tail_lines = 10
+max_line_chars = 200
