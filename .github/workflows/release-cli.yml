@@ -125,17 +125,21 @@ jobs:
             apps/cli/${{ steps.tarball.outputs.archive }}
             apps/cli/${{ steps.tarball.outputs.checksum }}
 
-      # Build a Debian package for the Linux glibc target only. cargo-deb
-      # reads metadata from [package.metadata.deb] in apps/cli/Cargo.toml.
+      # Debian package for the Linux glibc target only. Marked
+      # continue-on-error so a cargo-deb regression (e.g. missing
+      # license file, schema change) cannot take down the matrix job
+      # and starve the install.sh-critical Aggregate checksums.txt job.
+      # The .deb is a nice-to-have; install.sh does not need it.
       - name: Install cargo-deb
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         run: cargo install cargo-deb --locked
       - name: Build .deb
         id: deb
         if: matrix.target == 'x86_64-unknown-linux-gnu'
+        continue-on-error: true
         run: |
           cargo deb --no-build --target x86_64-unknown-linux-gnu
-          DEB=$(ls target/x86_64-unknown-linux-gnu/debian/*.deb | head -1)
+          DEB=$(find target/x86_64-unknown-linux-gnu/debian -maxdepth 1 -name '*.deb' | head -1)
           cp "$DEB" "tok0_${{ inputs.tag }}_amd64.deb"
           sha256sum "tok0_${{ inputs.tag }}_amd64.deb" \
             > "tok0_${{ inputs.tag }}_amd64.deb.sha256"
@@ -143,7 +147,7 @@ jobs:
           echo "deb_sha=tok0_${{ inputs.tag }}_amd64.deb.sha256" >> "$GITHUB_OUTPUT"
         shell: bash
       - name: Upload .deb to release
-        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        if: matrix.target == 'x86_64-unknown-linux-gnu' && steps.deb.outcome == 'success'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.tag }}
@@ -154,9 +158,15 @@ jobs:
   # Aggregate the per-platform tarball checksums into a single
   # checksums.txt file. install.sh greps this for "  <archive>$" so the
   # format must be sha256sum's standard `<sha>  <filename>` (two spaces).
+  #
+  # `if: !cancelled()` runs this even when one matrix leg failed —
+  # better to ship a checksums.txt covering 4 platforms than to ship
+  # zero because Windows or one Linux variant flaked. Without this, a
+  # single matrix failure starves install.sh of its checksums file.
   checksums:
     name: Aggregate checksums.txt
     needs: build
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -171,8 +181,14 @@ jobs:
           gh release download "${{ inputs.tag }}" \
             --repo "${{ github.repository }}" \
             --pattern "tok0-${{ inputs.tag }}-*.tar.gz"
+          shopt -s nullglob
+          tarballs=(tok0-${{ inputs.tag }}-*.tar.gz)
+          if [ ${#tarballs[@]} -eq 0 ]; then
+            echo "No tarballs found for ${{ inputs.tag }} — every build leg failed." >&2
+            exit 1
+          fi
           : > ../checksums.txt
-          for f in tok0-${{ inputs.tag }}-*.tar.gz; do
+          for f in "${tarballs[@]}"; do
             sha256sum "$f" >> ../checksums.txt
           done
           cd ..
@@ -186,6 +202,10 @@ jobs:
   update-formula:
     name: Update Homebrew formula
     needs: build
+    # Same rationale as `checksums`: don't gate Homebrew bumps on a
+    # 100%-green matrix. The formula only needs the macOS .sha256
+    # files, which the script will explicitly check for.
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -198,11 +218,24 @@ jobs:
       - uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Skip if Formula/tok0.rb does not exist yet
+        id: has_formula
+        working-directory: .
+        run: |
+          if [ -f Formula/tok0.rb ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "Formula/tok0.rb not present — skipping Homebrew bump."
+          fi
       - name: Update Formula/tok0.rb with real SHA-256s
+        if: steps.has_formula.outputs.exists == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./scripts/update-formula.sh "${{ inputs.tag }}"
       - name: Commit + push formula update
+        if: steps.has_formula.outputs.exists == 'true'
+        working-directory: .
         run: |
           if git diff --quiet Formula/tok0.rb; then
             echo "Formula already up to date; nothing to commit."
@@ -213,3 +246,55 @@ jobs:
           git add Formula/tok0.rb
           git commit -m "chore(release): update Homebrew formula for ${{ inputs.tag }}"
           git push origin HEAD:main
+
+  # Post-release smoke check. Fails the workflow loudly if any
+  # install.sh-critical asset is missing — better to see a red workflow
+  # than to ship a silently-empty release that 404s for users.
+  verify-release:
+    name: Verify release assets
+    needs: [build, checksums]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check critical assets present
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          assets=$(gh release view "$TAG" --repo "${{ github.repository }}" \
+            --json assets --jq '.assets[].name')
+          echo "Assets in $TAG:"
+          echo "$assets"
+
+          required=(
+            "tok0-${TAG}-aarch64-apple-darwin.tar.gz"
+            "tok0-${TAG}-x86_64-apple-darwin.tar.gz"
+            "tok0-${TAG}-x86_64-unknown-linux-gnu.tar.gz"
+            "tok0-${TAG}-x86_64-unknown-linux-musl.tar.gz"
+            "checksums.txt"
+          )
+
+          missing=0
+          for f in "${required[@]}"; do
+            if ! grep -Fxq "$f" <<< "$assets"; then
+              echo "::error::Missing critical asset: $f"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::$missing critical asset(s) missing — install.sh would 404."
+            exit 1
+          fi
+          echo "All critical assets present — install.sh path verified."
+
+      - name: Verify checksums.txt format matches install.sh expectations
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/${{ github.repository }}/releases/download/${TAG}/checksums.txt" -o checksums.txt
+          # install.sh greps for `  <archive>$` (two-space-separated).
+          grep -E "^[0-9a-f]{64}  tok0-${TAG}-aarch64-apple-darwin\.tar\.gz$" checksums.txt
+          echo "checksums.txt format OK."
