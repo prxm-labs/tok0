@@ -117,6 +117,29 @@ Commands not on this list still work — they pass through tok0's generic ANSI-s
 
 `semgrep`, `trivy`, `bandit`, `snyk`, `grype`, `sonar` — floors 65–75%.
 
+## Networking & system tools
+
+Native compressors (CI-asserted ≥60% savings):
+
+| Command | Floor | Notes |
+|---|---|---|
+| `curl -v` | 60% | drops TLS handshake, request/response headers, progress meter — keeps status line + body |
+| `dig` | 60% | keeps the ANSWER section; drops query metadata, AUTHORITY, ADDITIONAL |
+| `lsof` | 60% | drops DEVICE/SIZE/NODE columns; group-by-command summary for large outputs |
+| `netstat` / `ss` | 60% | groups by state, keeps LISTEN ports in full, summarises ESTABLISHED |
+| `openssl x509 -text` | 60% | indent-aware drop of pub-key bytes, signature, SCT block, AIA URLs |
+| `tar -tvf` | 60% | count + size summary, by-extension grouping for archives >50 entries |
+
+TOML rules (strip patterns + head/tail window):
+
+`head`, `tail`, `cat`/`bat` (route through `read`), `sort`, `uniq`, `tree`,
+`sed`, `awk`, `wget`, `nslookup`, `traceroute`, `mtr`, `top`, `htop`,
+`sysctl`, `dmesg`, `journalctl`, `ip`, `eza`/`exa`, `glab`, `dasel`,
+`grpcurl`, `yq`, `httpie`, `gpg`, `keytool`, `vault`, `step`, `zip`,
+`unzip`, `7z`.
+
+`grep`/`rg`/`ag` share one compressor; `find`/`fd` share another.
+
 ## Other ecosystems
 
 Languages: Elixir (`mix`, `dialyzer`), Haskell (`cabal`, `stack`), PHP (`composer`, `artisan`, `phpunit`, `phpstan`), Scala (`sbt`, `mill`), Swift (`xcodebuild`, `swiftc`), Dart (`flutter`, `dart`), mobile (`expo`, `react-native`), Perl (`prove`, `cpanm`), exotic (`zig`, `nim`, `crystal`, `d`).
