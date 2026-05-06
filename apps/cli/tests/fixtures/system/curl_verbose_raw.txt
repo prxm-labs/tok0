@@ -1,0 +1,74 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Host api.github.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 140.82.121.6
+*   Trying 140.82.121.6:443...
+* Connected to api.github.com (140.82.121.6) port 443
+* ALPN: curl offers h2,http/1.1
+* (304) (OUT), TLS handshake, Client hello (1):
+} [319 bytes data]
+*  CAfile: /etc/ssl/cert.pem
+*  CApath: none
+* (304) (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* (304) (IN), TLS handshake, Unknown (8):
+{ [19 bytes data]
+* (304) (IN), TLS handshake, Certificate (11):
+{ [2741 bytes data]
+* (304) (IN), TLS handshake, CERT verify (15):
+{ [80 bytes data]
+* (304) (IN), TLS handshake, Finished (20):
+{ [36 bytes data]
+* (304) (OUT), TLS handshake, Finished (20):
+} [36 bytes data]
+* SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256 / [blank] / UNDEF
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.github.com
+*  start date: May  4 00:00:00 2026 GMT
+*  expire date: Aug  1 23:59:59 2026 GMT
+*  subjectAltName: host "api.github.com" matched cert's "*.github.com"
+*  issuer: C=GB; O=Sectigo Limited; CN=Sectigo Public Server Authentication CA DV E36
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.github.com/zen
+* [HTTP/2] [1] [:method: GET]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.github.com]
+* [HTTP/2] [1] [:path: /zen]
+* [HTTP/2] [1] [user-agent: curl/8.7.1]
+* [HTTP/2] [1] [accept: */*]
+> GET /zen HTTP/2
+> Host: api.github.com
+> User-Agent: curl/8.7.1
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/2 200 
+< date: Wed, 06 May 2026 21:20:35 GMT
+< content-type: text/plain;charset=utf-8
+< x-github-api-version-selected: 2022-11-28
+< access-control-expose-headers: ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO, X-GitHub-Request-Id, Deprecation, Sunset
+< access-control-allow-origin: *
+< strict-transport-security: max-age=31536000; includeSubdomains; preload
+< x-frame-options: deny
+< x-content-type-options: nosniff
+< x-xss-protection: 0
+< referrer-policy: origin-when-cross-origin, strict-origin-when-cross-origin
+< content-security-policy: default-src 'none'
+< vary: Accept-Encoding, Accept, X-Requested-With
+< server: github.com
+< accept-ranges: bytes
+< x-ratelimit-limit: 60
+< x-ratelimit-remaining: 59
+< x-ratelimit-used: 1
+< x-ratelimit-resource: core
+< x-ratelimit-reset: 1778106042
+< content-length: 35
+< x-github-request-id: E30F:22DA20:452BAE8:40AA051:69FBB0AA
+< 
+{ [35 bytes data]
+100    35  100    35    0     0    231      0 --:--:-- --:--:-- --:--:--   233
+* Connection #0 to host api.github.com left intact
+Approachable is better than simple.

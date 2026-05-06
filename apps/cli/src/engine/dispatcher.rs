@@ -55,6 +55,7 @@ pub fn dispatch(cmd: &str, args: &[&str], stdout: &str) -> Option<String> {
         "du" => Some(compressors::system::du_cmd::filter_du(stdout, 20)),
         "df" => Some(compressors::system::df_cmd::filter_df(stdout)),
         "wc" => Some(compressors::system::wc_cmd::filter_wc(stdout)),
+        "curl" => Some(compressors::system::curl_cmd::filter_curl(stdout)),
         "dig" => Some(compressors::system::dig_cmd::filter_dig(stdout)),
         "lsof" => Some(compressors::system::lsof_cmd::filter_lsof(stdout)),
         "netstat" | "ss" => Some(compressors::system::netstat_cmd::filter_netstat(stdout)),

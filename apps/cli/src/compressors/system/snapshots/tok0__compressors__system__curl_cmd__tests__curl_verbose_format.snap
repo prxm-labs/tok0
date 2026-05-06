@@ -1,0 +1,8 @@
+---
+source: src/compressors/system/curl_cmd.rs
+expression: output
+---
+* Connected to api.github.com (140.82.121.6) port 443
+> GET /zen HTTP/2
+< HTTP/2 200 
+Approachable is better than simple.

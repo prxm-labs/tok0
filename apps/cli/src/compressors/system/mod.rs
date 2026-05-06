@@ -1,3 +1,4 @@
+pub mod curl_cmd;
 pub mod df_cmd;
 pub mod diff_cmd;
 pub mod dig_cmd;
