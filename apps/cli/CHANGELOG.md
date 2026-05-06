@@ -11,6 +11,13 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5](https://github.com/prxm-labs/tok0/compare/v0.1.4...v0.1.5) (2026-05-06)
+
+
+### Bug Fixes
+
+* **cli:** respect USERPROFILE/HOME on Windows for tool detection ([08b5da8](https://github.com/prxm-labs/tok0/commit/08b5da8533b19539d2a66f4ab20f415e89ae1e2e))
+
 ## [0.1.4](https://github.com/prxm-labs/tok0/compare/v0.1.3...v0.1.4) (2026-05-06)
 
 
