@@ -11,6 +11,13 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8](https://github.com/prxm-labs/tok0/compare/v0.1.7...v0.1.8) (2026-05-06)
+
+
+### Bug Fixes
+
+* **cli:** route unknown subcommands through external fallback ([eb7a474](https://github.com/prxm-labs/tok0/commit/eb7a474245a7ef46154fec6b12c3487fe09cc0f8))
+
 ## [0.1.7](https://github.com/prxm-labs/tok0/compare/v0.1.6...v0.1.7) (2026-05-06)
 
 
