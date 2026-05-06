@@ -1,14 +1,32 @@
 name: Release (CLI)
 
+# Reusable build pipeline. Invoked by release-please.yml after it tags a
+# release, or manually via workflow_dispatch for incident recovery.
+#
+# We do NOT trigger on `push: tags: ['v*']` because release-please pushes
+# tags using the default GITHUB_TOKEN, and GitHub Actions deliberately
+# suppresses workflow chains triggered by GITHUB_TOKEN to prevent
+# recursion. See: https://docs.github.com/actions/security-guides/automatic-token-authentication
+
 on:
-  push:
-    tags: ['v*']
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+        description: 'Release tag to build (e.g. v0.1.4).'
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: true
+        description: 'Existing release tag to build artifacts for (e.g. v0.1.4).'
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-cli-${{ github.ref }}
+  group: release-cli-${{ inputs.tag }}
   cancel-in-progress: false
 
 jobs:
@@ -37,6 +55,8 @@ jobs:
         working-directory: apps/cli
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.tag }}
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -51,7 +71,11 @@ jobs:
             cargo build --release --target ${{ matrix.target }}
           fi
         shell: bash
-      - name: Rename + checksum
+
+      # Raw binary + per-binary sha256 — consumed by Formula/tok0.rb and
+      # apps/cli/scripts/update-formula.sh. Do not change names without
+      # updating those.
+      - name: Rename + checksum (raw binary)
         id: artifacts
         shell: bash
         run: |
@@ -67,9 +91,34 @@ jobs:
           echo "checksum=${DEST}.sha256" >> "$GITHUB_OUTPUT"
       - uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ inputs.tag }}
           files: |
             apps/cli/${{ steps.artifacts.outputs.binary }}
             apps/cli/${{ steps.artifacts.outputs.checksum }}
+
+      # Tarball archive — consumed by apps/website/public/install.sh.
+      # Archive contains the binary renamed back to plain `tok0`.
+      # Skipped on Windows: install.sh refuses Windows targets.
+      - name: Build tarball archive
+        id: tarball
+        if: matrix.os != 'windows-latest'
+        shell: bash
+        run: |
+          STAGE=$(mktemp -d)
+          cp "target/${{ matrix.target }}/release/tok0" "$STAGE/tok0"
+          ARCHIVE="tok0-${{ inputs.tag }}-${{ matrix.target }}.tar.gz"
+          tar -czf "$ARCHIVE" -C "$STAGE" tok0
+          (sha256sum "$ARCHIVE" 2>/dev/null || shasum -a 256 "$ARCHIVE") > "${ARCHIVE}.sha256"
+          echo "archive=${ARCHIVE}" >> "$GITHUB_OUTPUT"
+          echo "checksum=${ARCHIVE}.sha256" >> "$GITHUB_OUTPUT"
+      - name: Upload tarball
+        if: matrix.os != 'windows-latest'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: |
+            apps/cli/${{ steps.tarball.outputs.archive }}
+            apps/cli/${{ steps.tarball.outputs.checksum }}
 
       # Build a Debian package for the Linux glibc target only. cargo-deb
       # reads metadata from [package.metadata.deb] in apps/cli/Cargo.toml.
@@ -82,19 +131,52 @@ jobs:
         run: |
           cargo deb --no-build --target x86_64-unknown-linux-gnu
           DEB=$(ls target/x86_64-unknown-linux-gnu/debian/*.deb | head -1)
-          cp "$DEB" "tok0_${{ github.ref_name }}_amd64.deb"
-          sha256sum "tok0_${{ github.ref_name }}_amd64.deb" \
-            > "tok0_${{ github.ref_name }}_amd64.deb.sha256"
-          echo "deb=tok0_${{ github.ref_name }}_amd64.deb" >> "$GITHUB_OUTPUT"
-          echo "deb_sha=tok0_${{ github.ref_name }}_amd64.deb.sha256" >> "$GITHUB_OUTPUT"
+          cp "$DEB" "tok0_${{ inputs.tag }}_amd64.deb"
+          sha256sum "tok0_${{ inputs.tag }}_amd64.deb" \
+            > "tok0_${{ inputs.tag }}_amd64.deb.sha256"
+          echo "deb=tok0_${{ inputs.tag }}_amd64.deb" >> "$GITHUB_OUTPUT"
+          echo "deb_sha=tok0_${{ inputs.tag }}_amd64.deb.sha256" >> "$GITHUB_OUTPUT"
         shell: bash
       - name: Upload .deb to release
         if: matrix.target == 'x86_64-unknown-linux-gnu'
         uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ inputs.tag }}
           files: |
             apps/cli/${{ steps.deb.outputs.deb }}
             apps/cli/${{ steps.deb.outputs.deb_sha }}
+
+  # Aggregate the per-platform tarball checksums into a single
+  # checksums.txt file. install.sh greps this for "  <archive>$" so the
+  # format must be sha256sum's standard `<sha>  <filename>` (two spaces).
+  checksums:
+    name: Aggregate checksums.txt
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download tarballs and compute checksums.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir _checksums
+          cd _checksums
+          gh release download "${{ inputs.tag }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "tok0-${{ inputs.tag }}-*.tar.gz"
+          : > ../checksums.txt
+          for f in tok0-${{ inputs.tag }}-*.tar.gz; do
+            sha256sum "$f" >> ../checksums.txt
+          done
+          cd ..
+          cat checksums.txt
+      - name: Upload checksums.txt
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: checksums.txt
 
   update-formula:
     name: Update Homebrew formula
@@ -106,16 +188,15 @@ jobs:
     permissions:
       contents: write
     steps:
+      # Checkout the default branch (main) — we commit the formula bump
+      # there, not onto the tagged commit.
       - uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract version from tag
-        id: tag
-        run: echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
       - name: Update Formula/tok0.rb with real SHA-256s
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./scripts/update-formula.sh "${{ steps.tag.outputs.version }}"
+        run: ./scripts/update-formula.sh "${{ inputs.tag }}"
       - name: Commit + push formula update
         run: |
           if git diff --quiet Formula/tok0.rb; then
@@ -125,5 +206,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add Formula/tok0.rb
-          git commit -m "chore(release): update Homebrew formula for ${{ steps.tag.outputs.version }}"
+          git commit -m "chore(release): update Homebrew formula for ${{ inputs.tag }}"
           git push origin HEAD:main

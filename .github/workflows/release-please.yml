@@ -12,17 +12,21 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.rp.outputs.release_created }}
+      tag_name: ${{ steps.rp.outputs.tag_name }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: rp
         with:
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
-          # The default GITHUB_TOKEN can open PRs and push tags. When the
-          # release PR merges, this same step pushes a `vX.Y.Z` tag,
-          # which fires `.github/workflows/release.yml` (build matrix)
-          # which in turn fires `update-formula` (Homebrew bump) and
-          # `docker.yml` (GHCR publish). No manual `git tag` ever needed.
+          # When the release PR merges, this step pushes a `vX.Y.Z` tag
+          # AND creates the matching GitHub release. We then chain the
+          # build pipeline via `workflow_call` below — we cannot use a
+          # `push: tags` trigger on release-cli.yml because the default
+          # GITHUB_TOKEN cannot trigger downstream workflows (anti-loop
+          # protection).
       - name: Show release-please outputs
         if: ${{ steps.rp.outputs.release_created == 'true' }}
         run: |
@@ -30,3 +34,13 @@ jobs:
           echo "Major:    ${{ steps.rp.outputs.major }}"
           echo "Minor:    ${{ steps.rp.outputs.minor }}"
           echo "Patch:    ${{ steps.rp.outputs.patch }}"
+
+  build-release:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    uses: ./.github/workflows/release-cli.yml
+    with:
+      tag: ${{ needs.release-please.outputs.tag_name }}
+    permissions:
+      contents: write
+    secrets: inherit
