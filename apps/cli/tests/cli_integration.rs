@@ -234,17 +234,119 @@ fn test_async_meter_persists_across_invocations() {
 }
 
 #[test]
-fn test_unknown_command_errors_cleanly() {
+fn test_unknown_command_falls_through_to_shell() {
+    // Any subcommand tok0 does not explicitly define is forwarded to the
+    // shell via run_proxy. If the shell cannot find the binary either,
+    // tok0 exits non-zero with a spawn error — NOT a clap "unrecognized
+    // subcommand" error. This guarantees common shell tools (wc, tr,
+    // head, …) never get rejected by tok0's argv parser.
     let (_tmp, db) = isolated_env();
-    let out = run_tok0(&["not-a-real-subcommand"], &db);
-    // clap returns 2 for arg errors.
-    assert!(!out.status.success(), "unknown command should fail");
+    let out = run_tok0(
+        &["this-binary-definitely-does-not-exist-on-any-runner-xyz"],
+        &db,
+    );
+    assert!(!out.status.success(), "missing binary should fail");
     let stderr = String::from_utf8_lossy(&out.stderr);
     assert!(
-        stderr.contains("error") || stderr.contains("unrecognized"),
-        "stderr should describe the error: {}",
+        !stderr.contains("unrecognized subcommand"),
+        "tok0 must forward unknown subcommands to the shell, not reject \
+         them at the clap layer. stderr={}",
         stderr
     );
+    assert!(
+        stderr.contains("Failed to spawn") || stderr.contains("No such file"),
+        "stderr should indicate the shell could not find the binary: {}",
+        stderr
+    );
+}
+
+// ── External subcommand fallback (wc / tr / head / arbitrary) ────────────────
+//
+// tok0 explicitly enumerates a few subcommands (Git, Ls, Read, …) but the
+// majority of shell tools are not — they reach run_proxy via the `External`
+// catch-all variant. These tests prove that:
+//   1. A command WITH a compressor (wc, head) gets routed and compressed.
+//   2. A command WITHOUT a compressor (tr) passes through unchanged.
+//   3. Stdin is inherited correctly (so pipes still work).
+
+#[test]
+fn test_external_wc_routes_through_dispatcher() {
+    let (_tmp, db) = isolated_env();
+    let dir = TempDir::new().expect("tmp");
+    let path = dir.path().join("lines.txt");
+    std::fs::write(&path, "alpha\nbeta\ngamma\n").expect("write");
+
+    let out = run_tok0(&["wc", "-l", path.to_str().expect("utf8")], &db);
+    assert!(
+        out.status.success(),
+        "wc must succeed: exit={:?} stderr={}",
+        out.status.code(),
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        stdout.contains('3'),
+        "wc -l should report 3 lines somewhere in output: {}",
+        stdout
+    );
+}
+
+#[test]
+fn test_external_head_routes_through_read_compressor() {
+    let (_tmp, db) = isolated_env();
+    let dir = TempDir::new().expect("tmp");
+    let path = dir.path().join("many.txt");
+    let content: String = (0..20).map(|i| format!("line-{}\n", i)).collect();
+    std::fs::write(&path, &content).expect("write");
+
+    let out = run_tok0(&["head", "-3", path.to_str().expect("utf8")], &db);
+    assert!(
+        out.status.success(),
+        "head must succeed: exit={:?} stderr={}",
+        out.status.code(),
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        !stdout.is_empty(),
+        "head should produce non-empty output: {}",
+        stdout
+    );
+}
+
+#[test]
+fn test_external_tr_passes_through_unchanged() {
+    // `tr` has no compressor in the dispatcher. The External fallback
+    // should still execute it, inherit stdin, and stream stdout
+    // unchanged. Verifies the no-compressor passthrough path.
+    use std::io::Write;
+    use std::process::Stdio;
+
+    let (_tmp, db) = isolated_env();
+    let mut child = Command::new(tok0_binary())
+        .args(["tr", "a-z", "A-Z"])
+        .env("TOK0_DB_PATH", &db)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("spawn tok0 tr");
+    child
+        .stdin
+        .as_mut()
+        .expect("stdin")
+        .write_all(b"hello world\n")
+        .expect("write stdin");
+    let out = child.wait_with_output().expect("wait tok0 tr");
+
+    assert!(
+        out.status.success(),
+        "tok0 tr must succeed: exit={:?} stderr={}",
+        out.status.code(),
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert_eq!(stdout.trim(), "HELLO WORLD", "tr should uppercase stdin");
 }
 
 #[test]

@@ -348,6 +348,14 @@ enum Commands {
     },
     /// JSON pretty-print + array/object truncation (reads stdin)
     Json,
+    /// Catch-all for any subcommand tok0 does not explicitly define
+    /// (e.g. `tok0 wc -l file`, `tok0 tr a-z A-Z`). The first element is
+    /// the command name; the rest are forwarded as args. The command is
+    /// run through `run_proxy`, so the dispatcher gets a chance to
+    /// compress its output and the meter records token savings. If no
+    /// compressor matches, output passes through unchanged.
+    #[command(external_subcommand)]
+    External(Vec<String>),
 }
 
 #[cfg(feature = "cloud")]
@@ -457,6 +465,14 @@ fn run(cli: Cli) -> Result<()> {
             Ok(())
         }
         Commands::Proxy { args } => run_raw_proxy(&args),
+        Commands::External(parts) => {
+            let mut iter = parts.into_iter();
+            let cmd = iter
+                .next()
+                .context("External subcommand had no command name")?;
+            let args: Vec<String> = iter.collect();
+            run_proxy(&cmd, &args)
+        }
         Commands::Stats {
             graph,
             history,
