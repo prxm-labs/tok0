@@ -209,42 +209,42 @@ enum Commands {
     },
     /// Git operations
     Git {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         command: Vec<String>,
     },
     /// Smart file reading
     Read {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Directory listing
     Ls {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Search files
     Grep {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Find files
     Find {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// File diff
     Diff {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Smart code summary
     Smart {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Proxy passthrough (no filtering, tracking only)
     Proxy {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Show tok0 status: version, hooks, savings, trust, extensions
@@ -283,12 +283,12 @@ enum Commands {
     },
     /// Rewrite command (used by hooks)
     Rewrite {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Profile compression pipeline timing
     Profile {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Manage extension rule packs
@@ -333,17 +333,17 @@ enum Commands {
     },
     /// Vite (dev / build) — JS/TS bundler & dev server
     Vite {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Next.js CLI (dev / build / start)
     Next {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// Prisma CLI (migrate / generate / validate / studio)
     Prisma {
-        #[arg(trailing_var_arg = true)]
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
         args: Vec<String>,
     },
     /// JSON pretty-print + array/object truncation (reads stdin)
@@ -970,5 +970,191 @@ mod tests {
             buf.is_empty(),
             "should not print anything when SHELL is unset"
         );
+    }
+
+    // ── Argv parsing: subcommands must accept leading flags ──────────────
+    //
+    // `tok0 ls -lah` used to fail with "unexpected argument '-l' found"
+    // because clap's `trailing_var_arg = true` only treats arguments as
+    // raw values *after* the first positional. Pairing it with
+    // `allow_hyphen_values = true` makes the entire arg list opaque, so
+    // any `-flag` at the start is captured verbatim and forwarded to the
+    // underlying tool (ls, grep, find, git, etc.).
+
+    fn parse_argv(argv: &[&str]) -> Cli {
+        Cli::try_parse_from(argv).expect("argv must parse")
+    }
+
+    #[test]
+    fn test_ls_accepts_leading_short_flag() {
+        let cli = parse_argv(&["tok0", "ls", "-lah"]);
+        match cli.command {
+            Commands::Ls { args } => assert_eq!(args, vec!["-lah".to_string()]),
+            other => panic!("expected Ls, got {:?}", std::any::type_name_of_val(&other)),
+        }
+    }
+
+    #[test]
+    fn test_ls_accepts_long_flag_then_path() {
+        let cli = parse_argv(&["tok0", "ls", "--all", "/tmp"]);
+        match cli.command {
+            Commands::Ls { args } => {
+                assert_eq!(args, vec!["--all".to_string(), "/tmp".to_string()]);
+            }
+            _ => panic!("expected Ls"),
+        }
+    }
+
+    #[test]
+    fn test_ls_no_args_still_works() {
+        let cli = parse_argv(&["tok0", "ls"]);
+        assert!(matches!(cli.command, Commands::Ls { args } if args.is_empty()));
+    }
+
+    #[test]
+    fn test_ls_positional_only_still_works() {
+        let cli = parse_argv(&["tok0", "ls", "/tmp"]);
+        match cli.command {
+            Commands::Ls { args } => assert_eq!(args, vec!["/tmp".to_string()]),
+            _ => panic!("expected Ls"),
+        }
+    }
+
+    #[test]
+    fn test_grep_leading_flag_then_pattern() {
+        let cli = parse_argv(&["tok0", "grep", "-r", "foo", "."]);
+        match cli.command {
+            Commands::Grep { args } => assert_eq!(
+                args,
+                vec!["-r".to_string(), "foo".to_string(), ".".to_string()]
+            ),
+            _ => panic!("expected Grep"),
+        }
+    }
+
+    #[test]
+    fn test_find_leading_flag() {
+        let cli = parse_argv(&["tok0", "find", "-name", "*.rs"]);
+        match cli.command {
+            Commands::Find { args } => {
+                assert_eq!(args, vec!["-name".to_string(), "*.rs".to_string()]);
+            }
+            _ => panic!("expected Find"),
+        }
+    }
+
+    #[test]
+    fn test_diff_leading_flag() {
+        // `-u` would collide with tok0's --ultra-compact short alias.
+        // Use `--brief`, which has no global counterpart.
+        let cli = parse_argv(&["tok0", "diff", "--brief", "a.txt", "b.txt"]);
+        match cli.command {
+            Commands::Diff { args } => assert_eq!(
+                args,
+                vec![
+                    "--brief".to_string(),
+                    "a.txt".to_string(),
+                    "b.txt".to_string()
+                ]
+            ),
+            _ => panic!("expected Diff"),
+        }
+    }
+
+    #[test]
+    fn test_read_leading_flag() {
+        let cli = parse_argv(&["tok0", "read", "-n", "10", "/etc/hosts"]);
+        match cli.command {
+            Commands::Read { args } => assert_eq!(
+                args,
+                vec!["-n".to_string(), "10".to_string(), "/etc/hosts".to_string()]
+            ),
+            _ => panic!("expected Read"),
+        }
+    }
+
+    #[test]
+    fn test_git_log_with_flags() {
+        let cli = parse_argv(&["tok0", "git", "log", "--oneline", "-3"]);
+        match cli.command {
+            Commands::Git { command } => assert_eq!(
+                command,
+                vec!["log".to_string(), "--oneline".to_string(), "-3".to_string()]
+            ),
+            _ => panic!("expected Git"),
+        }
+    }
+
+    #[test]
+    fn test_vite_dev_with_flag() {
+        let cli = parse_argv(&["tok0", "vite", "dev", "--port", "3000"]);
+        match cli.command {
+            Commands::Vite { args } => assert_eq!(
+                args,
+                vec!["dev".to_string(), "--port".to_string(), "3000".to_string()]
+            ),
+            _ => panic!("expected Vite"),
+        }
+    }
+
+    #[test]
+    fn test_smart_leading_flag() {
+        // Avoid `-v`/`-u`: those collide with tok0's global --verbose /
+        // --ultra-compact flags (see the Cli struct). When a passthrough
+        // command needs those, the user has to use `--` or move the
+        // global flag before the subcommand.
+        let cli = parse_argv(&["tok0", "smart", "-q", "src/lib.rs"]);
+        match cli.command {
+            Commands::Smart { args } => {
+                assert_eq!(args, vec!["-q".to_string(), "src/lib.rs".to_string()]);
+            }
+            _ => panic!("expected Smart"),
+        }
+    }
+
+    #[test]
+    fn test_proxy_leading_flag_passthrough() {
+        let cli = parse_argv(&["tok0", "proxy", "ls", "-lah"]);
+        match cli.command {
+            Commands::Proxy { args } => {
+                assert_eq!(args, vec!["ls".to_string(), "-lah".to_string()])
+            }
+            _ => panic!("expected Proxy"),
+        }
+    }
+
+    #[test]
+    fn test_double_dash_separator_still_works() {
+        // Backwards compat: users who learned `tok0 ls -- -lah` keep working.
+        let cli = parse_argv(&["tok0", "ls", "--", "-lah"]);
+        match cli.command {
+            Commands::Ls { args } => assert_eq!(args, vec!["-lah".to_string()]),
+            _ => panic!("expected Ls"),
+        }
+    }
+
+    #[test]
+    fn test_external_subcommand_with_leading_flag() {
+        // `tok0 wc -l file` — wc is not a defined subcommand, so the
+        // catch-all External should capture it with all flags preserved.
+        let cli = parse_argv(&["tok0", "wc", "-l", "/etc/hosts"]);
+        match cli.command {
+            Commands::External(parts) => assert_eq!(
+                parts,
+                vec!["wc".to_string(), "-l".to_string(), "/etc/hosts".to_string()]
+            ),
+            _ => panic!("expected External"),
+        }
+    }
+
+    #[test]
+    fn test_external_unknown_tool_with_flag() {
+        let cli = parse_argv(&["tok0", "lsof", "-nP"]);
+        match cli.command {
+            Commands::External(parts) => {
+                assert_eq!(parts, vec!["lsof".to_string(), "-nP".to_string()])
+            }
+            _ => panic!("expected External"),
+        }
     }
 }
