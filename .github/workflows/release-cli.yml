@@ -32,6 +32,11 @@ concurrency:
 jobs:
   build:
     strategy:
+      # One platform's failure must not cancel the others — otherwise a
+      # broken `.deb` step or a flaky musl cross-compile takes the whole
+      # release down and the Aggregate checksums.txt job (which `needs:
+      # build`) never runs, leaving install.sh with no checksums file.
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
