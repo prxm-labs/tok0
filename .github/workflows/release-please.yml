@@ -12,9 +12,14 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    # Manifest mode: release-please-action emits per-package outputs
+    # keyed by the path declared in release-please-config.json packages
+    # (here, apps/cli), separated by `--`. The bare `release_created` /
+    # `tag_name` outputs are NOT set in manifest mode — referencing them
+    # silently yields empty strings and the downstream build is skipped.
     outputs:
-      release_created: ${{ steps.rp.outputs.release_created }}
-      tag_name: ${{ steps.rp.outputs.tag_name }}
+      release_created: ${{ steps.rp.outputs['apps/cli--release_created'] }}
+      tag_name: ${{ steps.rp.outputs['apps/cli--tag_name'] }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: rp
@@ -28,12 +33,12 @@ jobs:
           # GITHUB_TOKEN cannot trigger downstream workflows (anti-loop
           # protection).
       - name: Show release-please outputs
-        if: ${{ steps.rp.outputs.release_created == 'true' }}
+        if: ${{ steps.rp.outputs['apps/cli--release_created'] == 'true' }}
         run: |
-          echo "Released ${{ steps.rp.outputs.tag_name }}"
-          echo "Major:    ${{ steps.rp.outputs.major }}"
-          echo "Minor:    ${{ steps.rp.outputs.minor }}"
-          echo "Patch:    ${{ steps.rp.outputs.patch }}"
+          echo "Released ${{ steps.rp.outputs['apps/cli--tag_name'] }}"
+          echo "Major:    ${{ steps.rp.outputs['apps/cli--major'] }}"
+          echo "Minor:    ${{ steps.rp.outputs['apps/cli--minor'] }}"
+          echo "Patch:    ${{ steps.rp.outputs['apps/cli--patch'] }}"
 
   build-release:
     needs: release-please
