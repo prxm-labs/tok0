@@ -11,6 +11,13 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.7](https://github.com/prxm-labs/tok0/compare/v0.1.6...v0.1.7) (2026-05-06)
+
+
+### Bug Fixes
+
+* **cli:** point cargo-deb license-file at repo-root LICENSE ([b1c190f](https://github.com/prxm-labs/tok0/commit/b1c190f85950773d0afbf6a0faa3e9435fa44c4a))
+
 ## [0.1.6](https://github.com/prxm-labs/tok0/compare/v0.1.5...v0.1.6) (2026-05-06)
 
 
