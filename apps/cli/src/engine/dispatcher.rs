@@ -1,5 +1,26 @@
 use crate::compressors;
 
+/// Extract the value of `-o <fmt>` / `-o=<fmt>` / `--output <fmt>` /
+/// `--output=<fmt>` from a kubectl-style argv slice. Returns the first
+/// occurrence; later flags shadow earlier ones (matching kubectl's own
+/// behaviour). Used to detect `kubectl get -o json` so we can route the
+/// payload through the JSON compressor.
+fn output_format<'a>(args: &[&'a str]) -> Option<&'a str> {
+    let mut iter = args.iter();
+    while let Some(arg) = iter.next() {
+        if *arg == "-o" || *arg == "--output" {
+            return iter.next().copied();
+        }
+        if let Some(rest) = arg.strip_prefix("-o=") {
+            return Some(rest);
+        }
+        if let Some(rest) = arg.strip_prefix("--output=") {
+            return Some(rest);
+        }
+    }
+    None
+}
+
 /// Routes a command + args to the appropriate compressor filter function.
 ///
 /// Returns `Some(compressed_output)` if a matching compressor was found,
@@ -130,8 +151,8 @@ pub fn dispatch(cmd: &str, args: &[&str], stdout: &str) -> Option<String> {
         },
         "golangci-lint" => Some(compressors::go::go_cmd::filter_golangci_lint(stdout)),
 
-        // ── Docker / Podman ──────────────────────────────────────
-        "docker" | "podman" => match sub {
+        // ── Docker / Podman / nerdctl ────────────────────────────
+        "docker" | "podman" | "nerdctl" => match sub {
             "ps" => Some(compressors::cloud::docker_cmd::filter_docker_ps(stdout)),
             "build" => Some(compressors::cloud::docker_cmd::filter_docker_build(stdout)),
             "images" | "image" => {
@@ -141,12 +162,27 @@ pub fn dispatch(cmd: &str, args: &[&str], stdout: &str) -> Option<String> {
             "compose" => Some(compressors::cloud::docker_cmd::filter_docker_compose(
                 stdout,
             )),
+            // `inspect` always emits valid JSON. Truncate large arrays/objects
+            // via json_cmd; on parse failure (e.g. caller piped `--format`),
+            // pass the raw output through.
+            "inspect" => Some(
+                compressors::system::json_cmd::filter_json(stdout)
+                    .unwrap_or_else(|_| stdout.to_string()),
+            ),
             _ => None,
         },
 
         // ── Kubernetes ───────────────────────────────────────────
         "kubectl" | "k" => match sub {
             "get" => {
+                // `-o json` / `-o=json` / `--output json` → route through
+                // json_cmd for structural truncation. yaml falls through to
+                // the tabular filter (it's already line-oriented).
+                if matches!(output_format(args), Some("json")) {
+                    if let Ok(j) = compressors::system::json_cmd::filter_json(stdout) {
+                        return Some(j);
+                    }
+                }
                 let resource = args.get(1).copied().unwrap_or("");
                 if resource == "pods" {
                     Some(compressors::cloud::kubectl_cmd::filter_kubectl_pods(stdout))
@@ -675,5 +711,85 @@ mod tests {
         assert!(result.contains("line-2"));
         assert!(result.contains("line-199"));
         assert!(result.contains("line-198"));
+    }
+
+    // ── Tier 7: docker inspect, kubectl JSON, nerdctl ────────────────────
+
+    #[test]
+    fn test_output_format_separated() {
+        assert_eq!(output_format(&["get", "pods", "-o", "json"]), Some("json"));
+        assert_eq!(
+            output_format(&["get", "pods", "--output", "yaml"]),
+            Some("yaml")
+        );
+    }
+
+    #[test]
+    fn test_output_format_equals() {
+        assert_eq!(output_format(&["get", "pods", "-o=json"]), Some("json"));
+        assert_eq!(
+            output_format(&["get", "pods", "--output=yaml"]),
+            Some("yaml")
+        );
+    }
+
+    #[test]
+    fn test_output_format_absent() {
+        assert_eq!(output_format(&["get", "pods"]), None);
+        assert_eq!(output_format(&[]), None);
+    }
+
+    #[test]
+    fn test_docker_inspect_routes_json() {
+        let input = r#"[{"Id":"abc123","Name":"web","State":{"Running":true}}]"#;
+        let result = dispatch("docker", &["inspect", "web"], input);
+        assert!(result.is_some(), "docker inspect should dispatch");
+        let out = result.expect("dispatch");
+        // json_cmd reformats with serde — must still contain key fields.
+        assert!(out.contains("abc123"));
+        assert!(out.contains("Running"));
+    }
+
+    #[test]
+    fn test_docker_inspect_passthrough_on_invalid_json() {
+        // `--format` produces non-JSON. Filter must not mangle it.
+        let input = "true\n";
+        let result = dispatch(
+            "docker",
+            &["inspect", "--format", "{{.State.Running}}", "web"],
+            input,
+        );
+        assert!(result.is_some());
+        assert!(result.expect("dispatch").contains("true"));
+    }
+
+    #[test]
+    fn test_nerdctl_aliases_docker() {
+        let input = "CONTAINER ID   IMAGE   STATUS\nabc123   nginx   Up 2 hours\n";
+        let result = dispatch("nerdctl", &["ps"], input);
+        assert!(
+            result.is_some(),
+            "nerdctl should alias to docker dispatcher"
+        );
+    }
+
+    #[test]
+    fn test_kubectl_get_o_json_routes_json() {
+        let input = r#"{"items":[{"metadata":{"name":"pod-1"}},{"metadata":{"name":"pod-2"}}]}"#;
+        let result = dispatch("kubectl", &["get", "pods", "-o", "json"], input);
+        assert!(result.is_some());
+        let out = result.expect("dispatch");
+        assert!(out.contains("pod-1"));
+        assert!(out.contains("metadata"));
+    }
+
+    #[test]
+    fn test_kubectl_get_o_yaml_falls_through_to_tabular() {
+        // No JSON in input — yaml falls through to filter_kubectl_get, which
+        // returns the input mostly intact (or transformed). Importantly, the
+        // call must NOT panic and must produce output.
+        let input = "apiVersion: v1\nkind: Pod\nmetadata:\n  name: pod-1\n";
+        let result = dispatch("kubectl", &["get", "pods", "-o", "yaml"], input);
+        assert!(result.is_some());
     }
 }
