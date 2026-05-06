@@ -11,6 +11,19 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10](https://github.com/prxm-labs/tok0/compare/v0.1.9...v0.1.10) (2026-05-06)
+
+
+### Features
+
+* **cli:** tier 5 — archive/compression command coverage ([6eaa1e7](https://github.com/prxm-labs/tok0/commit/6eaa1e7beaaab3cf86db15e140e2209a859b05ad))
+* **cli:** tier 6 — security/auth/crypto command coverage ([c5d671d](https://github.com/prxm-labs/tok0/commit/c5d671d52709342a755678fc0ffa8a997e513204))
+
+
+### Tests
+
+* **cli:** poll DB after flush() in async-record meter test ([55682ad](https://github.com/prxm-labs/tok0/commit/55682ad3fb0d49beb70ddeddcc119fcefd5d4698))
+
 ## [0.1.9](https://github.com/prxm-labs/tok0/compare/v0.1.8...v0.1.9) (2026-05-06)
 
 
