@@ -1,0 +1,15 @@
+---
+source: src/compressors/system/tar_cmd.rs
+expression: output
+---
+archive: 124 files, 1 dirs, 34.2K
+
+by extension:
+  .toml           124 files  34.2K
+
+top files:
+        1.3K  ./yarn.toml
+        800B  ./xcodebuild.toml
+        706B  ./skaffold.toml
+        684B  ./cosign.toml
+        662B  ./pnpm.toml

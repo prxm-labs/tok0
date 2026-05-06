@@ -14,4 +14,5 @@ pub mod netstat_cmd;
 pub mod read_cmd;
 pub mod silent_cmd;
 pub mod smart_cmd;
+pub mod tar_cmd;
 pub mod wc_cmd;

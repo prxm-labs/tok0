@@ -10,6 +10,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
         include_str!("../../src/rules/ansible-playbook.toml"),
     ),
     ("argocd", include_str!("../../src/rules/argocd.toml")),
+    ("7z", include_str!("../../src/rules/sevenzip.toml")),
     ("ava", include_str!("../../src/rules/ava.toml")),
     ("awk", include_str!("../../src/rules/awk.toml")),
     (
@@ -181,6 +182,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("turbo", include_str!("../../src/rules/turbo.toml")),
     ("ty", include_str!("../../src/rules/ty.toml")),
     ("uniq", include_str!("../../src/rules/uniq.toml")),
+    ("unzip", include_str!("../../src/rules/unzip.toml")),
     ("uv-sync", include_str!("../../src/rules/uv-sync.toml")),
     ("webpack", include_str!("../../src/rules/webpack.toml")),
     ("wget", include_str!("../../src/rules/wget.toml")),
@@ -192,6 +194,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("yamllint", include_str!("../../src/rules/yamllint.toml")),
     ("yarn", include_str!("../../src/rules/yarn.toml")),
     ("yq", include_str!("../../src/rules/yq.toml")),
+    ("zip", include_str!("../../src/rules/zip.toml")),
 ];
 
 static BUILTIN_CONFIGS: OnceLock<Vec<FilterConfig>> = OnceLock::new();

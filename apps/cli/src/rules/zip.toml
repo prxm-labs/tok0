@@ -1,0 +1,12 @@
+[filter]
+name = "zip"
+commands = ["zip"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*adding: ",
+  "^\\s*updating: ",
+  "^\\s*deflated ",
+]
+head_lines = 20
+tail_lines = 5
+max_line_chars = 200

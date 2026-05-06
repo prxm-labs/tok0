@@ -1,0 +1,13 @@
+[filter]
+name = "unzip"
+commands = ["unzip"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*inflating: ",
+  "^\\s*extracting: ",
+  "^\\s*creating: ",
+  "^Archive:  ",
+]
+head_lines = 30
+tail_lines = 5
+max_line_chars = 200

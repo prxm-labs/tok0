@@ -59,6 +59,7 @@ pub fn dispatch(cmd: &str, args: &[&str], stdout: &str) -> Option<String> {
         "dig" => Some(compressors::system::dig_cmd::filter_dig(stdout)),
         "lsof" => Some(compressors::system::lsof_cmd::filter_lsof(stdout)),
         "netstat" | "ss" => Some(compressors::system::netstat_cmd::filter_netstat(stdout)),
+        "tar" => Some(compressors::system::tar_cmd::filter_tar(stdout)),
         "smart" => Some(compressors::system::smart_cmd::filter_smart(stdout)),
         "env" | "printenv" => Some(compressors::system::env_cmd::filter_env(stdout, None)),
 

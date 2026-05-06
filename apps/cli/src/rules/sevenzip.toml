@@ -1,0 +1,13 @@
+[filter]
+name = "7z"
+commands = ["7z", "7zz", "7za"]
+strip_patterns = [
+  "^\\s*$",
+  "^7-Zip ",
+  "^Scanning the drive",
+  "^Open archive: ",
+  "^p7zip Version",
+]
+head_lines = 30
+tail_lines = 8
+max_line_chars = 200
