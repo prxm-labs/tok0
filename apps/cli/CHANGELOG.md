@@ -11,6 +11,13 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4](https://github.com/prxm-labs/tok0/compare/v0.1.3...v0.1.4) (2026-05-06)
+
+
+### Documentation
+
+* consolidate cli markdown into website docs ([ef3b7f9](https://github.com/prxm-labs/tok0/commit/ef3b7f935891f8bbd631dd3ed927c39dafa78958))
+
 ## [0.1.3](https://github.com/prxm-labs/tok0/compare/v0.1.2...v0.1.3) (2026-05-06)
 
 
