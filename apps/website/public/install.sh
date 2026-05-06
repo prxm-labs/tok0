@@ -81,18 +81,32 @@ dim "tok0: installing ${VERSION}"
 ARCHIVE="${BIN}-${VERSION}-${TARGET}.tar.gz"
 ARCHIVE_URL="${GH_DL}/${VERSION}/${ARCHIVE}"
 CHECKSUMS_URL="${GH_DL}/${VERSION}/checksums.txt"
+ARCHIVE_SHA_URL="${ARCHIVE_URL}.sha256"
 
 TMP=$(mktemp -d 2>/dev/null || mktemp -d -t tok0)
 trap 'rm -rf "$TMP"' EXIT
 
 dim "tok0: downloading ${ARCHIVE_URL}"
 curl -fsSL "$ARCHIVE_URL"  -o "$TMP/$ARCHIVE"  || err "failed to download $ARCHIVE_URL"
-curl -fsSL "$CHECKSUMS_URL" -o "$TMP/checksums.txt" || err "failed to download checksums"
+
+# Prefer the aggregated checksums.txt (one round-trip can verify any
+# platform), fall back to the per-archive <archive>.sha256 file. Both
+# follow sha256sum's `<sha>  <filename>` format. The fallback exists
+# so a release whose aggregator job failed (but where the per-platform
+# upload succeeded) can still be installed safely.
+EXPECTED=""
+if curl -fsSL "$CHECKSUMS_URL" -o "$TMP/checksums.txt" 2>/dev/null; then
+  EXPECTED=$(grep "  ${ARCHIVE}\$" "$TMP/checksums.txt" | awk '{print $1}')
+fi
+if [ -z "$EXPECTED" ]; then
+  dim "tok0: checksums.txt unavailable, falling back to ${ARCHIVE}.sha256"
+  curl -fsSL "$ARCHIVE_SHA_URL" -o "$TMP/${ARCHIVE}.sha256" \
+    || err "failed to download checksum (neither checksums.txt nor ${ARCHIVE}.sha256)"
+  EXPECTED=$(awk '{print $1}' "$TMP/${ARCHIVE}.sha256")
+fi
+[ -n "$EXPECTED" ] || err "checksum for ${ARCHIVE} not found"
 
 # ── verify checksum ────────────────────────────────────────────────────────
-EXPECTED=$(grep "  ${ARCHIVE}\$" "$TMP/checksums.txt" | awk '{print $1}')
-[ -n "$EXPECTED" ] || err "checksum for ${ARCHIVE} not found in checksums.txt"
-
 ACTUAL=$( (cd "$TMP" && $SHA256 "$ARCHIVE") | awk '{print $1}')
 [ "$EXPECTED" = "$ACTUAL" ] || err "checksum mismatch for ${ARCHIVE}: expected $EXPECTED, got $ACTUAL"
 dim "tok0: checksum verified"
