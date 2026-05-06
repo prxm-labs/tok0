@@ -20,7 +20,7 @@ cloud = ["dep:keyring"]
 [package.metadata.deb]
 maintainer = "prxm-labs <theodorevorillas@gmail.com>"
 copyright = "2026, prxm-labs"
-license-file = ["LICENSE", "0"]
+license-file = ["../../LICENSE", "0"]
 extended-description = """
 tok0 is a high-performance CLI proxy that compresses verbose shell command
 output before it reaches an LLM, typically saving 70-95% of tokens on
