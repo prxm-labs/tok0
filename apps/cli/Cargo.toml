@@ -18,7 +18,7 @@ cloud = ["dep:keyring"]
 #   cargo install cargo-deb
 #   cargo deb --no-build --target x86_64-unknown-linux-gnu
 [package.metadata.deb]
-maintainer = "prxm-labs <noreply@anthropic.com>"
+maintainer = "prxm-labs <theodorevorillas@gmail.com>"
 copyright = "2026, prxm-labs"
 license-file = ["LICENSE", "0"]
 extended-description = """
