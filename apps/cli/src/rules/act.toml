@@ -1,0 +1,14 @@
+[filter]
+name = "act"
+commands = ["act"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\[",
+  "^DEBU\\[",
+  "^INFO\\[",
+  "^WARN\\[",
+  "^\\| ",
+]
+head_lines = 60
+tail_lines = 20
+max_line_chars = 300

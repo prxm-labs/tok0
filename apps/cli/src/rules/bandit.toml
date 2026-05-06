@@ -1,0 +1,15 @@
+[filter]
+name = "bandit"
+commands = ["bandit"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\[main\\]\\s+INFO",
+  "^Run started:",
+  "^Test results:",
+  "^\\[node_visitor\\]",
+  "^\\[tester\\]",
+  "^Files skipped",
+]
+head_lines = 60
+tail_lines = 15
+max_line_chars = 300

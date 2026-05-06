@@ -1,0 +1,16 @@
+[filter]
+name = "snyk"
+commands = ["snyk"]
+strip_patterns = [
+  "^\\s*$",
+  "^Testing ",
+  "^Organization:",
+  "^Package manager:",
+  "^Target file:",
+  "^Project name:",
+  "^Open source:",
+  "^Project path:",
+]
+head_lines = 60
+tail_lines = 15
+max_line_chars = 300

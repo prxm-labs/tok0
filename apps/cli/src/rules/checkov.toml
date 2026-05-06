@@ -1,0 +1,14 @@
+[filter]
+name = "checkov"
+commands = ["checkov"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s+_\\s+_",
+  "^\\s+\\|.+_/__",
+  "^By bridgecrew",
+  "^terraform scan results:",
+  "^Passed checks: ",
+]
+head_lines = 80
+tail_lines = 20
+max_line_chars = 300

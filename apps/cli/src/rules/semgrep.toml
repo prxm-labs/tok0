@@ -1,0 +1,15 @@
+[filter]
+name = "semgrep"
+commands = ["semgrep"]
+strip_patterns = [
+  "^\\s*$",
+  "^Scanning ",
+  "^running ",
+  "^\\s*┌",
+  "^\\s*│",
+  "^\\s*└",
+  "^Found \\d+ findings? \\(\\d+ blocking\\)",
+]
+head_lines = 60
+tail_lines = 15
+max_line_chars = 300

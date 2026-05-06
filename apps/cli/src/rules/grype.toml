@@ -1,0 +1,11 @@
+[filter]
+name = "grype"
+commands = ["grype"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*✔ ",
+  "^\\s*✓ ",
+]
+head_lines = 60
+tail_lines = 15
+max_line_chars = 300

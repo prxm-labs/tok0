@@ -1,0 +1,14 @@
+[filter]
+name = "trivy"
+commands = ["trivy"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.+INFO",
+  "^\\s*Total: \\d+ \\(",
+  "^\\s*└",
+  "^\\s*├",
+  "^\\s*│",
+]
+head_lines = 80
+tail_lines = 20
+max_line_chars = 300

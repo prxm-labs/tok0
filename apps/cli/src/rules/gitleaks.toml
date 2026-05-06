@@ -1,0 +1,13 @@
+[filter]
+name = "gitleaks"
+commands = ["gitleaks"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\d{1,2}:\\d{2}[AP]M",
+  "^\\s*│ ",
+  "^\\s*├─",
+  "^\\s*└─",
+]
+head_lines = 60
+tail_lines = 15
+max_line_chars = 300

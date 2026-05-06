@@ -1,0 +1,15 @@
+[filter]
+name = "tfsec"
+commands = ["tfsec"]
+strip_patterns = [
+  "^\\s*$",
+  "^\\s*timings",
+  "^\\s*disk i/o",
+  "^\\s*parsing",
+  "^\\s*adaptation",
+  "^\\s*checks",
+  "^\\s*total",
+]
+head_lines = 80
+tail_lines = 15
+max_line_chars = 300
