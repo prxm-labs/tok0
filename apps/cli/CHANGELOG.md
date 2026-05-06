@@ -11,6 +11,36 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3](https://github.com/prxm-labs/tok0/compare/v0.1.2...v0.1.3) (2026-05-06)
+
+
+### Features
+
+* **cli/bridge:** add AI tool adapters and trust gating ([c314aae](https://github.com/prxm-labs/tok0/commit/c314aae2d1369c5c4bc9dd839a372a393bc90c59))
+* **cli/compressors:** add build, lint, pkg, and dotnet compressors ([fada213](https://github.com/prxm-labs/tok0/commit/fada213554875e879397ad5f1fcbecc7eee599da))
+* **cli/compressors:** add cloud, db, and system compressors ([eed0295](https://github.com/prxm-labs/tok0/commit/eed0295f2b78e9a1e4a15809b703bd7d3904a462))
+* **cli/compressors:** add git compressors ([dfe7bc4](https://github.com/prxm-labs/tok0/commit/dfe7bc4368173d68cfbaf7a8f56a4ee4c994d25e))
+* **cli/compressors:** add javascript ecosystem compressors ([e7e6eae](https://github.com/prxm-labs/tok0/commit/e7e6eae3c0dc52afb9cb199eba495dc2f5823eaa))
+* **cli/compressors:** add python/go/java/ruby compressors ([a6d1353](https://github.com/prxm-labs/tok0/commit/a6d1353b0a4dfa995179119b19c07d7bcd749daf))
+* **cli/compressors:** add rust ecosystem compressors ([c5fa39e](https://github.com/prxm-labs/tok0/commit/c5fa39e1788f9832d914b280de8e8829c25b36f4))
+* **cli/engine:** add core engine modules ([9aa04a3](https://github.com/prxm-labs/tok0/commit/9aa04a33e0fa54cb8c28c9f0551bacda7818e710))
+* **cli:** add extension system for user rule packs ([4002c50](https://github.com/prxm-labs/tok0/commit/4002c50d145505d8eaafedbe92028f61b3dcf840))
+* **cli:** add insights, doctor, and profiler ([479c552](https://github.com/prxm-labs/tok0/commit/479c552bcf8915b8fc8f0af3a171e7dbe4a4f325))
+* **cli:** add session scanner and opportunity report ([68d2fd0](https://github.com/prxm-labs/tok0/commit/68d2fd047b4a469d3918e451e4295075dfb3e6bc))
+* **cli:** add shell completions and per-tool hook templates ([a9a5220](https://github.com/prxm-labs/tok0/commit/a9a522074e513c016bd222bd829f66ae6305bfcf))
+* **cli:** add TOML rule engine and built-in rule pack ([98812e5](https://github.com/prxm-labs/tok0/commit/98812e5890c8c502100e0d57e3df504a9fe46d45))
+* **cli:** scaffold rust crate ([2612a8f](https://github.com/prxm-labs/tok0/commit/2612a8fdb4fb6f79bb05060d82630b51f688b77f))
+
+
+### Tests
+
+* **cli:** add integration tests, fixtures, and benches ([0b754b2](https://github.com/prxm-labs/tok0/commit/0b754b2bd483b41a350e4c2a6f4197a02ebb1ad7))
+
+
+### Documentation
+
+* add readmes and project guides ([658b66b](https://github.com/prxm-labs/tok0/commit/658b66b63408d59e427a1092be4abe327b176fe5))
+
 ## [0.1.2](https://github.com/prxm-labs/tok0/compare/v0.1.1...v0.1.2) (2026-05-06)
 
 
