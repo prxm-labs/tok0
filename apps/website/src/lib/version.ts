@@ -44,5 +44,5 @@ function parseCliVersion(raw: string): string {
 /** SemVer string read from `apps/cli/Cargo.toml` at build time. */
 export const CLI_VERSION: string = parseCliVersion(CARGO_TOML_RAW);
 
-/** `v0.1.1` — convenience for headers/banners. */
+/** `v<CLI_VERSION>` — convenience for headers/banners. */
 export const CLI_VERSION_TAG: string = `v${CLI_VERSION}`;
