@@ -11,6 +11,19 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.11](https://github.com/prxm-labs/tok0/compare/v0.1.10...v0.1.11) (2026-05-06)
+
+
+### Features
+
+* **cli:** tier 7 — docker inspect, kubectl -o json, nerdctl alias ([1e6b204](https://github.com/prxm-labs/tok0/commit/1e6b2048b0bd8261f080e074f63b6f161e74d278))
+* **cli:** tier 8 — security scanners + act CI/CD coverage ([b9bf6b8](https://github.com/prxm-labs/tok0/commit/b9bf6b8e553dfe3c04d9185452d7412ba8adc231))
+
+
+### Bug Fixes
+
+* **cli:** allow leading flags on every passthrough subcommand ([3470b44](https://github.com/prxm-labs/tok0/commit/3470b44dd68c39be8f30d7ad973fffb9c10d7f4b))
+
 ## [0.1.10](https://github.com/prxm-labs/tok0/compare/v0.1.9...v0.1.10) (2026-05-06)
 
 
