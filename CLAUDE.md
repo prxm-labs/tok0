@@ -86,8 +86,7 @@ Key entry points:
 - `default = []` — minimal build. `tok0 auth`, `tok0 cloud`,
   `tok0 telemetry` are *not* compiled in. Telemetry ping is a no-op.
 - `cloud = []` — adds the cloud subcommands and the real telemetry
-  ping. Requires the `api.tok0.dev` backend (currently not deployed —
-  see [ROADMAP.md](ROADMAP.md) Tier 0).
+  ping. Requires the `api.tok0.dev` backend.
 
 CI runs both configurations.
 
@@ -121,13 +120,6 @@ do not guess. As of 2026-04 the supported set lives in
 4. `post_install_hint()` if the tool needs a manual step (paste into
    Settings, toggle in panel, …).
 5. Parametric test in `bridge::setup::tests::all_instruction_tools()`.
-
-## Plan-execution protocol
-
-The repo's plan lives in [ROADMAP.md](ROADMAP.md) (post-v0.1
-hardening). When asked to "implement Tier N" or "Phase N", follow the
-steps in order — they're already TDD-shaped (test, run, implement,
-verify, commit). Don't deviate without flagging.
 
 ## Commit style
 

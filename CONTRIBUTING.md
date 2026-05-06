@@ -158,7 +158,7 @@ To make tok0 install a hook into a new AI tool:
 
 ## Releasing
 
-See [RELEASING.md](RELEASING.md).
+Releases run through release-please. Merge the auto-opened `chore(main): release X.Y.Z` PR; the matrix build, Homebrew formula update, and Docker image push happen from the resulting tag. See the "Releases" section of [README.md](README.md) for the full flow.
 
 ## Getting help
 

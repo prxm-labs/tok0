@@ -76,20 +76,18 @@ Defenses in place:
 - Native commands invoke via `std::process::Command` with separate
   argv — no shell interpolation.
 - API keys held in `CloudConfig`/`CloudClient` are wiped via `zeroize`
-  on drop (in-memory only — file persistence is plaintext until the
-  OS-keyring work in [ROADMAP.md](ROADMAP.md) Tier 1 lands).
+  on drop (in-memory only — file persistence in
+  `~/.config/tok0/config.toml` remains plaintext; OS-keyring migration
+  is planned).
 
 ## Known gaps
 
-Tracked in [ROADMAP.md](ROADMAP.md):
-
 - Bearer-token strings allocated for `format!("Bearer {}", key)` are
-  not zeroized after the request returns (Tier 1.2).
-- TOML rule regexes have a size cap but no execution-time budget
-  (Tier 1.1).
+  not zeroized after the request returns.
+- TOML rule regexes have a size cap but no execution-time budget.
 - Extensions clone via `git clone --depth=1` with no signature or
-  commit-pin verification by default (Tier 1.3).
+  commit-pin verification by default.
 - Credentials persist plaintext in `~/.config/tok0/config.toml`;
-  OS-keyring migration pending (Tier 1.4).
+  OS-keyring migration pending.
 
 If you find an issue not on this list, please report it.

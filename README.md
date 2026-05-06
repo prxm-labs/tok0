@@ -16,8 +16,7 @@
 <p align="center">
   <a href="https://tok0.dev"><strong>tok0.dev</strong></a> ·
   <a href="https://tok0.dev/docs/introduction/">Docs</a> ·
-  <a href="https://tok0.dev/docs/getting-started/">Quickstart</a> ·
-  <a href="apps/cli/ROADMAP.md">Roadmap</a>
+  <a href="https://tok0.dev/docs/getting-started/">Quickstart</a>
 </p>
 
 ---

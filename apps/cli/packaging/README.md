@@ -12,7 +12,7 @@ Each subdirectory holds the manifest and build recipe for one distribution chann
 | chocolatey | `chocolatey/`         | Scaffold | (needs choco.org submission)           |
 | snap       | `snap/snapcraft.yaml` | Scaffold | (needs snapcraft login + publish)      |
 
-"Scaffold" means the manifest exists in this repo but the channel-side publishing step (tap repo, npm registry, chocolatey submission, etc.) is still external. See [`../ROADMAP.md`](../ROADMAP.md) Tier 6 for the remaining work.
+"Scaffold" means the manifest exists in this repo but the channel-side publishing step (tap repo, npm registry, chocolatey submission, etc.) is still external.
 
 ## Bumping a version
 

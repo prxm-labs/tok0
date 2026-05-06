@@ -22,6 +22,23 @@ Pipeline overhead is **&lt; 0.5 ms per command** in benchmarks. The wrapped comm
 
 No. Every compressor's CI tests assert that the *signal* is preserved: the agent still sees error messages, exit codes, file paths, the trailing summary. Only redundant or formatting-only output is collapsed. If a model loses information it actually needed, the rule's `min_savings_pct` is too aggressive — patch the rule (or open a PR) with the captured fixture.
 
+## Is compression lossless?
+
+No. tok0 is best-effort, not a guaranteed-lossless transformation. Three things to know:
+
+- A rule may strip a line that turns out to matter for a specific question.
+- A novel error format from a tool tok0 doesn't recognize falls through to a generic head/tail truncation.
+- Token-savings percentages reported by `tok0 stats` are computed against a whitespace approximation, not your model's exact tokenizer.
+
+If a command's output is critical and you need every byte, bypass tok0:
+
+```bash
+TOK0_DISABLE=1 <your command>      # one-off
+tok0 init --remove                  # uninstall every hook
+```
+
+Avoid relying on tok0 in regulated environments (audit trail, compliance) without testing it against the commands you care about first.
+
 ## What about non-deterministic output?
 
 The pipeline itself is deterministic (no clock reads, no randomness). If a wrapped command emits non-deterministic output (timestamps, hashes, port numbers), the compression of that output will also vary run-to-run. Each invocation still produces a stable, valid result.

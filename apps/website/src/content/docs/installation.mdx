@@ -18,6 +18,22 @@ curl -fsSL https://tok0.dev/install.sh | sh
 
 Detects your OS and arch, downloads the matching binary from GitHub Releases, verifies its checksum, and drops it into `/usr/local/bin/tok0` (or `~/.local/bin/tok0` if `/usr/local` isn't writable).
 
+The script reads two environment variables:
+
+| Var | Default | Purpose |
+|---|---|---|
+| `TOK0_VERSION` | `latest` | Pin to a specific release tag. |
+| `TOK0_INSTALL_DIR` | `/usr/local/bin` | Where the binary lands. |
+
+Pinning a version into your home dir:
+
+```bash
+TOK0_VERSION=0.1.0 TOK0_INSTALL_DIR="$HOME/.local/bin" \
+  curl -fsSL https://tok0.dev/install.sh | sh
+```
+
+The script prefers glibc on Linux and falls back to musl on Alpine and other musl-based systems.
+
 ## macOS — Homebrew
 
 ```bash
