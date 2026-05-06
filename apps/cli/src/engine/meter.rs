@@ -907,9 +907,21 @@ mod tests {
 
         super::flush();
 
-        // Verify the events were persisted by opening the same DB sync.
-        let tracker = Tracker::new(&db_path).expect("open db after flush");
-        let summary = tracker.get_summary().expect("summary");
+        // flush() has a 500ms watchdog before detaching from the worker. On
+        // slow runners (notably Windows CI) SQLite WAL writes for two events
+        // can exceed that, so the worker is still committing when flush()
+        // returns. Poll the DB until both events are visible rather than
+        // asserting immediately on a single read.
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+        let summary = loop {
+            let tracker = Tracker::new(&db_path).expect("open db after flush");
+            let s = tracker.get_summary().expect("summary");
+            if s.total_commands >= 2 || std::time::Instant::now() >= deadline {
+                break s;
+            }
+            drop(tracker);
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        };
         assert!(
             summary.total_commands >= 2,
             "expected at least 2 commands persisted, got {}",
