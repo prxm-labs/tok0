@@ -1,5 +1,5 @@
 use anyhow::{Context, Result};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
 pub fn parse_version(v: &str) -> Result<(u64, u64, u64)> {
@@ -211,9 +211,50 @@ pub fn replace_binary_with_rollback(
     }
 }
 
+/// Verify that tok0 can write to the directory containing its current
+/// binary before kicking off any download. When tok0 is installed at a
+/// system-wide path like `/usr/local/bin/tok0`, the user running
+/// `tok0 update` typically does not own that directory and the silent
+/// failure mode is "downloaded N MB, then permission denied on the
+/// rename step". Failing fast with an actionable message is much better.
+fn preflight_write_access(current_binary: &Path) -> Result<()> {
+    let dir = current_binary
+        .parent()
+        .context("Could not determine parent directory of current binary")?;
+
+    // Attempt to create a uniquely-named tempfile in the install dir.
+    // tempfile auto-deletes on drop, so we leave no probe artifact.
+    match tempfile::Builder::new()
+        .prefix(".tok0-update-probe-")
+        .tempfile_in(dir)
+    {
+        Ok(_) => Ok(()),
+        Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+            anyhow::bail!(
+                "Cannot update tok0: permission denied writing to {}.\n\n\
+                 Try one of:\n  \
+                 sudo tok0 update\n  \
+                 TOK0_INSTALL_DIR=\"$HOME/.local/bin\" sh -c \"$(curl -fsSL https://tok0.dev/install.sh)\"",
+                dir.display()
+            )
+        }
+        Err(e) => {
+            Err(e).with_context(|| format!("Failed to verify writability of {}", dir.display()))
+        }
+    }
+}
+
 pub fn run_update() -> Result<()> {
     let current = env!("CARGO_PKG_VERSION");
     eprintln!("tok0: current version {}", current);
+
+    let current_binary =
+        std::env::current_exe().context("Failed to determine current binary path")?;
+    // Bail before any network round-trips if we can't write to the
+    // install dir. This avoids the "download succeeded, install failed
+    // with a leftover .tmp" trap when tok0 lives in /usr/local/bin.
+    preflight_write_access(&current_binary)?;
+
     eprintln!("tok0: checking for updates...");
 
     let release = match check_for_update_forced(current)? {
@@ -229,8 +270,6 @@ pub fn run_update() -> Result<()> {
         current, release.version
     );
 
-    let current_binary =
-        std::env::current_exe().context("Failed to determine current binary path")?;
     let tmp_path = current_binary.with_extension("new");
 
     eprintln!("tok0: downloading...");
@@ -371,5 +410,58 @@ mod tests {
         let hint = format_update_hint("1.5.0");
         assert!(hint.contains("1.5.0"));
         assert!(hint.contains("tok0 update"));
+    }
+
+    #[test]
+    fn test_preflight_accepts_writable_parent() {
+        let tmp = tempfile::TempDir::new().expect("temp dir");
+        let fake_binary = tmp.path().join("tok0");
+        preflight_write_access(&fake_binary).expect("writable temp dir must pass preflight");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_preflight_rejects_readonly_parent_with_actionable_hint() {
+        use std::fs::Permissions;
+        use std::os::unix::fs::PermissionsExt;
+
+        let tmp = tempfile::TempDir::new().expect("temp dir");
+        // Strip write bits from the parent — `tok0.tmp` cannot be created.
+        std::fs::set_permissions(tmp.path(), Permissions::from_mode(0o555)).expect("chmod 0555");
+
+        // Self-detect root: if we can still create a file in the dir
+        // despite chmod 0o555, we have CAP_DAC_OVERRIDE / euid==0 and
+        // the negative test cannot be set up. Skip cleanly.
+        let probe = tmp.path().join(".root-detect");
+        if std::fs::File::create(&probe).is_ok() {
+            let _ = std::fs::remove_file(&probe);
+            let _ = std::fs::set_permissions(tmp.path(), Permissions::from_mode(0o755));
+            eprintln!("skipping: euid bypasses chmod (likely root)");
+            return;
+        }
+
+        let fake_binary = tmp.path().join("tok0");
+        let result = preflight_write_access(&fake_binary);
+
+        // Restore writable so TempDir::drop can clean up.
+        std::fs::set_permissions(tmp.path(), Permissions::from_mode(0o755)).expect("restore 0755");
+
+        let err = result.expect_err("readonly parent must fail preflight");
+        let msg = format!("{:#}", err);
+        assert!(
+            msg.contains("permission denied") || msg.contains("Permission denied"),
+            "error must mention permission denied: {}",
+            msg
+        );
+        assert!(
+            msg.contains("sudo tok0 update"),
+            "error must point at the sudo recovery path: {}",
+            msg
+        );
+        assert!(
+            msg.contains("TOK0_INSTALL_DIR"),
+            "error must point at the user-local-install recovery path: {}",
+            msg
+        );
     }
 }
