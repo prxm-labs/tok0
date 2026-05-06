@@ -92,7 +92,9 @@ Commands not on this list still work — they pass through tok0's generic ANSI-s
 |---|---|---|
 | `docker build` | 84% | native |
 | `docker compose up` | 75% | TOML |
+| `docker inspect` | 60% | native (JSON-aware) |
 | `kubectl get` | 69% | native |
+| `kubectl get -o json` | 60% | native (JSON-aware) |
 | `kubectl describe` | 70% | TOML |
 | `helm install` | 70% | TOML |
 | `terraform plan` | 77% | native |
@@ -105,6 +107,10 @@ Commands not on this list still work — they pass through tok0's generic ANSI-s
 | `argocd …` | 70% | TOML |
 | `flux …` | 70% | TOML |
 
+`nerdctl` is aliased to the docker dispatcher: every docker subcommand
+(`ps`, `build`, `images`, `logs`, `compose`, `inspect`) is also covered
+when invoked as `nerdctl …`.
+
 ## Package managers
 
 `brew`, `apt`, `dnf`, `pacman`, `snap`, `flatpak`, `nix`, `winget`, `scoop`, `choco`, `gem`, `nuget`, `vcpkg`, `conan` — floors 70–85%, mostly TOML rules.
@@ -115,7 +121,10 @@ Commands not on this list still work — they pass through tok0's generic ANSI-s
 
 ## Security & supply chain
 
-`semgrep`, `trivy`, `bandit`, `snyk`, `grype`, `sonar` — floors 65–75%.
+`semgrep`, `trivy`, `bandit`, `snyk`, `grype`, `gitleaks`, `checkov`,
+`tfsec`, `cosign`, `sops`, `sonar` — floors 65–75%, all TOML rules.
+
+CI/CD: `act` (local GitHub Actions runner), `pre-commit` — TOML.
 
 ## Networking & system tools
 
