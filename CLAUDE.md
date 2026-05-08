@@ -102,8 +102,16 @@ Recipe for a Rust compressor:
 2. Create `src/compressors/<eco>/<cmd>_cmd.rs` with `pub fn run(args: <Args>) -> Result<()>`.
 3. All regex inside `lazy_static!`.
 4. Add `assert_snapshot!` + token-savings ≥60% test.
-5. Wire into [src/main.rs](src/main.rs) `Commands` enum and
+5. Add the 5 mandatory edge-case tests: empty input, malformed input,
+   unicode, ANSI codes, large input. The TDD skill enforces these.
+6. Wire into [src/main.rs](src/main.rs) `Commands` enum and
    [src/engine/dispatcher.rs](src/engine/dispatcher.rs) match.
+7. Add a dispatcher integration test in `dispatcher.rs::tests` —
+   `cargo test --lib compressors::...` only exercises the filter, not
+   the routing. A typo in the match arm slips through without this.
+8. List the new command in
+   [apps/website/src/content/docs/compressors.mdx](apps/website/src/content/docs/compressors.mdx)
+   so the published docs match what's actually shipped.
 
 Reference: `.claude/skills/rust-dev/SKILL.md` and `.claude/skills/tdd/SKILL.md`.
 
