@@ -170,3 +170,14 @@ Three options, in order of effort:
 <Callout type="tip">
 Run `tok0 scan` to see which of your already-run commands would benefit from a compressor. It reads your AI tool session histories and ranks the misses by tokens you'd have saved.
 </Callout>
+
+## Known limitations
+
+**Global flag collision.** tok0 has two global short flags: `-v` (`--verbose`) and `-u` (`--ultra-compact`). They take precedence anywhere in argv, so `tok0 ls -v` interprets `-v` as tok0's verbose flag, not as `ls -v`. To pass `-v` or `-u` through to the underlying tool:
+
+```bash
+tok0 ls -- -v       # explicit `--` separator
+tok0 ls --classify  # long form (no -v collision)
+```
+
+Other short flags (`-l`, `-a`, `-r`, `-n`, `-h`, etc.) work without escaping — `tok0 ls -lah`, `tok0 grep -r foo`, `tok0 find -name '*.rs'` all do what you'd expect.
