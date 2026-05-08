@@ -1,0 +1,9 @@
+# Captured: 2026-05-08
+# Command: pnpm install 2>&1
+# Setup: project where dependencies are already installed and the
+#        lockfile is current — pnpm exits with a five-line summary.
+# Tool version: pnpm 10.8.0
+# Source: real-captured (not synthetic)
+# Notes: After --ultra-compact lands, this entire fixture should
+#        collapse to the literal "ok". In default mode, only the
+#        "Done in 302ms using pnpm v10.8.0" line should survive.

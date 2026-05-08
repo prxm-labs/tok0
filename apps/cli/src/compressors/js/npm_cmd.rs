@@ -50,10 +50,14 @@ lazy_static! {
     // banner is harmless — the version is on the "Done" line.
     static ref BUN_BANNER_RE: Regex = Regex::new(r"^bun install v\d").unwrap();
 
-    // Node deprecation footer that pnpm/yarn forward unchanged from
-    // the underlying Node runtime — never user-actionable.
-    static ref NODE_DEPRECATION_RE: Regex =
-        Regex::new(r"^\(node:\d+\)|^\(Use `node ").unwrap();
+    // No-op markers across all four package managers — emitted when
+    // there's nothing to do. Includes pnpm "Lockfile is up to date" /
+    // "Already up to date", npm "up to date, audited …", yarn "Saved
+    // lockfile". Stripping leaves only a Done line + any real warnings.
+    static ref NOOP_MARKER_RE: Regex = Regex::new(
+        r"^(?:Lockfile is up to date|Already up to date|up to date, audited|Saved lockfile)"
+    )
+    .unwrap();
 
     // npm test: lines to keep / strip
     static ref TEST_PASS_LINE_RE: Regex =
@@ -78,6 +82,13 @@ pub fn filter_npm_install(input: &str) -> String {
         return String::new();
     }
 
+    // The Node runtime deprecation footer can appear here (pnpm/yarn
+    // forward it from their own runtime). Strip it up front via the
+    // shared helper; the dispatcher post-pass also handles it for any
+    // path that bypasses this filter.
+    let cleaned = crate::engine::shell::strip_node_deprecation_footer(input);
+    let input = cleaned.as_ref();
+
     let mut out: Vec<&str> = Vec::new();
 
     for line in input.lines() {
@@ -96,7 +107,7 @@ pub fn filter_npm_install(input: &str) -> String {
             || YARN_BERRY_FRAME_RE.is_match(line)
             || YARN_BERRY_FETCH_RE.is_match(line)
             || BUN_BANNER_RE.is_match(line)
-            || NODE_DEPRECATION_RE.is_match(line)
+            || NOOP_MARKER_RE.is_match(line)
         {
             continue;
         }
@@ -320,6 +331,36 @@ mod tests {
         let raw = include_str!("../../../tests/fixtures/js/pnpm_install_pkg_mgr_conflict_raw.txt");
         let out = filter_npm_install(raw);
         insta::assert_snapshot!(out);
+    }
+
+    #[test]
+    fn test_pnpm_install_noop_default_keeps_only_done_line() {
+        // Five-line "already-installed" pnpm output collapses to a
+        // single Done line (the others are noise).
+        let raw = include_str!("../../../tests/fixtures/js/pnpm_install_noop_raw.txt");
+        let out = filter_npm_install(raw);
+        assert!(
+            out.contains("Done in 302ms using pnpm v10.8.0"),
+            "Should keep timing signal in default mode, got: {out:?}"
+        );
+        assert!(!out.contains("Lockfile is up to date"));
+        assert!(!out.contains("Already up to date"));
+        assert!(!out.contains("DeprecationWarning"));
+        assert!(!out.contains("trace-deprecation"));
+        // Exactly one line of substance should remain.
+        let nonblank = out.lines().filter(|l| !l.trim().is_empty()).count();
+        assert_eq!(nonblank, 1, "Expected single Done line, got:\n{out}");
+    }
+
+    #[test]
+    fn test_pnpm_install_noop_ultra_compact_collapses_to_ok() {
+        // With ultra-compact enabled (engine post-pass), the entire
+        // five-line no-op pnpm install output collapses to literal "ok".
+        let raw = include_str!("../../../tests/fixtures/js/pnpm_install_noop_raw.txt");
+        let filtered = filter_npm_install(raw);
+        // Mirror the dispatcher post-pass for unit-level coverage.
+        let ultra = crate::engine::shell::apply_ultra_compact(&filtered);
+        assert_eq!(ultra, "ok");
     }
 
     #[test]
