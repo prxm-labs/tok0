@@ -38,6 +38,12 @@ These override general Rust conventions; CI enforces all of them.
    through the raw output rather than blocking the user.
 6. **Exit-code propagation.** `std::process::exit(code)` when the
    underlying command fails.
+7. **Pipe-aware output.** `run_proxy` runs compression + sanitisation
+   only when `engine::output_mode::should_compress()` returns true
+   (TTY by default; `TOK0_FORCE_COMPRESS=1` / `TOK0_FORCE_RAW=1`
+   override). When stdout is piped, raw command output is passed
+   through verbatim — lossy compressors like `find`/`ls`/`grep`
+   would otherwise break `tok0 cmd … | xargs …` pipelines.
 
 Full conventions: see `.claude/skills/rust-dev/SKILL.md`.
 
@@ -62,7 +68,7 @@ src/
   bridge/                 Hook installers, trust gating, wizard, integrity
   engine/                 Shared infra: config, meter, dispatcher, rules,
                           builtin_rules, telemetry (gated), updater,
-                          sanitize, shell, timeout
+                          sanitize, shell, timeout, output_mode
   compressors/            Per-command native filters (git, rust, js, ...)
   insights/               status, doctor, stats, profiler, rules_cli
   scanner/                opportunity, session_reader, command_catalog
@@ -75,9 +81,10 @@ scripts/                  test-install-sh.sh, update-formula.sh, …
 ```
 
 Key entry points:
-- [src/main.rs](src/main.rs) — `Commands` enum, `run_proxy`, `run_meta`.
+- [src/main.rs](src/main.rs) — `Commands` enum, `run_proxy`, `run_meta`, `maybe_compress`.
 - [src/bridge/setup.rs](src/bridge/setup.rs) — `install_hook_at`, `detect_tools_in`, `config_dir_for`, `post_install_hint`.
 - [src/engine/dispatcher.rs](src/engine/dispatcher.rs) — routes a command + args to the right compressor or TOML rule.
+- [src/engine/output_mode.rs](src/engine/output_mode.rs) — `should_compress()`: TTY-aware gate around the compressor pipeline (skip when piped).
 - [src/engine/meter.rs](src/engine/meter.rs) — async mpsc metering, `flush()` semantics.
 - [src/insights/doctor.rs](src/insights/doctor.rs) — diagnostic checks.
 
