@@ -206,9 +206,7 @@ function formatUsd(n: number): string {
         }
       </div>
 
-      <div class="label fleet-label">
-        Estimated savings · input-token rates
-      </div>
+      <div class="label fleet-label">Estimated savings · input-token rates</div>
       <div class="usd-row">
         <span class="usd-headline">{formatUsd(usdMid)}</span>
         <span class="usd-rate">
@@ -350,7 +348,7 @@ function formatUsd(n: number): string {
   }
   .os-row {
     display: grid;
-    grid-template-columns: 140px 1fr 56px;
+    grid-template-columns: 140px 1fr auto;
     gap: 14px;
     align-items: center;
     font: 500 12px/1 var(--font-mono);
