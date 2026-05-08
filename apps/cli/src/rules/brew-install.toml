@@ -1,6 +1,6 @@
 [filter]
 name = "brew-install"
-commands = ["brew install", "brew upgrade"]
+commands = ["brew install", "brew upgrade", "brew reinstall"]
 strip_patterns = [
   "^\\s*$",
   "^==> Downloading",
@@ -8,5 +8,20 @@ strip_patterns = [
   "^Already downloaded:",
   "^###",
   "^==> Fetching",
+  # No-op markers — emitted when the formula is already installed at
+  # the requested version. The "To reinstall" hint that follows is
+  # equally redundant.
+  "^Warning: .* is already installed",
+  "^To reinstall ",
+  "^\\s+brew reinstall",
 ]
 head_lines = 20
+empty_message = "brew: ok"
+
+[[assertions]]
+input = """Warning: ripgrep 14.0.3 is already installed and up-to-date.
+To reinstall 14.0.3, run:
+  brew reinstall ripgrep
+"""
+expected_contains = "ok"
+min_savings_pct = 60

@@ -11,8 +11,21 @@ strip_patterns = [
   "^Reading state information",
   "^Fetched\\s+",
   "^\\d+ packages can be upgraded",
+  # No-op markers when nothing needs to change.
+  "^.+ is already the newest version",
+  "^0 upgraded, 0 newly installed, 0 to remove",
 ]
 head_lines = 20
 tail_lines = 10
 max_line_chars = 200
 empty_message = "apt: ok"
+
+[[assertions]]
+input = """Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+ripgrep is already the newest version (14.0.3-1).
+0 upgraded, 0 newly installed, 0 to remove and 12 not upgraded.
+"""
+expected_contains = "ok"
+min_savings_pct = 60
