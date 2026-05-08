@@ -1,0 +1,9 @@
+[filter]
+name = "flake8"
+commands = ["flake8"]
+strip_patterns = [
+  "^\\s*$",
+]
+head_lines = 80
+tail_lines = 10
+max_line_chars = 250

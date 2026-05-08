@@ -1,0 +1,16 @@
+[filter]
+name = "black"
+commands = ["black"]
+strip_patterns = [
+  "^\\s*$",
+  "^reformatted ",
+  "^would reformat ",
+  "^All done! ",
+  "^Oh no! ",
+  "^\\s*\\d+ files? (would be )?reformatted",
+  "^\\s*\\d+ files? (would be )?left unchanged",
+  "^\\s*\\d+ files? (would )?fail to reformat",
+]
+head_lines = 30
+tail_lines = 5
+max_line_chars = 200

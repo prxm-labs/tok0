@@ -1,0 +1,16 @@
+[filter]
+name = "mypy"
+commands = ["mypy"]
+strip_patterns = [
+  "^\\s*$",
+  "^Success: ",
+  "^Type checking ",
+  "^Building \\(",
+  "^Searching for ",
+  "^Loading cached ",
+  "^Loading module ",
+  "^Type-checking ",
+]
+head_lines = 80
+tail_lines = 10
+max_line_chars = 300

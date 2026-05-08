@@ -15,6 +15,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("ava", include_str!("../../src/rules/ava.toml")),
     ("awk", include_str!("../../src/rules/awk.toml")),
     ("bandit", include_str!("../../src/rules/bandit.toml")),
+    ("black", include_str!("../../src/rules/black.toml")),
     (
         "basedpyright",
         include_str!("../../src/rules/basedpyright.toml"),
@@ -59,6 +60,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
         "fail2ban-client",
         include_str!("../../src/rules/fail2ban-client.toml"),
     ),
+    ("flake8", include_str!("../../src/rules/flake8.toml")),
     ("flux", include_str!("../../src/rules/flux.toml")),
     ("format", include_str!("../../src/rules/format.toml")),
     ("gcc", include_str!("../../src/rules/gcc.toml")),
@@ -103,6 +105,7 @@ const BUILTIN_TOML: &[(&str, &str)] = &[
     ("mocha", include_str!("../../src/rules/mocha.toml")),
     ("mtr", include_str!("../../src/rules/mtr.toml")),
     ("mvn-build", include_str!("../../src/rules/mvn-build.toml")),
+    ("mypy", include_str!("../../src/rules/mypy.toml")),
     ("npx", include_str!("../../src/rules/npx.toml")),
     ("nslookup", include_str!("../../src/rules/nslookup.toml")),
     ("nx", include_str!("../../src/rules/nx.toml")),
