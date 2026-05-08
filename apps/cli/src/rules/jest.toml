@@ -9,6 +9,10 @@ strip_patterns = [
   "^Snapshots:.*total$",
   "^Time:",
   "^Ran all test suites",
+  # No-op markers when nothing matched the test runner's filter.
+  "^No tests found",
+  "^Could not find any test",
+  "^Test Suites: 0 failed, 0 passed",
 ]
 head_lines = 8
 tail_lines = 8
