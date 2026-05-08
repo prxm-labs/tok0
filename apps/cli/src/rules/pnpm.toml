@@ -7,14 +7,27 @@ strip_patterns = [
   "^\\s*\\d+ packages? are looking for funding",
   "^Already up to date",
   "^Lockfile is up to date",
-  "^WARN deprecated subdependencies",
+  # Any leading-whitespace WARN line (pnpm prefixes warnings with a
+  # single space and double-space-pads the level: " WARN  Moving X …").
+  # The previous rule only stripped a single hard-coded message, so
+  # large monorepos cycling between package managers leaked dozens of
+  # near-identical Moving-to-.ignored lines per install.
+  "^\\s*WARN\\s+",
   "^Packages: \\+\\d+",
   "^\\++$",
+  # Update-available banner box (top, sides, bottom).
   "^\\s+│.*│\\s*$",
   "^\\s+╭─+╮\\s*$",
   "^\\s+╰─+╯\\s*$",
+  # Node deprecation footer that pnpm forwards from its own runtime —
+  # not actionable noise from the user's perspective.
+  "^\\(node:\\d+\\)",
+  "^\\(Use `node ",
 ]
-head_lines = 5
+# Keep a generous head budget: a real install lists every direct
+# dep on its own "+ name version" line, and clipping the middle of
+# that list defeats the point of compressing.
+head_lines = 40
 tail_lines = 8
 empty_message = "ok"
 
@@ -25,4 +38,18 @@ input = """Progress: resolved 1234, downloaded 56, added 12, done
 Done in 3.2s
 """
 expected_contains = "react 18.2.0"
+min_savings_pct = 60
+
+[[assertions]]
+input = """ WARN  Moving react that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving vite that was installed by a different package manager to "node_modules/.ignored"
+Progress: resolved 236, reused 0, downloaded 201, added 196, done
+dependencies:
++ react 19.2.6
++ vite 8.0.11
+(node:13518) [DEP0169] DeprecationWarning: url.parse() behavior is not standardized
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Done in 9.3s using pnpm v10.8.0
+"""
+expected_contains = "react 19.2.6"
 min_savings_pct = 60

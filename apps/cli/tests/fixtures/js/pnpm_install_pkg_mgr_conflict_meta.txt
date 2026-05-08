@@ -1,0 +1,14 @@
+# Captured: 2026-05-08
+# Command: pnpm install 2>&1
+# Setup:
+#   Project where node_modules was previously populated by a different
+#   package manager (npm/yarn/bun). pnpm relocates each conflicting dep
+#   to node_modules/.ignored before its own resolution pass.
+# Tool version: pnpm 10.8.0
+# Source: real-captured (not synthetic)
+# Notes: Stresses three patterns the original pnpm rule missed:
+#        1. Leading-space ` WARN  Moving X ...` lines (19 of them).
+#        2. The Node.js (node:PID) [DEP0169] DeprecationWarning footer.
+#        3. The "(Use `node --trace-deprecation ...`)" hint line.
+#        Original head=5 / tail=8 truncation also dropped the middle of
+#        a real 19-package devDependencies list.

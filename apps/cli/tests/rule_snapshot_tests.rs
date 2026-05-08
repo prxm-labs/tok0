@@ -99,6 +99,12 @@ macro_rules! rule_test {
 // ===== PR-A registrations =====
 
 rule_test!(pnpm, "pnpm", "js/pnpm_install_raw.txt");
+rule_test!(
+    pnpm_pkg_mgr_conflict,
+    "pnpm",
+    "js/pnpm_install_pkg_mgr_conflict_raw.txt",
+    70
+);
 rule_test!(bun, "bun", "js/bun_install_raw.txt", 30);
 rule_test!(bunx, "bunx", "js/bunx_prettier_check_raw.txt", 30);
 rule_test!(npx, "npx", "js/npx_tsc_raw.txt", 30);

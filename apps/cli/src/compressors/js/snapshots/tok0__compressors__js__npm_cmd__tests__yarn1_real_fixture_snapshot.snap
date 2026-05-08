@@ -1,0 +1,8 @@
+---
+source: src/compressors/js/npm_cmd.rs
+expression: filter_npm_install(raw)
+---
+warning package.json: No license field
+warning f@1.0.0: No license field
+warning left-pad@1.3.0: use String.prototype.padStart()
+Done in 0.53s.

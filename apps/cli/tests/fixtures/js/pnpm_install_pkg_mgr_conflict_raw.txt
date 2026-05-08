@@ -1,0 +1,63 @@
+ WARN  Moving @tailwindcss/vite that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @testing-library/react that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @types/bun that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @testing-library/jest-dom that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @types/react-dom that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @types/three that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @types/topojson-client that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @types/react that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving @vitejs/plugin-react that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving jsdom that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving tailwindcss that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving vite that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving vitest that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving react that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving react-dom that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving react-globe.gl that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving simplex-noise that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving three that was installed by a different package manager to "node_modules/.ignored"
+ WARN  Moving topojson-client that was installed by a different package manager to "node_modules/.ignored"
+Progress: resolved 1, reused 0, downloaded 0, added 0
+   ╭─────────────────────────────────────────╮
+   │                                         │
+   │   Update available! 10.8.0 → 11.0.8.    │
+   │   Changelog: https://pnpm.io/v/11.0.8   │
+   │    To update, run: pnpm self-update     │
+   │                                         │
+   ╰─────────────────────────────────────────╯
+Progress: resolved 22, reused 0, downloaded 19, added 0
+Progress: resolved 62, reused 0, downloaded 58, added 0
+Progress: resolved 94, reused 0, downloaded 83, added 0
+Progress: resolved 130, reused 0, downloaded 102, added 0
+Progress: resolved 169, reused 0, downloaded 123, added 0
+Progress: resolved 205, reused 0, downloaded 168, added 0
+Progress: resolved 224, reused 0, downloaded 186, added 0
+Progress: resolved 234, reused 0, downloaded 197, added 0
+Packages: +196
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 236, reused 0, downloaded 201, added 196, done
+dependencies:
++ react 19.2.6
++ react-dom 19.2.6
++ react-globe.gl 2.37.1
++ simplex-noise 4.0.3
++ three 0.184.0
++ topojson-client 3.1.0
++ typescript 6.0.3
+devDependencies:
++ @tailwindcss/vite 4.2.4
++ @testing-library/jest-dom 6.9.1
++ @testing-library/react 16.3.2
++ @types/bun 1.3.13
++ @types/react 19.2.14
++ @types/react-dom 19.2.3
++ @types/three 0.184.1
++ @types/topojson-client 3.1.5
++ @vitejs/plugin-react 6.0.1
++ jsdom 29.1.1
++ tailwindcss 4.2.4
++ vite 8.0.11
++ vitest 4.1.5
+(node:13518) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Done in 9.3s using pnpm v10.8.0

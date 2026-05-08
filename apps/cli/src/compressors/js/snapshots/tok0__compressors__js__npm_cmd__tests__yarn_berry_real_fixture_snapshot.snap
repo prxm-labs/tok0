@@ -1,0 +1,6 @@
+---
+source: src/compressors/js/npm_cmd.rs
+expression: filter_npm_install(raw)
+---
+➤ YN0061: │ left-pad@npm:1.3.0 is deprecated: use String.prototype.padStart()
+➤ YN0000: Done with warnings in 0s 457ms
