@@ -19,10 +19,9 @@ strip_patterns = [
   "^\\s+│.*│\\s*$",
   "^\\s+╭─+╮\\s*$",
   "^\\s+╰─+╯\\s*$",
-  # Node deprecation footer that pnpm forwards from its own runtime —
-  # not actionable noise from the user's perspective.
-  "^\\(node:\\d+\\)",
-  "^\\(Use `node ",
+  # Node deprecation footer is stripped universally by the dispatcher
+  # post-pass (engine::shell::strip_node_deprecation_footer) — no need
+  # to duplicate the patterns per rule.
 ]
 # Keep a generous head budget: a real install lists every direct
 # dep on its own "+ name version" line, and clipping the middle of

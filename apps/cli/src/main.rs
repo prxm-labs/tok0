@@ -439,6 +439,7 @@ fn main() {
 }
 
 fn run(cli: Cli) -> Result<()> {
+    engine::shell::set_ultra_compact(cli.ultra_compact);
     match cli.command {
         Commands::Git { command } => run_proxy("git", &command),
         Commands::Ls { args } => run_proxy("ls", &args),

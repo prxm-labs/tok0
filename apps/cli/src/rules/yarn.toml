@@ -6,8 +6,8 @@ strip_patterns = [
   "^yarn install v",
   "^info ",
   "^\\[\\d+/\\d+\\]",
-  "^\\(node:\\d+\\) ",
-  "^\\(Use `node ",
+  # Node deprecation footer is handled by the dispatcher post-pass —
+  # see engine::shell::strip_node_deprecation_footer.
   "^success Saved lockfile",
   # Yarn Berry (3.x+) — strip the step framing but keep substantive
   # diagnostics (deprecations, errors, warnings). YN0000 is the "info"

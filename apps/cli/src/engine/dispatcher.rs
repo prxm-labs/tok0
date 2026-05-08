@@ -286,7 +286,8 @@ pub fn dispatch_with_rule_index(
 ) -> Option<String> {
     // Try native compressor first
     if let Some(compressed) = dispatch(cmd, args, stdout) {
-        return Some(apply_output_cap(&compressed, 50_000, 100, 50));
+        let capped = apply_output_cap(&compressed, 50_000, 100, 50);
+        return Some(apply_post_pass(&capped));
     }
 
     // Fallback: try TOML rules via indexed lookup
@@ -297,10 +298,24 @@ pub fn dispatch_with_rule_index(
     };
     if let Some(rule) = index.find(&full_command) {
         let output = crate::engine::rules::apply_filter_config(stdout, rule);
-        return Some(apply_output_cap(&output, 50_000, 100, 50));
+        let capped = apply_output_cap(&output, 50_000, 100, 50);
+        return Some(apply_post_pass(&capped));
     }
 
     None
+}
+
+/// Universal post-pass: strip the Node deprecation footer regardless of
+/// which compressor or TOML rule produced the output, and apply the
+/// ultra-compact extras if the global flag is set. Both are idempotent
+/// and safe on non-Node output.
+fn apply_post_pass(output: &str) -> String {
+    let cleaned = crate::engine::shell::strip_node_deprecation_footer(output);
+    if crate::engine::shell::ultra_compact_enabled() {
+        crate::engine::shell::apply_ultra_compact(cleaned.as_ref())
+    } else {
+        cleaned.into_owned()
+    }
 }
 
 /// Apply hard cap: if output exceeds max_chars, keep head + tail lines.
@@ -853,4 +868,84 @@ mod tests {
         assert!(result.is_some(), "tar should dispatch");
         assert!(result.expect("dispatch").contains("files"));
     }
+
+    // ── Universal Node deprecation post-pass coverage ─────────────────
+    //
+    // The post-pass strips `(node:NNN) [DEP…]` and the `--trace-deprecation`
+    // hint from EVERY compressor's output, regardless of which match arm
+    // fired. Without this, prisma/vite/tsc/vitest/next would each need
+    // to re-implement the same patterns.
+
+    #[test]
+    fn test_post_pass_strips_node_deprecation_through_native() {
+        // Native pnpm install path. The Node footer is forwarded by
+        // pnpm from its own runtime — universal post-pass must remove it.
+        let input = "+ react 19.2.6\n(node:13518) [DEP0169] DeprecationWarning: url.parse() is deprecated\n(Use `node --trace-deprecation ...` to show where the warning was created)\nDone in 9.3s\n";
+        let rules: Vec<FilterConfig> = Vec::new();
+        let out = dispatch_with_rules("pnpm", &["install"], input, &rules)
+            .expect("pnpm install should dispatch");
+        assert!(out.contains("react 19.2.6"));
+        assert!(out.contains("Done in 9.3s"));
+        assert!(
+            !out.contains("DeprecationWarning"),
+            "Node DEP must be stripped post-dispatch, got:\n{out}"
+        );
+        assert!(
+            !out.contains("trace-deprecation"),
+            "trace-deprecation hint must be stripped post-dispatch"
+        );
+    }
+
+    #[test]
+    fn test_post_pass_strips_node_deprecation_through_toml_rule() {
+        // TOML rule path — feed an unknown command that matches a custom
+        // rule. The rule itself doesn't include Node patterns; the
+        // post-pass must still strip them.
+        let rules = vec![FilterConfig {
+            name: "mytool".to_string(),
+            commands: vec!["mytool".to_string()],
+            strip_patterns: vec![],
+            empty_message: None,
+            ..Default::default()
+        }];
+        let input = "tool output line\n(node:99) [DEP0001] DeprecationWarning: foo\n(Use `node --trace-deprecation ...`)\n";
+        let out =
+            dispatch_with_rules("mytool", &[], input, &rules).expect("mytool should dispatch");
+        assert!(out.contains("tool output line"));
+        assert!(!out.contains("DeprecationWarning"));
+        assert!(!out.contains("trace-deprecation"));
+    }
+
+    #[test]
+    fn test_post_pass_strips_node_experimental_warning() {
+        // ExperimentalWarning shares the (node:NNN) [EXPNNN] shape.
+        let input = "+ react 19.2.6\n(node:42) [EXP0001] ExperimentalWarning: importAttributes is experimental\n";
+        let rules: Vec<FilterConfig> = Vec::new();
+        let out = dispatch_with_rules("pnpm", &["install"], input, &rules)
+            .expect("pnpm install should dispatch");
+        assert!(out.contains("react 19.2.6"));
+        assert!(!out.contains("ExperimentalWarning"));
+    }
+
+    #[test]
+    fn test_post_pass_idempotent_on_clean_output() {
+        // No Node footer present — output should be unchanged by the
+        // post-pass (no spurious modifications).
+        let input = "abc1234 commit message\ndef5678 another commit\n";
+        let rules: Vec<FilterConfig> = Vec::new();
+        let out = dispatch_with_rules("git", &["log", "--oneline"], input, &rules)
+            .expect("git log should dispatch");
+        // The native git compressor runs first; just confirm no Node
+        // markers leaked in.
+        assert!(!out.contains("(node:"));
+    }
+
+    // Ultra-compact end-to-end behaviour is covered by unit tests in
+    // engine::shell::tests (apply_ultra_compact) and
+    // compressors::js::npm_cmd::tests (test_pnpm_install_noop_ultra_compact_collapses_to_ok).
+    // We deliberately don't test it through dispatch_with_rules here:
+    // the ultra-compact flag is a process-wide AtomicBool, and cargo
+    // test runs the suite in parallel by default — toggling the flag
+    // would race against any other dispatcher test that asserts on
+    // output containing a `Done in …` line.
 }

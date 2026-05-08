@@ -12,18 +12,20 @@
 
 use std::path::PathBuf;
 use tok0::engine::rules::{apply_filter_config, parse_filter_config, FilterConfig};
-use tok0::engine::shell::strip_ansi;
+use tok0::engine::shell::{strip_ansi, strip_node_deprecation_footer};
 
 fn count_tokens(s: &str) -> usize {
     s.split_whitespace().count()
 }
 
-/// Mirror production: strip ANSI control sequences before the TOML
-/// strip_patterns pipeline sees the bytes. Production does this in
-/// each `<cmd>_cmd.rs::run()` between exec output and `apply_filter_config`.
+/// Mirror production: ANSI strip → TOML rule pipeline → universal
+/// Node-deprecation post-pass. The post-pass lives in the dispatcher
+/// (engine::dispatcher::apply_post_pass) so individual rules don't
+/// duplicate `(node:NNN)` / `(Use \`node …)` patterns.
 fn pipeline(rule: &FilterConfig, raw: &str) -> String {
     let cleaned = strip_ansi(raw);
-    apply_filter_config(&cleaned, rule)
+    let filtered = apply_filter_config(&cleaned, rule);
+    strip_node_deprecation_footer(&filtered).into_owned()
 }
 
 /// Load a built-in rule by name from `src/rules/<name>.toml` at runtime.
