@@ -11,6 +11,23 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.12](https://github.com/prxm-labs/tok0/compare/v0.1.11...v0.1.12) (2026-05-08)
+
+
+### Features
+
+* **cli:** compress pnpm/yarn/bun install noise in dispatcher path ([8666f54](https://github.com/prxm-labs/tok0/commit/8666f5481b93bcbad9ee2398dea714fcd7a62266))
+
+
+### Bug Fixes
+
+* **cli:** ship mypy/black/flake8; drop unimplemented pulumi/az from docs ([d67d237](https://github.com/prxm-labs/tok0/commit/d67d23715caf312b95d61797ec908c1456927216))
+
+
+### Tests
+
+* **cli:** dispatcher integration tests for new system compressors ([b9b1004](https://github.com/prxm-labs/tok0/commit/b9b1004ee61558743c1e3eb8c9f9ebd9a2b1ba04))
+
 ## [0.1.11](https://github.com/prxm-labs/tok0/compare/v0.1.10...v0.1.11) (2026-05-06)
 
 
