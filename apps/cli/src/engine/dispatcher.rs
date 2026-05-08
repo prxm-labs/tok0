@@ -792,4 +792,65 @@ mod tests {
         let result = dispatch("kubectl", &["get", "pods", "-o", "yaml"], input);
         assert!(result.is_some());
     }
+
+    // ── Native system compressors: dispatcher-route smoke tests ──────────
+    //
+    // These guard against typos in the dispatcher match arms (e.g.
+    // `"dig" =>` mistyped as `"dog" =>`). The compressor unit tests in
+    // each *_cmd.rs already verify the filter logic; these only verify
+    // the routing connection.
+
+    #[test]
+    fn test_curl_dispatches() {
+        let input = "* Connected to api.github.com\n> GET / HTTP/2\n< HTTP/2 200\nbody";
+        let result = dispatch("curl", &["-v", "https://api.github.com"], input);
+        assert!(result.is_some(), "curl should dispatch");
+    }
+
+    #[test]
+    fn test_dig_dispatches() {
+        let input = ";; ANSWER SECTION:\ngoogle.com. 60 IN A 1.2.3.4\n";
+        let result = dispatch("dig", &["google.com"], input);
+        assert!(result.is_some(), "dig should dispatch");
+        assert!(result.expect("dispatch").contains("1.2.3.4"));
+    }
+
+    #[test]
+    fn test_lsof_dispatches() {
+        let input = "COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME\nfoo 123 user cwd DIR 1,1 100 2 /tmp/x\n";
+        let result = dispatch("lsof", &["-nP"], input);
+        assert!(result.is_some(), "lsof should dispatch");
+    }
+
+    #[test]
+    fn test_netstat_dispatches() {
+        let input = "tcp4 0 0 *.80 *.* LISTEN\n";
+        let result = dispatch("netstat", &["-an"], input);
+        assert!(result.is_some(), "netstat should dispatch");
+        assert!(result.expect("dispatch").contains("LISTEN"));
+    }
+
+    #[test]
+    fn test_ss_aliases_netstat() {
+        let input =
+            "State Recv-Q Send-Q Local Address:Port Peer Address:Port\nLISTEN 0 4096 0.0.0.0:8080 0.0.0.0:*";
+        let result = dispatch("ss", &["-tuln"], input);
+        assert!(result.is_some(), "ss should alias to netstat dispatcher");
+    }
+
+    #[test]
+    fn test_openssl_dispatches() {
+        let input = "Certificate:\n    Data:\n        Subject: CN=example.com\n";
+        let result = dispatch("openssl", &["x509", "-text", "-noout"], input);
+        assert!(result.is_some(), "openssl should dispatch");
+        assert!(result.expect("dispatch").contains("example.com"));
+    }
+
+    #[test]
+    fn test_tar_dispatches() {
+        let input = "-rw-r--r--  0 user staff  100 May 1 12:00 ./a.txt\n-rw-r--r--  0 user staff  200 May 1 12:01 ./b.txt\n";
+        let result = dispatch("tar", &["-tvf", "archive.tar"], input);
+        assert!(result.is_some(), "tar should dispatch");
+        assert!(result.expect("dispatch").contains("files"));
+    }
 }
