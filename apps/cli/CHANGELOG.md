@@ -11,6 +11,17 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.13](https://github.com/prxm-labs/tok0/compare/v0.1.12...v0.1.13) (2026-05-08)
+
+
+### Features
+
+* **cli:** collapse no-op JS install output to a single line ([c352c81](https://github.com/prxm-labs/tok0/commit/c352c81ae91938eafeba6264ea5f3c238469564a))
+* **cli:** pipe-aware output mode — pass through raw on non-TTY ([34e393f](https://github.com/prxm-labs/tok0/commit/34e393fdcc6f8a745979f54965105b3d0ef3d8ee))
+* **cli:** strip jest no-tests-found markers ([e5c4d97](https://github.com/prxm-labs/tok0/commit/e5c4d97f5cb926a35f0f3d3e085c8fed34b55769))
+* **cli:** strip no-op markers from brew/apt rules ([0b287fb](https://github.com/prxm-labs/tok0/commit/0b287fbf836617d8032650f0f4800bd7a63bae67))
+* **engine:** universal Node-deprecation post-pass + --ultra-compact ([be59682](https://github.com/prxm-labs/tok0/commit/be596822d86768481c286fc47b0d88557aba9af7))
+
 ## [0.1.12](https://github.com/prxm-labs/tok0/compare/v0.1.11...v0.1.12) (2026-05-08)
 
 
