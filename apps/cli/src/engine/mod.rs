@@ -5,6 +5,7 @@ pub mod cloud;
 pub mod config;
 pub mod dispatcher;
 pub mod meter;
+pub mod output_mode;
 pub mod rules;
 pub mod rules_cache;
 pub mod sanitize;

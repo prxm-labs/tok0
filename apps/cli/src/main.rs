@@ -788,6 +788,25 @@ fn run_meta<F: FnOnce() -> Result<()>>(f: F) -> Result<()> {
     result
 }
 
+/// Apply compression + sanitisation when the output mode says so;
+/// otherwise return the raw command output verbatim. Extracted from
+/// `run_proxy` so the compress/passthrough contract is unit-testable
+/// without spawning subprocesses.
+fn maybe_compress(
+    cmd: &str,
+    args: &[&str],
+    raw_stdout: &str,
+    ext_rules: &[engine::rules::FilterConfig],
+    should_compress: bool,
+) -> String {
+    if !should_compress {
+        return raw_stdout.to_string();
+    }
+    let compressed = engine::dispatcher::dispatch_with_rules(cmd, args, raw_stdout, ext_rules)
+        .unwrap_or_else(|| raw_stdout.to_string());
+    engine::sanitize::sanitize_output(&compressed)
+}
+
 /// Execute command through compressor pipeline with metering.
 fn run_proxy(cmd: &str, args: &[String]) -> Result<()> {
     let str_args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
@@ -800,12 +819,18 @@ fn run_proxy(cmd: &str, args: &[String]) -> Result<()> {
     let raw_stdout = String::from_utf8_lossy(&output.stdout);
     let stderr = String::from_utf8_lossy(&output.stderr);
 
-    // Compress stdout through dispatcher; fallback to TOML rules, then raw
+    // Compress only when stdout is a TTY (or explicitly forced). When piped,
+    // pass through raw — compressors like `find`/`ls`/`grep` are lossy by
+    // design (group-and-truncate) which breaks downstream tools that need
+    // verbatim data (e.g. `tok0 find … | xargs grep`).
     let ext_rules = get_extension_rules();
-    let compressed =
-        engine::dispatcher::dispatch_with_rules(cmd, &str_args, &raw_stdout, ext_rules)
-            .unwrap_or_else(|| raw_stdout.to_string());
-    let compressed = engine::sanitize::sanitize_output(&compressed);
+    let compressed = maybe_compress(
+        cmd,
+        &str_args,
+        &raw_stdout,
+        ext_rules,
+        engine::output_mode::should_compress(),
+    );
 
     // Output first — user sees results immediately
     if !compressed.is_empty() {
@@ -868,6 +893,95 @@ fn run_raw_proxy(args: &[String]) -> Result<()> {
 mod tests {
     use super::*;
     use clap::CommandFactory;
+
+    // ─────────────────────────────────────────────────────────────────
+    // run_proxy / maybe_compress contract
+    //
+    // Regression guard for the bug where
+    //   `tok0 find <dir> -type f -name "*.rs" | xargs grep -l "node:" | head -10`
+    // failed because the `find` compressor groups + truncates paths
+    // into "+N more" and the path-redactor rewrites `/Users/name/` →
+    // `/Users/user/`, both of which destroy data the pipeline needs.
+    //
+    // The fix gates compression behind `output_mode::should_compress()`.
+    // These tests pin the contract so future refactors can't reintroduce
+    // the regression.
+    // ─────────────────────────────────────────────────────────────────
+
+    /// Long find listing → with compression OFF, every path is preserved
+    /// byte-for-byte. This is the property `xargs grep` needs.
+    #[test]
+    fn maybe_compress_passthrough_preserves_find_paths() {
+        let raw = (0..58)
+            .map(|i| format!("/Users/theodorevorillas/project/src/file_{i}.rs"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let out = maybe_compress("find", &[".", "-name", "*.rs"], &raw, &[], false);
+        assert_eq!(out, raw, "passthrough must be byte-identical to raw");
+        assert!(out.contains("file_57.rs"), "last path must survive");
+        assert!(
+            !out.contains("more"),
+            "no '+N more' summary should leak through"
+        );
+        assert!(
+            out.contains("/Users/theodorevorillas/"),
+            "real home path must NOT be redacted in pipe mode (xargs needs it)"
+        );
+    }
+
+    /// With compression ON, the find compressor's lossy summary takes over —
+    /// the explicit, opt-in case for a TTY or `TOK0_FORCE_COMPRESS=1`.
+    #[test]
+    fn maybe_compress_with_compression_runs_dispatcher() {
+        let raw = (0..58)
+            .map(|i| format!("/Users/theodorevorillas/project/src/file_{i}.rs"))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let out = maybe_compress("find", &[".", "-name", "*.rs"], &raw, &[], true);
+        assert_ne!(out, raw, "compression must transform the output");
+        assert!(
+            out.contains("58 files found"),
+            "expected the find compressor's count header"
+        );
+        assert!(
+            out.contains("/Users/user/"),
+            "sanitiser must redact home path in compress mode"
+        );
+    }
+
+    /// Empty stdout is preserved exactly in passthrough mode (no spurious
+    /// headers, no "ok" replacement).
+    #[test]
+    fn maybe_compress_passthrough_empty_stdout() {
+        assert_eq!(maybe_compress("find", &[], "", &[], false), "");
+    }
+
+    /// Unknown command in passthrough mode: raw text wins, no fallback
+    /// errors.
+    #[test]
+    fn maybe_compress_passthrough_unknown_command() {
+        let raw = "arbitrary tool output\n";
+        assert_eq!(maybe_compress("nosuchcmd", &[], raw, &[], false), raw);
+    }
+
+    /// Unknown command in compress mode: the dispatcher returns None,
+    /// so we fall back to raw — but sanitiser still runs (path redaction).
+    #[test]
+    fn maybe_compress_compress_mode_unknown_command_sanitises() {
+        let raw = "see /Users/theodorevorillas/secret\n";
+        let out = maybe_compress("nosuchcmd", &[], raw, &[], true);
+        assert!(!out.contains("theodorevorillas"));
+        assert!(out.contains("/Users/user/"));
+    }
+
+    /// Pipe-mode passthrough must NOT redact secrets either — sanitisation
+    /// runs only when compression runs. (The user is on their own machine;
+    /// they can see their own secrets. Sanitisation is for LLM/cloud paths.)
+    #[test]
+    fn maybe_compress_passthrough_does_not_redact_secrets() {
+        let raw = "API_KEY=sk-abcdef0123456789\n";
+        assert_eq!(maybe_compress("env", &[], raw, &[], false), raw);
+    }
 
     #[test]
     fn test_completion_generation_bash() {
