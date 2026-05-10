@@ -159,6 +159,57 @@ fn test_rewrite_cat_to_read() {
 }
 
 #[test]
+fn test_cd_builtin_fails_fast_with_clear_error() {
+    // Regression: `tok0 cd <path>` used to spawn /usr/bin/cd, which exits
+    // 0 if the path exists but cannot change the parent shell's cwd. That
+    // made `tok0 cd dir && rg pattern` silently search the wrong tree.
+    // The fix is fail-fast: detect the builtin, print a clear error,
+    // exit 1 so `&&` chains break immediately.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0(&["cd", "/tmp"], &db);
+    assert!(!out.status.success(), "tok0 cd must exit non-zero");
+    assert_eq!(out.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        stderr.contains("'cd' is a shell builtin"),
+        "stderr should explain the builtin issue, got: {stderr}"
+    );
+    assert!(
+        stderr.contains("Drop the 'tok0' prefix"),
+        "stderr should suggest the fix, got: {stderr}"
+    );
+}
+
+#[test]
+fn test_export_builtin_fails_fast() {
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0(&["export", "FOO=bar"], &db);
+    assert!(!out.status.success());
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        stderr.contains("'export' is a shell builtin"),
+        "stderr: {stderr}"
+    );
+}
+
+#[test]
+fn test_real_binary_with_builtin_name_in_path_is_not_blocked() {
+    // `/usr/bin/cd` is a real (POSIX-mandated) binary on macOS. The
+    // path-qualified form is *not* the builtin and must pass through
+    // to run_proxy unchanged.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0(&["/usr/bin/cd", "/tmp"], &db);
+    // We don't care about exit code (the binary itself behaves like cd
+    // in a subshell) — only that we did NOT short-circuit with the
+    // builtin error.
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !stderr.contains("is a shell builtin"),
+        "path-qualified cd should not trigger the builtin guard, got: {stderr}"
+    );
+}
+
+#[test]
 fn test_proxy_runs_command_and_records() {
     let (_tmp, db) = isolated_env();
     // Use `echo` — portable across macOS/Linux CI.
