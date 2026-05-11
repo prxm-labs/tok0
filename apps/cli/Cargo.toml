@@ -1,6 +1,6 @@
 [package]
 name = "tok0"
-version = "0.1.15"
+version = "0.1.16"
 edition = "2021"
 description = "High-performance CLI proxy that reduces LLM token consumption by 70-95%"
 license = "MIT"
