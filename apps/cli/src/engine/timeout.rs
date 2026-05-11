@@ -160,21 +160,26 @@ mod tests {
     /// otherwise the child blocks writing and we never see the exit.
     #[test]
     fn test_large_output_no_deadlock() {
-        // 200 KB of stdout via printf — well past any typical OS pipe
-        // buffer (Linux: 64 KB, macOS: 16 KB).
+        // 200 KB of stdout via bash brace expansion — well past any typical
+        // OS pipe buffer (Linux: 64 KB, macOS: 16 KB).
         let line = "x".repeat(200);
-        // Use `yes` clipped via `head` to produce ~200 KB without
-        // depending on portable printf '%s\n' syntax.
+        // Brace expansion `{1..1000}` is a bash builtin (≥3.0) and avoids
+        // the `seq` coreutil, which isn't always on Windows Git-Bash PATH.
         let result = execute_with_timeout(
             "bash",
             &[
                 "-c",
-                &format!("for i in $(seq 1 1000); do echo {}; done", line),
+                &format!("for i in {{1..1000}}; do echo {}; done", line),
             ],
             Duration::from_secs(5),
         );
         let output = result.expect("should not deadlock");
-        assert!(output.status.success());
+        assert!(
+            output.status.success(),
+            "bash child exited non-zero (status={:?}); stderr={}",
+            output.status.code(),
+            String::from_utf8_lossy(&output.stderr)
+        );
         assert!(
             output.stdout.len() > 150_000,
             "got {} bytes — drain might be deadlocked",
