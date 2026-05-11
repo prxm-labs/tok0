@@ -491,6 +491,18 @@ fn run(cli: Cli) -> Result<()> {
                 std::process::exit(1);
             }
             let args: Vec<String> = iter.collect();
+            // Interactive UIs (vim, htop, …) and privilege escalators
+            // (sudo, doas, …) need a real TTY. Bypass the compression
+            // pipeline and exec them with full stdio inheritance.
+            // No metering, no compression, no capture.
+            if engine::guards::needs_tty(&cmd) {
+                let str_args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+                let code = engine::shell::execute_inherit_tty(&cmd, &str_args)?;
+                if code != 0 {
+                    std::process::exit(code);
+                }
+                return Ok(());
+            }
             run_proxy(&cmd, &args)
         }
         Commands::Stats {

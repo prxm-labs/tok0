@@ -60,6 +60,24 @@ pub fn execute_command(cmd: &str, args: &[&str]) -> Result<Output> {
         .with_context(|| format!("Failed to wait for: {} {}", cmd, args.join(" ")))
 }
 
+/// Execute a command with stdin/stdout/stderr fully inherited from the
+/// parent process. Used for TUI editors, pagers, sudo prompts, REPLs —
+/// anything that needs a real TTY for rendering or password entry.
+/// No compression, no metering, no capture: pure passthrough.
+///
+/// Returns the child's exit code (defaulting to 1 if the process was
+/// terminated by signal). Errors only on spawn failure (binary not
+/// found, etc.).
+pub fn execute_inherit_tty(cmd: &str, args: &[&str]) -> Result<i32> {
+    let status = Command::new(cmd)
+        .args(args)
+        .stdin(std::process::Stdio::inherit())
+        .stdout(std::process::Stdio::inherit())
+        .stderr(std::process::Stdio::inherit())
+        .status()
+        .with_context(|| format!("Failed to execute: {} {}", cmd, args.join(" ")))?;
+    Ok(status.code().unwrap_or(1))
+}
 
 /// Truncate a line to max_chars, appending "..." if truncated. Zero-copy when no truncation needed.
 pub fn truncate_line(line: &str, max_chars: usize) -> std::borrow::Cow<'_, str> {

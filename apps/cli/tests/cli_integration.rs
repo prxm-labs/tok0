@@ -269,6 +269,46 @@ fn test_path_qualified_name_with_equals_is_not_blocked() {
 }
 
 #[test]
+fn test_interactive_command_bypasses_capture() {
+    // `less` is interactive — under run_proxy it would be captured with
+    // piped stdio, TUI rendering broken. The needs_tty bypass spawns
+    // it with full stdio inheritance instead. We can't drive a TUI in
+    // a test, but we can confirm tok0 doesn't blow up trying to spawn
+    // it through the captured-pipe path. Driving stdin to EOF via
+    // run_tok0 (which uses .output()) means `less` will see immediate
+    // EOF on its inherited stdin and exit cleanly with no input.
+    //
+    // The key signal: stderr must NOT contain any "tok0: filter
+    // warning" or compression-pipeline marker, since interactive
+    // commands skip the compression pipeline entirely.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0(&["less"], &db);
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !stderr.contains("filter warning"),
+        "interactive bypass should skip the compression pipeline, stderr was: {stderr}"
+    );
+}
+
+#[test]
+fn test_sudo_bypass_does_not_capture_stdio() {
+    // Same shape as the interactive test: sudo needs TTY for the
+    // password prompt. With no TTY (test harness), sudo will error,
+    // but tok0 must have routed it through the inherit-stdio path
+    // rather than capturing it.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0(&["sudo", "--version"], &db);
+    // sudo --version doesn't need a password and should succeed,
+    // but the key assertion is structural: tok0 didn't mangle the
+    // output via the compression pipeline.
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !stderr.contains("tok0: filter warning"),
+        "sudo bypass should skip the compression pipeline, stderr: {stderr}"
+    );
+}
+
+#[test]
 fn test_real_binary_with_builtin_name_in_path_is_not_blocked() {
     // `/usr/bin/cd` is a real (POSIX-mandated) binary on macOS. The
     // path-qualified form is *not* the builtin and must pass through
