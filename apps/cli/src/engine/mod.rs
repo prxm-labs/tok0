@@ -4,6 +4,7 @@ pub mod builtin_rules;
 pub mod cloud;
 pub mod config;
 pub mod dispatcher;
+pub mod guards;
 pub mod meter;
 pub mod output_mode;
 pub mod rules;

@@ -68,33 +68,7 @@ fn get_extension_rules() -> &'static [engine::rules::FilterConfig] {
     })
 }
 
-/// True for shell builtins whose effect is local to the shell process —
-/// running them through tok0 puts them in a child process where they
-/// either no-op (cd, export) or fail confusingly. We refuse them at the
-/// External catch-all so the agent sees the failure immediately instead
-/// of a silently wrong cwd or empty pipe output 30s later.
-///
-/// Path-qualified names (`/usr/bin/cd`, `./cd`) are real binaries, not
-/// the builtin, so we leave those alone.
-fn is_shell_builtin(cmd: &str) -> bool {
-    if cmd.is_empty() || cmd.contains('/') {
-        return false;
-    }
-    matches!(
-        cmd,
-        "cd" | "pushd"
-            | "popd"
-            | "export"
-            | "set"
-            | "unset"
-            | "source"
-            | "."
-            | "alias"
-            | "unalias"
-            | "eval"
-            | "exec"
-    )
-}
+use engine::guards::is_shell_builtin;
 
 /// Detect the user's shell from the $SHELL env value. Pure + testable.
 /// Returns None if unset or unrecognized.
@@ -1309,66 +1283,8 @@ mod tests {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Shell-builtin detection
-    //
-    // `tok0 cd <path>` cannot work — `cd` runs in tok0's child process,
-    // so the parent shell's cwd never changes. Worse, /usr/bin/cd on
-    // macOS is a real binary that exits 0 when the path exists, so the
-    // chained `&& rg ...` runs in the original cwd and silently
-    // searches the wrong tree (and often times out scanning the
-    // workspace root). Same problem for pushd/popd/export/source/etc.
-    //
-    // These tests pin the contract: tok0 detects state-mutating shell
-    // builtins and refuses with a clear stderr message + exit 1, so
-    // the agent sees the failure immediately instead of getting empty
-    // output 30s later.
-    // ─────────────────────────────────────────────────────────────────
-
-    #[test]
-    fn is_shell_builtin_detects_cwd_mutators() {
-        for cmd in ["cd", "pushd", "popd"] {
-            assert!(is_shell_builtin(cmd), "{cmd} should be detected");
-        }
-    }
-
-    #[test]
-    fn is_shell_builtin_detects_env_mutators() {
-        for cmd in ["export", "set", "unset"] {
-            assert!(is_shell_builtin(cmd), "{cmd} should be detected");
-        }
-    }
-
-    #[test]
-    fn is_shell_builtin_detects_sourcing() {
-        for cmd in ["source", "."] {
-            assert!(is_shell_builtin(cmd), "{cmd} should be detected");
-        }
-    }
-
-    #[test]
-    fn is_shell_builtin_detects_alias_and_eval() {
-        for cmd in ["alias", "unalias", "eval", "exec"] {
-            assert!(is_shell_builtin(cmd), "{cmd} should be detected");
-        }
-    }
-
-    #[test]
-    fn is_shell_builtin_returns_false_for_real_commands() {
-        for cmd in ["git", "cargo", "npm", "rg", "ls", "wc", "grep", "find"] {
-            assert!(
-                !is_shell_builtin(cmd),
-                "{cmd} is a real binary, not a builtin"
-            );
-        }
-    }
-
-    #[test]
-    fn is_shell_builtin_returns_false_for_empty_or_paths() {
-        // Path-qualified names (`/usr/local/bin/cd`) are real binaries,
-        // not the shell builtin.
-        assert!(!is_shell_builtin(""));
-        assert!(!is_shell_builtin("/usr/bin/cd"));
-        assert!(!is_shell_builtin("./cd"));
-    }
+    // Shell-builtin predicate tests live next to the implementation
+    // in engine::guards. The wiring into the External arm is exercised
+    // by test_cd_builtin_fails_fast_with_clear_error and friends in
+    // tests/cli_integration.rs.
 }
