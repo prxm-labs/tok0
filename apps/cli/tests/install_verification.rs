@@ -139,25 +139,12 @@ const TOOLS: &[ToolFixture] = &[
 /// because the build would have failed if any of these `include_str!`
 /// targets was missing.
 fn shipped_templates() -> Vec<(&'static str, &'static str)> {
-    vec![
-        ("cursor/tok0.md", include_str!("../hooks/cursor/tok0.md")),
-        (
-            "gemini/GEMINI.md",
-            include_str!("../hooks/gemini/GEMINI.md"),
-        ),
-        (
-            "windsurf/global_rules.md",
-            include_str!("../hooks/windsurf/global_rules.md"),
-        ),
-        ("cline/tok0.md", include_str!("../hooks/cline/tok0.md")),
-        ("amp/AGENTS.md", include_str!("../hooks/amp/AGENTS.md")),
-        (
-            "opencode/AGENTS.md",
-            include_str!("../hooks/opencode/AGENTS.md"),
-        ),
-        ("codex/AGENTS.md", include_str!("../hooks/codex/AGENTS.md")),
-        ("kimi/tok0.md", include_str!("../hooks/kimi/tok0.md")),
-    ]
+    // All markdown-instruction tools share a single canonical template
+    // at hooks/_shared/AGENTS-TEMPLATE.md. The "name" entry here is the
+    // shared source path for diagnostic clarity if the assertion below
+    // fails.
+    let shared: &'static str = include_str!("../hooks/_shared/AGENTS-TEMPLATE.md");
+    vec![("_shared/AGENTS-TEMPLATE.md", shared)]
 }
 
 #[test]

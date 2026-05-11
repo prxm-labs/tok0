@@ -200,33 +200,20 @@ pub fn uninstall_hook_at(tool: &ToolTarget, config_dir: &Path) -> Result<HookIns
     }
 }
 
-/// Returns the per-tool instruction text. The canonical bytes live in
-/// `hooks/<tool>/<filename>` and are embedded at compile time via
-/// `include_str!`, so contributors can edit per-tool guidance without
+/// Canonical agent-facing instruction text. Every tool's markdown
+/// guidance (AGENTS.md, GEMINI.md, global_rules.md, tok0.md) gets the
+/// same content from `hooks/_shared/AGENTS-TEMPLATE.md`; per-tool quirks
+/// live in `post_install_hint`. Embedded at compile time via
+/// `include_str!`, so contributors can edit the template without
 /// touching Rust.
 pub fn generate_instructions_for(tool: &ToolTarget) -> &'static str {
     match tool {
-        ToolTarget::Cursor => include_str!("../../hooks/cursor/tok0.md"),
-        ToolTarget::GeminiCli => include_str!("../../hooks/gemini/GEMINI.md"),
-        ToolTarget::Windsurf => include_str!("../../hooks/windsurf/global_rules.md"),
-        ToolTarget::Cline => include_str!("../../hooks/cline/tok0.md"),
-        ToolTarget::Amp => include_str!("../../hooks/amp/AGENTS.md"),
-        ToolTarget::OpenCode => include_str!("../../hooks/opencode/AGENTS.md"),
-        ToolTarget::Codex => include_str!("../../hooks/codex/AGENTS.md"),
-        ToolTarget::KimiCode => include_str!("../../hooks/kimi/tok0.md"),
         // Claude Code installs a JSON hook into settings.json; no markdown
         // template applies. Returning empty is fine because the
         // `install_claude_code` path never calls this function.
         ToolTarget::ClaudeCode => "",
+        _ => include_str!("../../hooks/_shared/AGENTS-TEMPLATE.md"),
     }
-}
-
-/// Backwards-compatible wrapper. Returns the Cursor template by default
-/// since it shares the canonical content; new code should call
-/// `generate_instructions_for(tool)` instead.
-#[allow(dead_code)]
-pub fn generate_instructions() -> String {
-    generate_instructions_for(&ToolTarget::Cursor).to_string()
 }
 
 // ─── ClaudeCode installer ─────────────────────────────────────────────────────
@@ -737,17 +724,44 @@ mod tests {
         );
     }
 
-    // ── 6. generate_instructions mentions tok0 ────────────────────────────────
+    // ── 6. generate_instructions_for mentions tok0 + warns about builtins ───
     #[test]
-    fn test_generate_instructions_contains_tok0() {
-        let instructions = generate_instructions();
-        assert!(
-            instructions.contains("tok0"),
-            "instructions should mention tok0"
-        );
-        assert!(
-            instructions.contains("tok0 git status") || instructions.contains("tok0"),
-            "instructions should include usage example"
+    fn test_generate_instructions_contains_tok0_and_guard_docs() {
+        // Sample every markdown-instruction tool; ClaudeCode returns ""
+        // because it installs a JSON hook instead.
+        for tool in [
+            ToolTarget::Cursor,
+            ToolTarget::GeminiCli,
+            ToolTarget::Windsurf,
+            ToolTarget::Cline,
+            ToolTarget::Amp,
+            ToolTarget::OpenCode,
+            ToolTarget::Codex,
+            ToolTarget::KimiCode,
+        ] {
+            let instructions = generate_instructions_for(&tool);
+            assert!(
+                instructions.contains("tok0 git status"),
+                "{:?} instructions should include usage example",
+                tool
+            );
+            // The "Don't prefix" section is the load-bearing addition —
+            // pin it so it cannot regress silently.
+            assert!(
+                instructions.contains("Don't prefix"),
+                "{:?} should warn about commands that can't be proxied",
+                tool
+            );
+            assert!(
+                instructions.contains("cd") && instructions.contains("export"),
+                "{:?} should name cd and export specifically",
+                tool
+            );
+        }
+        assert_eq!(
+            generate_instructions_for(&ToolTarget::ClaudeCode),
+            "",
+            "ClaudeCode uses the JSON hook, not a markdown template"
         );
     }
 
@@ -962,54 +976,25 @@ mod tests {
 
     /// Phase 3 invariant: the bytes installed by `install_hook_at` for each
     /// instructions-file tool must be exactly the bytes shipped in
-    /// `hooks/<tool>/<filename>`. This pins the externalized templates as
-    /// the single source of truth — Rust string literals inside setup.rs
-    /// are never the canonical content.
+    /// `hooks/_shared/AGENTS-TEMPLATE.md`. This pins the externalized
+    /// template as the single source of truth — Rust string literals
+    /// inside setup.rs are never the canonical content. Every markdown-
+    /// instruction tool gets the same shared template (per-tool filename
+    /// varies).
     #[test]
-    fn test_installed_file_equals_external_template() {
-        let cases: Vec<(ToolTarget, &str, &'static str)> = vec![
-            (
-                ToolTarget::Cursor,
-                "tok0.md",
-                include_str!("../../hooks/cursor/tok0.md"),
-            ),
-            (
-                ToolTarget::GeminiCli,
-                "GEMINI.md",
-                include_str!("../../hooks/gemini/GEMINI.md"),
-            ),
-            (
-                ToolTarget::Windsurf,
-                "global_rules.md",
-                include_str!("../../hooks/windsurf/global_rules.md"),
-            ),
-            (
-                ToolTarget::Cline,
-                "tok0.md",
-                include_str!("../../hooks/cline/tok0.md"),
-            ),
-            (
-                ToolTarget::Amp,
-                "AGENTS.md",
-                include_str!("../../hooks/amp/AGENTS.md"),
-            ),
-            (
-                ToolTarget::OpenCode,
-                "AGENTS.md",
-                include_str!("../../hooks/opencode/AGENTS.md"),
-            ),
-            (
-                ToolTarget::Codex,
-                "AGENTS.md",
-                include_str!("../../hooks/codex/AGENTS.md"),
-            ),
-            (
-                ToolTarget::KimiCode,
-                "tok0.md",
-                include_str!("../../hooks/kimi/tok0.md"),
-            ),
+    fn test_installed_file_equals_shared_template() {
+        let expected: &'static str = include_str!("../../hooks/_shared/AGENTS-TEMPLATE.md");
+        let cases: Vec<(ToolTarget, &str)> = vec![
+            (ToolTarget::Cursor, "tok0.md"),
+            (ToolTarget::GeminiCli, "GEMINI.md"),
+            (ToolTarget::Windsurf, "global_rules.md"),
+            (ToolTarget::Cline, "tok0.md"),
+            (ToolTarget::Amp, "AGENTS.md"),
+            (ToolTarget::OpenCode, "AGENTS.md"),
+            (ToolTarget::Codex, "AGENTS.md"),
+            (ToolTarget::KimiCode, "tok0.md"),
         ];
-        for (tool, filename, expected) in cases {
+        for (tool, filename) in cases {
             let dir = tmp();
             install_hook_at(&tool, dir.path())
                 .unwrap_or_else(|e| panic!("{:?}: install failed: {:#}", tool, e));
@@ -1017,8 +1002,8 @@ mod tests {
                 fs::read_to_string(dir.path().join(filename)).expect("read installed file");
             assert_eq!(
                 actual, expected,
-                "{:?}: installed bytes must match hooks/<tool>/{}",
-                tool, filename
+                "{:?}: installed bytes must match hooks/_shared/AGENTS-TEMPLATE.md",
+                tool
             );
         }
     }
