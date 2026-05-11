@@ -910,18 +910,29 @@ fn run_proxy(cmd: &str, args: &[String]) -> Result<()> {
     // pass through raw — compressors like `find`/`ls`/`grep` are lossy by
     // design (group-and-truncate) which breaks downstream tools that need
     // verbatim data (e.g. `tok0 find … | xargs grep`).
+    let should_compress = engine::output_mode::should_compress();
     let ext_rules = get_extension_rules();
-    let compressed = maybe_compress(
-        cmd,
-        &str_args,
-        &raw_stdout,
-        ext_rules,
-        engine::output_mode::should_compress(),
-    );
+    let compressed = maybe_compress(cmd, &str_args, &raw_stdout, ext_rules, should_compress);
+
+    // Cross-invocation dedup: when the LLM re-runs the same command and
+    // gets byte-identical output, replace it with a one-line reference to
+    // the previous run id. Only when actually compressing — piping raw
+    // output through dedup would confuse downstream tools.
+    let final_output = if should_compress {
+        engine::context_state::apply_dedup(
+            cmd,
+            &str_args,
+            &compressed,
+            output.status.code().unwrap_or(0),
+            engine::tool_policy::current().id,
+        )
+    } else {
+        compressed.clone()
+    };
 
     // Output first — user sees results immediately
-    if !compressed.is_empty() {
-        print!("{}", compressed);
+    if !final_output.is_empty() {
+        print!("{}", final_output);
     }
     if !stderr.is_empty() {
         eprint!("{}", stderr);
