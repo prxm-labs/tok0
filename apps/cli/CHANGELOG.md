@@ -11,6 +11,33 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.14](https://github.com/prxm-labs/tok0/compare/v0.1.13...v0.1.14) (2026-05-11)
+
+
+### Features
+
+* **bridge:** functional PreToolUse hook with command rewriting ([7a785ca](https://github.com/prxm-labs/tok0/commit/7a785caa909af6d78019f12cfe636f89cd378157))
+* **cli:** bypass run_proxy for interactive UIs and privilege escalators ([51de3f4](https://github.com/prxm-labs/tok0/commit/51de3f437e22babd6807f9e3ac045ff542d0617f))
+* **engine:** aggressive token reduction phase 1 — dedupe, token-aware window, JSON minify, progress strip ([#13](https://github.com/prxm-labs/tok0/issues/13)) ([3477510](https://github.com/prxm-labs/tok0/commit/34775109c79ba61d1ba032acceadeaff0392e4b8))
+* **engine:** pipeline-friendly stdio — inherit stdin, env timeout, concurrent drain ([a340e4d](https://github.com/prxm-labs/tok0/commit/a340e4d1948bee33aac3880eb223b7ae52a7384a))
+
+
+### Bug Fixes
+
+* **bridge:** rewriter passes through compound commands and tty-needing commands ([72b3d7c](https://github.com/prxm-labs/tok0/commit/72b3d7ccf69ccd033ea9fff5c7382990e6decc9a))
+* **cli:** map cd into interactive and pipeable prompts ([2f86dc3](https://github.com/prxm-labs/tok0/commit/2f86dc3e0e45d7f5b141b62d34f677e2a5f76ffd))
+* **cli:** refuse variable-assignment prefix at External arm ([fffe3a3](https://github.com/prxm-labs/tok0/commit/fffe3a31dd117716f54d31ddc408514bb5fe9f4c))
+
+
+### Refactoring
+
+* **engine:** extract shell-builtin guard into engine::guards ([24ad7af](https://github.com/prxm-labs/tok0/commit/24ad7af5447217351cf825872a629c0ea24556b2))
+
+
+### Documentation
+
+* **hooks:** warn agents about commands tok0 cannot proxy + consolidate templates ([dd27d87](https://github.com/prxm-labs/tok0/commit/dd27d87354fb4e0ac80f47a6a895526bd97872fa))
+
 ## [0.1.13](https://github.com/prxm-labs/tok0/compare/v0.1.12...v0.1.13) (2026-05-08)
 
 
