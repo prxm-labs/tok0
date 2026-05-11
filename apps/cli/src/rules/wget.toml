@@ -13,5 +13,5 @@ strip_patterns = [
   "^Saving to: ",
   "^--\\d{4}-\\d{2}-\\d{2}",
 ]
-tail_lines = 10
-max_line_chars = 200
+tail_lines = 5
+max_line_chars = 140

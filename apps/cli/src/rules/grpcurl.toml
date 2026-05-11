@@ -3,4 +3,4 @@ name = "grpcurl"
 commands = ["grpcurl"]
 strip_patterns = ["^\\s*$"]
 head_lines = 40
-max_line_chars = 200
+max_line_chars = 140

@@ -8,6 +8,6 @@ strip_patterns = [
   "^Open archive: ",
   "^p7zip Version",
 ]
-head_lines = 30
+head_lines = 20
 tail_lines = 8
-max_line_chars = 200
+max_line_chars = 140

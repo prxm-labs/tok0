@@ -9,6 +9,6 @@ strip_patterns = [
   "^\\s*Fresh\\s",
   "^\\s*Checking\\s",
 ]
-tail_lines = 10
-head_lines = 30
+tail_lines = 5
+head_lines = 20
 empty_message = "trunk build: ok"

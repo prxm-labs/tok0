@@ -10,6 +10,6 @@ strip_patterns = [
   "^\\s*Last Applied Configuration:",
 ]
 head_lines = 40
-tail_lines = 10
-max_line_chars = 200
+tail_lines = 5
+max_line_chars = 140
 empty_message = "kubectl: ok"

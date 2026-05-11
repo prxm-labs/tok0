@@ -8,7 +8,7 @@ strip_patterns = [
   "^Reconciliation request triggered",
 ]
 head_lines = 8
-tail_lines = 10
+tail_lines = 5
 empty_message = "ok"
 
 [[assertions]]

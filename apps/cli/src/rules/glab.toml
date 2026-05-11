@@ -5,5 +5,5 @@ strip_patterns = [
   "^\\s*$",
   "^Showing \\d+ ",
 ]
-head_lines = 30
-max_line_chars = 200
+head_lines = 20
+max_line_chars = 140
