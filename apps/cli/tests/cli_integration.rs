@@ -241,12 +241,37 @@ fn test_pretooluse_skips_var_assignment() {
 }
 
 #[test]
-fn test_pretooluse_skips_compound_command() {
-    // && / || / ; / | — leave alone to avoid half-correct prefixing.
+fn test_pretooluse_rewrites_compound_command_segments() {
+    // Phase 6 supersedes the prior passthrough: && / || / ; chains now
+    // get each segment rewritten independently. Builtins (cd) stay
+    // verbatim; commands get TOK0_TOOL prefix + tok0.
     let (_tmp, db) = isolated_env();
     let out = run_tok0_with_stdin(
         &["rewrite"],
         &pretooluse_payload("cd /tmp && cargo build"),
+        &db,
+    );
+    assert!(out.status.success());
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let parsed: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid hook JSON");
+    let cmd = parsed["hookSpecificOutput"]["updatedInput"]["command"]
+        .as_str()
+        .expect("command field is string");
+    assert!(cmd.contains("cd /tmp"), "cd builtin preserved: {cmd}");
+    assert!(
+        cmd.contains("TOK0_TOOL=claude_code") && cmd.contains("tok0 cargo build"),
+        "cargo build segment rewritten with env: {cmd}"
+    );
+}
+
+#[test]
+fn test_pretooluse_pipe_still_passthrough() {
+    // Pipes remain passthrough in Phase 6 — TOK0_FORCE_COMPRESS plumbing
+    // is deferred to a follow-up.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(
+        &["rewrite"],
+        &pretooluse_payload("cargo test | grep FAIL"),
         &db,
     );
     assert!(out.status.success());
