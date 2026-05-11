@@ -3,18 +3,6 @@ source: src/compressors/system/json_cmd.rs
 expression: "filter_json(raw).expect(\"should parse nested JSON\")"
 ---
 {
-  "meta": {
-    "total": 2,
-    "v": 1
-  },
-  "users": [
-    {
-      "id": 1,
-      "name": "a"
-    },
-    {
-      "id": 2,
-      "name": "b"
-    }
-  ]
+"meta":{"total":2,"v":1},
+"users":[{"id":1,"name":"a"},{"id":2,"name":"b"}]
 }

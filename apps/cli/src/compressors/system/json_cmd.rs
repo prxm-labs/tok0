@@ -12,7 +12,37 @@ const OBJECT_TRUNCATE_AT: usize = 32;
 pub fn filter_json(input: &str) -> Result<String> {
     let v: Value = serde_json::from_str(input.trim()).context("input is not valid JSON")?;
     let truncated = truncate(&v);
-    serde_json::to_string_pretty(&truncated).context("failed to serialize JSON")
+    format_top_level(&truncated)
+}
+
+/// Serialize as a single line per top-level array element or object pair,
+/// with inner structure minified (no indentation). Top-level scalars and
+/// empty containers produce single-line output. This keeps the result
+/// scannable line-by-line for the LLM while shedding the bulk of the
+/// whitespace overhead of `to_string_pretty`.
+fn format_top_level(v: &Value) -> Result<String> {
+    match v {
+        Value::Array(arr) if !arr.is_empty() => {
+            let mut parts: Vec<String> = Vec::with_capacity(arr.len());
+            for elem in arr {
+                parts.push(
+                    serde_json::to_string(elem).context("failed to serialize array element")?,
+                );
+            }
+            Ok(format!("[\n{}\n]", parts.join(",\n")))
+        }
+        Value::Object(obj) if !obj.is_empty() => {
+            let mut parts: Vec<String> = Vec::with_capacity(obj.len());
+            for (k, val) in obj {
+                let key = serde_json::to_string(k).context("failed to serialize object key")?;
+                let val_str =
+                    serde_json::to_string(val).context("failed to serialize object value")?;
+                parts.push(format!("{key}:{val_str}"));
+            }
+            Ok(format!("{{\n{}\n}}", parts.join(",\n")))
+        }
+        other => serde_json::to_string(other).context("failed to serialize JSON"),
+    }
 }
 
 fn truncate(v: &Value) -> Value {
@@ -99,6 +129,77 @@ mod tests {
         assert!(filter_json("[]").expect("empty array").contains("[]"));
         assert!(filter_json("{}").expect("empty object").contains("{}"));
         assert!(filter_json("null").expect("null literal").contains("null"));
+    }
+
+    // ── Phase 1: minified JSON with top-level newlines ──────────────
+
+    #[test]
+    fn test_minified_array_one_element_per_line() {
+        let raw = r#"[1, 2, 3]"#;
+        let out = filter_json(raw).expect("parse small array");
+        // Top-level array → one element per line, no inner indentation.
+        let body_lines: Vec<&str> = out.lines().collect();
+        assert!(body_lines.len() >= 5, "got: {out}");
+        assert!(out.starts_with('['));
+        assert!(out.ends_with(']'));
+        // Lines should not start with 2-space pretty-print indent.
+        for line in &body_lines {
+            assert!(
+                !line.starts_with("  "),
+                "minified output must not contain pretty-print indent: '{line}'"
+            );
+        }
+    }
+
+    #[test]
+    fn test_minified_object_one_pair_per_line() {
+        let raw = r#"{"a": 1, "b": 2}"#;
+        let out = filter_json(raw).expect("parse small object");
+        assert!(out.starts_with('{'));
+        assert!(out.ends_with('}'));
+        for line in out.lines() {
+            assert!(
+                !line.starts_with("  "),
+                "minified output must not contain pretty-print indent: '{line}'"
+            );
+        }
+    }
+
+    #[test]
+    fn test_minified_inner_structure_flat() {
+        // Nested arrays/objects inside top-level entries stay on one line.
+        let raw = r#"{"users": [{"id": 1, "tags": ["a", "b"]}, {"id": 2}]}"#;
+        let out = filter_json(raw).expect("parse nested");
+        // The "users" line must contain the full inner array on one line.
+        let users_line = out
+            .lines()
+            .find(|l| l.contains("users"))
+            .expect("users line");
+        assert!(users_line.contains("[{"));
+        assert!(users_line.contains("}]"));
+    }
+
+    #[test]
+    fn test_minified_savings_higher_than_pretty() {
+        // Compare new vs old format on the huge array fixture.
+        let raw = include_str!("../../../tests/fixtures/system/json_huge_array_raw.txt");
+        let new_out = filter_json(raw).expect("filter");
+        let v: Value = serde_json::from_str(raw.trim()).expect("parse");
+        let old_out = serde_json::to_string_pretty(&truncate(&v)).expect("pretty");
+        assert!(
+            count_tokens(&new_out) <= count_tokens(&old_out),
+            "minified should not lose ground: new {} vs old {}",
+            count_tokens(&new_out),
+            count_tokens(&old_out)
+        );
+    }
+
+    #[test]
+    fn test_minified_output_still_valid_json() {
+        let raw = include_str!("../../../tests/fixtures/system/json_huge_array_raw.txt");
+        let out = filter_json(raw).expect("filter");
+        let _: Value = serde_json::from_str(&out)
+            .expect("minified output with line breaks must still parse as JSON");
     }
 
     use proptest::prelude::*;

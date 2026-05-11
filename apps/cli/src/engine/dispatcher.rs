@@ -1,5 +1,13 @@
 use crate::compressors;
 
+/// Default global hard cap for compressed output. Anything larger gets
+/// head/tail truncation via `apply_output_cap`. Phase 1 tightening:
+/// dropped from 50k chars / 100/50 lines to be more aggressive on long
+/// CI logs, terraform plans, kubectl describe, etc.
+const DEFAULT_MAX_CHARS: usize = 30_000;
+const DEFAULT_HEAD: usize = 60;
+const DEFAULT_TAIL: usize = 30;
+
 /// Extract the value of `-o <fmt>` / `-o=<fmt>` / `--output <fmt>` /
 /// `--output=<fmt>` from a kubectl-style argv slice. Returns the first
 /// occurrence; later flags shadow earlier ones (matching kubectl's own
@@ -26,8 +34,9 @@ fn output_format<'a>(args: &[&'a str]) -> Option<&'a str> {
 /// Returns `Some(compressed_output)` if a matching compressor was found,
 /// `None` if the command is unknown or has no compressor.
 pub fn dispatch(cmd: &str, args: &[&str], stdout: &str) -> Option<String> {
-    let cleaned = crate::engine::shell::strip_ansi(stdout);
-    let stdout = cleaned.as_ref();
+    let ansi_stripped = crate::engine::shell::strip_ansi(stdout);
+    let progress_stripped = crate::engine::shell::strip_progress_noise(ansi_stripped.as_ref());
+    let stdout = progress_stripped.as_ref();
     let sub = args.first().copied().unwrap_or("");
 
     match cmd {
@@ -286,7 +295,7 @@ pub fn dispatch_with_rule_index(
 ) -> Option<String> {
     // Try native compressor first
     if let Some(compressed) = dispatch(cmd, args, stdout) {
-        let capped = apply_output_cap(&compressed, 50_000, 100, 50);
+        let capped = apply_output_cap(&compressed, DEFAULT_MAX_CHARS, DEFAULT_HEAD, DEFAULT_TAIL);
         return Some(apply_post_pass(&capped));
     }
 
@@ -298,7 +307,7 @@ pub fn dispatch_with_rule_index(
     };
     if let Some(rule) = index.find(&full_command) {
         let output = crate::engine::rules::apply_filter_config(stdout, rule);
-        let capped = apply_output_cap(&output, 50_000, 100, 50);
+        let capped = apply_output_cap(&output, DEFAULT_MAX_CHARS, DEFAULT_HEAD, DEFAULT_TAIL);
         return Some(apply_post_pass(&capped));
     }
 
@@ -551,6 +560,19 @@ mod tests {
         assert!(result.is_some());
         let output = result.expect("should dispatch");
         assert!(!output.contains("\x1b["), "ANSI codes should be stripped");
+    }
+
+    #[test]
+    fn test_dispatch_collapses_cr_progress() {
+        // pnpm-style \r-rewritten progress should be collapsed before the
+        // native compressor sees it. We feed npm install fixture-ish output
+        // and verify the intermediate progress states are gone.
+        let input =
+            "[1/4] Resolving\n[2/4] Fetching\rfetched 50%\rfetched 100%\nadded 42 packages\n";
+        let result = dispatch("npm", &["install"], input);
+        assert!(result.is_some());
+        let out = result.expect("dispatch");
+        assert!(!out.contains("fetched 50%"), "got: {out}");
     }
 
     #[test]
