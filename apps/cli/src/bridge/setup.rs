@@ -231,6 +231,30 @@ pub fn generate_instructions() -> String {
 
 // ─── ClaudeCode installer ─────────────────────────────────────────────────────
 
+/// The matcher value Claude Code expects so the hook fires only on
+/// Bash tool calls. Older tok0 builds used `""` which is ambiguous in
+/// current Claude Code; new installs use `"Bash"` and existing installs
+/// are migrated below.
+const CLAUDE_BASH_MATCHER: &str = "Bash";
+
+/// True if a settings.json hook entry has the tok0 PreToolUse hook with
+/// an empty (legacy) matcher that needs to be migrated to "Bash".
+fn needs_matcher_migration(entry: &serde_json::Value) -> bool {
+    let Some(matcher) = entry.get("matcher").and_then(|m| m.as_str()) else {
+        return false;
+    };
+    if !matcher.is_empty() {
+        return false;
+    }
+    let Some(hooks) = entry.get("hooks").and_then(|h| h.as_array()) else {
+        return false;
+    };
+    hooks
+        .iter()
+        .filter_map(|h| h.get("command").and_then(|c| c.as_str()))
+        .any(|c| c.contains(CLAUDE_HOOK_ENTRY))
+}
+
 fn install_claude_code(config_dir: &Path) -> Result<HookInstallResult> {
     fs::create_dir_all(config_dir)
         .with_context(|| format!("Failed to create config dir: {}", config_dir.display()))?;
@@ -248,19 +272,49 @@ fn install_claude_code(config_dir: &Path) -> Result<HookInstallResult> {
     let mut root: serde_json::Value = serde_json::from_str(&raw)
         .with_context(|| format!("Failed to parse JSON in {}", settings_path.display()))?;
 
-    // Idempotency: if "tok0" already appears anywhere in the file, bail early.
+    // Migration: existing installs may have `"matcher": ""` from older
+    // tok0 versions. Bump them to `"Bash"` so the hook actually fires
+    // under current Claude Code. Walk PreToolUse[*] looking for entries
+    // whose hooks[*].command contains "tok0 rewrite" and whose matcher
+    // is empty.
+    let mut migrated = false;
+    if let Some(pre) = root
+        .get_mut("hooks")
+        .and_then(|h| h.get_mut("PreToolUse"))
+        .and_then(|p| p.as_array_mut())
+    {
+        for entry in pre.iter_mut() {
+            if needs_matcher_migration(entry) {
+                if let Some(obj) = entry.as_object_mut() {
+                    obj.insert(
+                        "matcher".to_string(),
+                        serde_json::json!(CLAUDE_BASH_MATCHER),
+                    );
+                    migrated = true;
+                }
+            }
+        }
+    }
+
+    // Idempotency: if tok0 already appears, write back only if we
+    // migrated the matcher; otherwise no-op.
     if raw.contains(HOOK_MARKER) {
+        if migrated {
+            let serialized =
+                serde_json::to_string_pretty(&root).context("Failed to serialize settings.json")?;
+            fs::write(&settings_path, serialized)
+                .with_context(|| format!("Failed to write {}", settings_path.display()))?;
+        }
         return Ok(HookInstallResult {
             tool: "claude-code".to_string(),
             path: settings_path,
-            already_installed: true,
+            already_installed: !migrated,
         });
     }
 
-    // Build the hook entry:
-    //   "hooks": { "PreToolUse": [{ "matcher": "", "hooks": [{"type":"command","command":"tok0 rewrite"}] }] }
+    // Fresh install. Build the hook entry with the correct matcher.
     let hook_entry = serde_json::json!([{
-        "matcher": "",
+        "matcher": CLAUDE_BASH_MATCHER,
         "hooks": [{
             "type": "command",
             "command": CLAUDE_HOOK_ENTRY
@@ -528,6 +582,57 @@ mod tests {
         assert!(
             content.contains(CLAUDE_HOOK_ENTRY),
             "settings.json should contain hook entry command"
+        );
+    }
+
+    // ── 1b. Matcher must be "Bash" so the hook only fires on Bash tool ────────
+    #[test]
+    fn test_install_claude_code_uses_bash_matcher() {
+        let dir = tmp();
+        install_hook_at(&ToolTarget::ClaudeCode, dir.path()).expect("install");
+        let content = fs::read_to_string(dir.path().join("settings.json")).expect("read");
+        let parsed: serde_json::Value = serde_json::from_str(&content).expect("parse");
+        let matcher = &parsed["hooks"]["PreToolUse"][0]["matcher"];
+        assert_eq!(matcher, "Bash", "matcher must be \"Bash\", got {matcher:?}");
+    }
+
+    // ── 1c. Legacy installs (matcher: "") get migrated to "Bash" on re-init ───
+    #[test]
+    fn test_install_claude_code_migrates_empty_matcher() {
+        let dir = tmp();
+        let settings_path = dir.path().join("settings.json");
+        // Simulate an old tok0 install — hook present with matcher "".
+        let legacy = serde_json::json!({
+            "hooks": {
+                "PreToolUse": [{
+                    "matcher": "",
+                    "hooks": [{"type": "command", "command": "tok0 rewrite"}]
+                }]
+            }
+        });
+        fs::write(
+            &settings_path,
+            serde_json::to_string_pretty(&legacy).unwrap(),
+        )
+        .expect("write legacy");
+
+        let result = install_hook_at(&ToolTarget::ClaudeCode, dir.path()).expect("re-install");
+        assert!(
+            !result.already_installed,
+            "migration should signal a write happened (already_installed=false)"
+        );
+
+        let after = fs::read_to_string(&settings_path).expect("read after");
+        let parsed: serde_json::Value = serde_json::from_str(&after).expect("parse after");
+        assert_eq!(
+            parsed["hooks"]["PreToolUse"][0]["matcher"], "Bash",
+            "legacy empty matcher must be migrated to \"Bash\""
+        );
+        // Second re-init is a no-op.
+        let result2 = install_hook_at(&ToolTarget::ClaudeCode, dir.path()).expect("re-install");
+        assert!(
+            result2.already_installed,
+            "second migration pass must be a no-op"
         );
     }
 

@@ -3,69 +3,80 @@ use serde::Deserialize;
 
 // ---------------------------------------------------------------------------
 // Claude Code adapter
-// Payload shape: {"tool":"Bash","input":{"command":"git status"}}
+// Payload shape (Claude Code 2.x, current):
+//   {"session_id":"...","tool_name":"Bash","tool_input":{"command":"git status"},
+//    "tool_use_id":"...","cwd":"...","permission_mode":"default"}
+// Docs: https://code.claude.com/docs/en/hooks.md
 // ---------------------------------------------------------------------------
 
 #[derive(Deserialize)]
-struct ClaudeCodePayload {
-    #[allow(dead_code)]
-    tool: String,
-    input: ClaudeCodeInput,
+pub struct ClaudeCodePayload {
+    pub tool_name: String,
+    pub tool_input: ClaudeCodeInput,
 }
 
 #[derive(Deserialize)]
-struct ClaudeCodeInput {
-    command: String,
+pub struct ClaudeCodeInput {
+    pub command: String,
 }
 
-/// Parse a Claude Code hook payload and return the extracted command string.
+/// Parse a Claude Code PreToolUse payload and return the extracted command.
+/// Only succeeds when `tool_name == "Bash"` — other tools have different
+/// input shapes and would deserialize-fail or yield meaningless commands.
 pub fn translate_claude_code(payload: &str) -> Result<String> {
     let p: ClaudeCodePayload =
         serde_json::from_str(payload).context("Failed to parse Claude Code hook payload")?;
-    Ok(p.input.command)
+    if p.tool_name != "Bash" {
+        anyhow::bail!(
+            "tok0 only rewrites Bash tool calls; got tool_name={}",
+            p.tool_name
+        );
+    }
+    Ok(p.tool_input.command)
 }
 
 // ---------------------------------------------------------------------------
-// Gemini adapter
-// Payload shape: {"tool":"shell","args":["git","status"]}
+// Gemini / Copilot / argv adapters
+//
+// Defined for future hook integrations. Today only the Claude Code
+// adapter is wired into production (see main.rs::run_rewrite); the
+// others stay behind #[allow(dead_code)] so the implementations don't
+// rot, but the dead-code lint doesn't fire on every build.
 // ---------------------------------------------------------------------------
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct GeminiPayload {
-    #[allow(dead_code)]
     tool: String,
     args: Vec<String>,
 }
 
 /// Parse a Gemini hook payload and return the extracted command string.
+/// Payload shape: `{"tool":"shell","args":["git","status"]}`.
+#[allow(dead_code)]
 pub fn translate_gemini(payload: &str) -> Result<String> {
     let p: GeminiPayload =
         serde_json::from_str(payload).context("Failed to parse Gemini hook payload")?;
     Ok(p.args.join(" "))
 }
 
-// ---------------------------------------------------------------------------
-// Copilot adapter
-// Payload shape: {"command":"git status"}
-// ---------------------------------------------------------------------------
-
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct CopilotPayload {
     command: String,
 }
 
 /// Parse a Copilot hook payload and return the extracted command string.
+/// Payload shape: `{"command":"git status"}`.
+#[allow(dead_code)]
 pub fn translate_copilot(payload: &str) -> Result<String> {
     let p: CopilotPayload =
         serde_json::from_str(payload).context("Failed to parse Copilot hook payload")?;
     Ok(p.command)
 }
 
-// ---------------------------------------------------------------------------
-// argv adapter — no JSON, just space-join
-// ---------------------------------------------------------------------------
-
 /// Join argv-style args into a single command string.
+#[allow(dead_code)]
 pub fn translate_argv(args: &[String]) -> String {
     args.join(" ")
 }
@@ -82,9 +93,19 @@ mod tests {
 
     #[test]
     fn test_translate_claude_code_valid() {
-        let payload = r#"{"tool":"Bash","input":{"command":"git status"}}"#;
+        let payload = r#"{"session_id":"abc","tool_name":"Bash",
+            "tool_input":{"command":"git status"},"tool_use_id":"x",
+            "cwd":"/p","permission_mode":"default"}"#;
         let result = translate_claude_code(payload).expect("should parse");
         assert_eq!(result, "git status");
+    }
+
+    #[test]
+    fn test_translate_claude_code_minimal_valid() {
+        // Only the load-bearing fields. Extra payload fields are ignored.
+        let payload = r#"{"tool_name":"Bash","tool_input":{"command":"ls"}}"#;
+        let result = translate_claude_code(payload).expect("should parse");
+        assert_eq!(result, "ls");
     }
 
     #[test]
@@ -95,10 +116,18 @@ mod tests {
 
     #[test]
     fn test_translate_claude_code_missing_field() {
-        // `input` key is absent
-        let payload = r#"{"tool":"Bash"}"#;
+        let payload = r#"{"tool_name":"Bash"}"#;
         let result = translate_claude_code(payload);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_translate_claude_code_non_bash_tool_rejected() {
+        // tok0 only rewrites Bash; Write/Edit/etc. have different schemas
+        // and don't need a tok0 prefix.
+        let payload = r#"{"tool_name":"Write","tool_input":{"command":"…"}}"#;
+        let err = translate_claude_code(payload).expect_err("should reject non-Bash");
+        assert!(format!("{:#}", err).contains("only rewrites Bash"));
     }
 
     // --- Gemini ---
@@ -187,8 +216,8 @@ mod tests {
         #[test]
         fn prop_claude_code_round_trip(cmd in "[a-zA-Z0-9 _./\\-]{0,60}") {
             let payload = serde_json::json!({
-                "tool": "Bash",
-                "input": {"command": cmd.clone()}
+                "tool_name": "Bash",
+                "tool_input": {"command": cmd.clone()}
             })
             .to_string();
             let extracted = translate_claude_code(&payload).expect("valid round-trip");

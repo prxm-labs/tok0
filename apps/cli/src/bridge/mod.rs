@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 pub mod adapters;
 pub mod integrity;
 pub mod rewriter;

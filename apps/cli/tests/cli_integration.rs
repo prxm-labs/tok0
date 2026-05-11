@@ -175,6 +175,130 @@ fn test_rewrite_no_double_wrap() {
     assert!(!stdout.contains("tok0 tok0"), "no double wrap: {}", stdout);
 }
 
+// ─────────────────────────────────────────────────────────────────
+// PreToolUse hook (JSON-on-stdin) end-to-end coverage.
+// These exercise `tok0 rewrite` the way Claude Code 2.x invokes it.
+// ─────────────────────────────────────────────────────────────────
+
+fn pretooluse_payload(command: &str) -> String {
+    serde_json::json!({
+        "session_id": "test",
+        "tool_name": "Bash",
+        "tool_input": {"command": command},
+        "tool_use_id": "test",
+        "cwd": "/tmp",
+        "permission_mode": "default"
+    })
+    .to_string()
+}
+
+#[test]
+fn test_pretooluse_rewrites_plain_command() {
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(&["rewrite"], &pretooluse_payload("git status"), &db);
+    assert!(out.status.success(), "hook must exit 0");
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let parsed: serde_json::Value =
+        serde_json::from_str(stdout.trim()).expect("hookSpecificOutput must be JSON");
+    assert_eq!(parsed["hookSpecificOutput"]["hookEventName"], "PreToolUse");
+    assert_eq!(parsed["hookSpecificOutput"]["permissionDecision"], "allow");
+    assert_eq!(
+        parsed["hookSpecificOutput"]["updatedInput"]["command"],
+        "tok0 git status"
+    );
+}
+
+#[test]
+fn test_pretooluse_skips_builtin_command() {
+    // `cd /tmp` is a shell builtin — the hook leaves it alone so the
+    // Bash tool runs it natively (and tok0's runtime External-arm
+    // guard never trips).
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(&["rewrite"], &pretooluse_payload("cd /tmp"), &db);
+    assert!(out.status.success());
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    // No output → Claude Code falls back to the original command.
+    assert!(
+        stdout.trim().is_empty(),
+        "builtin should not be rewritten, got: {stdout}"
+    );
+}
+
+#[test]
+fn test_pretooluse_skips_var_assignment() {
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(
+        &["rewrite"],
+        &pretooluse_payload("FOO=bar cargo build"),
+        &db,
+    );
+    assert!(out.status.success());
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(stdout.trim().is_empty(), "got: {stdout}");
+}
+
+#[test]
+fn test_pretooluse_skips_compound_command() {
+    // && / || / ; / | — leave alone to avoid half-correct prefixing.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(
+        &["rewrite"],
+        &pretooluse_payload("cd /tmp && cargo build"),
+        &db,
+    );
+    assert!(out.status.success());
+    assert!(String::from_utf8_lossy(&out.stdout).trim().is_empty());
+}
+
+#[test]
+fn test_pretooluse_no_double_wrap() {
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(&["rewrite"], &pretooluse_payload("tok0 git status"), &db);
+    assert!(out.status.success());
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    assert!(
+        stdout.trim().is_empty(),
+        "already-prefixed command should be a no-op, got: {stdout}"
+    );
+}
+
+#[test]
+fn test_pretooluse_malformed_json_is_silent_passthrough() {
+    // Hook MUST NOT break on inputs it doesn't understand — exit 0
+    // with no output so Claude Code runs the original command.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(&["rewrite"], "not json", &db);
+    assert!(out.status.success());
+    assert!(out.stdout.is_empty());
+}
+
+#[test]
+fn test_pretooluse_non_bash_tool_silent() {
+    let (_tmp, db) = isolated_env();
+    let payload = serde_json::json!({
+        "tool_name": "Write",
+        "tool_input": {"file_path": "/tmp/x", "content": "..."}
+    })
+    .to_string();
+    let out = run_tok0_with_stdin(&["rewrite"], &payload, &db);
+    assert!(out.status.success());
+    assert!(out.stdout.is_empty(), "non-Bash tools must be untouched");
+}
+
+#[test]
+fn test_pretooluse_rewrite_map_applied() {
+    // `rg` → `tok0 grep` per the rewrite map.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(&["rewrite"], &pretooluse_payload("rg pattern src/"), &db);
+    assert!(out.status.success());
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let parsed: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid JSON");
+    assert_eq!(
+        parsed["hookSpecificOutput"]["updatedInput"]["command"],
+        "tok0 grep pattern src/"
+    );
+}
+
 #[test]
 fn test_rewrite_cat_to_read() {
     let (_tmp, db) = isolated_env();

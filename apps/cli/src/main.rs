@@ -640,14 +640,7 @@ fn run(cli: Cli) -> Result<()> {
             }
         }
         Commands::Discover { .. } => run_meta(scanner::opportunity::run),
-        Commands::Rewrite { args } => {
-            let rewritten = bridge::rewriter::rewrite_command(&args);
-            if rewritten.is_empty() {
-                return Ok(());
-            }
-            print!("{}", rewritten);
-            Ok(())
-        }
+        Commands::Rewrite { args } => run_rewrite(&args),
         Commands::Profile { args } => {
             if args.is_empty() {
                 anyhow::bail!("Usage: tok0 profile <command> [args...]");
@@ -810,6 +803,65 @@ fn run(cli: Cli) -> Result<()> {
             }
         },
     }
+}
+
+/// Build the PreToolUse hookSpecificOutput JSON document that tells
+/// Claude Code to run a substituted bash command instead of the
+/// original. Schema per
+/// https://code.claude.com/docs/en/hooks.md (Claude Code 2.x).
+fn pretooluse_substitute_command_response(updated_cmd: &str) -> serde_json::Value {
+    serde_json::json!({
+        "hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "allow",
+            "permissionDecisionReason": "rewritten by tok0 proxy",
+            "updatedInput": { "command": updated_cmd }
+        }
+    })
+}
+
+/// Handle `tok0 rewrite`. Two invocation paths:
+///
+/// 1. **JSON stdin** (Claude Code PreToolUse hook). When clap-parsed
+///    argv is empty and stdin is piped, read the PreToolUse JSON,
+///    extract the Bash command, run it through `rewrite_bash_command`,
+///    and emit a `hookSpecificOutput` JSON document on stdout that
+///    substitutes the rewritten command. Non-Bash tool calls and
+///    malformed payloads are handled by exiting 0 with no output (the
+///    safe default — Claude Code then runs the original command).
+///
+/// 2. **argv legacy** (manual debugging, non-Claude tools, tests).
+///    `tok0 rewrite git status` → prints `tok0 git status` to stdout.
+fn run_rewrite(args: &[String]) -> Result<()> {
+    use std::io::{IsTerminal, Read};
+
+    if args.is_empty() && !std::io::stdin().is_terminal() {
+        // JSON stdin path — Claude Code hook protocol.
+        let mut buf = String::new();
+        std::io::stdin()
+            .read_to_string(&mut buf)
+            .context("Failed to read PreToolUse JSON from stdin")?;
+        // Permissive parse: any error here (non-Bash tool, malformed
+        // JSON, missing fields) → exit 0 silently so Claude Code falls
+        // back to running the original command. The hook MUST NOT
+        // break on inputs it doesn't understand.
+        if let Ok(original) = bridge::adapters::translate_claude_code(&buf) {
+            let rewritten = bridge::rewriter::rewrite_bash_command(&original);
+            if rewritten != original {
+                let response = pretooluse_substitute_command_response(&rewritten);
+                println!("{}", response);
+            }
+        }
+        return Ok(());
+    }
+
+    // argv legacy path.
+    let rewritten = bridge::rewriter::rewrite_command(args);
+    if rewritten.is_empty() {
+        return Ok(());
+    }
+    print!("{}", rewritten);
+    Ok(())
 }
 
 /// Run a meta command, then check for updates (rate-limited, silent on failure).
