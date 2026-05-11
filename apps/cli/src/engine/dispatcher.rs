@@ -79,10 +79,10 @@ pub fn dispatch(cmd: &str, args: &[&str], stdout: &str) -> Option<String> {
             let path = args.last().copied().unwrap_or("");
             Some(compressors::system::read_cmd::filter_read(stdout, path))
         }
-        "grep" | "rg" | "ag" => Some(compressors::system::grep_cmd::filter_grep(stdout, 200, 50)),
+        "grep" | "rg" | "ag" => Some(compressors::system::grep_cmd::filter_grep(stdout, 100, 25)),
         "find" | "fd" => Some(compressors::system::find_cmd::filter_find(stdout)),
         "diff" => Some(compressors::system::diff_cmd::filter_diff(stdout)),
-        "du" => Some(compressors::system::du_cmd::filter_du(stdout, 20)),
+        "du" => Some(compressors::system::du_cmd::filter_du(stdout, 15)),
         "df" => Some(compressors::system::df_cmd::filter_df(stdout)),
         "wc" => Some(compressors::system::wc_cmd::filter_wc(stdout)),
         "curl" => Some(compressors::system::curl_cmd::filter_curl(stdout)),

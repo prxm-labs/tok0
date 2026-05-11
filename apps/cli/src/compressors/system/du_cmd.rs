@@ -176,14 +176,28 @@ mod tests {
 
     #[test]
     fn test_du_savings() {
-        let input = make_large_du_input();
-        let output = filter_du(&input, 10);
+        // Realistic large-repo du -sh: 100 entries. Production cap is 15
+        // (set in dispatcher), so ~85% of entries get summarized.
+        let input = (0..100)
+            .map(|i| {
+                let size = if i < 5 {
+                    "1.5G"
+                } else if i < 15 {
+                    "200M"
+                } else {
+                    "4.0K"
+                };
+                format!("{}\tpath/to/some/long/directory/structure/dir_{}", size, i)
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        let output = filter_du(&input, 15);
         let input_t = count_tokens(&input);
         let output_t = count_tokens(&output);
         let savings = 100.0 - (output_t as f64 / input_t as f64 * 100.0);
         assert!(
-            savings >= 10.0,
-            "Expected >=50% savings, got {:.1}% ({} -> {} tokens)",
+            savings >= 60.0,
+            "Expected >=60% savings on 100-entry du, got {:.1}% ({} -> {} tokens)",
             savings,
             input_t,
             output_t
