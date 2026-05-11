@@ -13,6 +13,8 @@ use serde::Deserialize;
 pub struct ClaudeCodePayload {
     pub tool_name: String,
     pub tool_input: ClaudeCodeInput,
+    #[serde(default)]
+    pub session_id: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -20,10 +22,24 @@ pub struct ClaudeCodeInput {
     pub command: String,
 }
 
-/// Parse a Claude Code PreToolUse payload and return the extracted command.
-/// Only succeeds when `tool_name == "Bash"` — other tools have different
-/// input shapes and would deserialize-fail or yield meaningless commands.
-pub fn translate_claude_code(payload: &str) -> Result<String> {
+/// Decoded hook payload — what the rewriter needs to construct the
+/// rewritten command. `session_id` is `None` when the payload omitted
+/// the field (older Claude Code releases, or other adapters that don't
+/// have a session concept).
+#[derive(Debug)]
+pub struct RewriteRequest {
+    pub command: String,
+    pub session_id: Option<String>,
+}
+
+/// Parse a Claude Code PreToolUse payload and return the extracted command
+/// plus the (optional) session id. Only succeeds when `tool_name == "Bash"`
+/// — other tools have different input shapes and would deserialize-fail or
+/// yield meaningless commands.
+///
+/// The session id is preserved so the dispatcher can scope per-tool state
+/// (Phase 5) and per-session cross-invocation context.
+pub fn translate_claude_code(payload: &str) -> Result<RewriteRequest> {
     let p: ClaudeCodePayload =
         serde_json::from_str(payload).context("Failed to parse Claude Code hook payload")?;
     if p.tool_name != "Bash" {
@@ -32,7 +48,10 @@ pub fn translate_claude_code(payload: &str) -> Result<String> {
             p.tool_name
         );
     }
-    Ok(p.tool_input.command)
+    Ok(RewriteRequest {
+        command: p.tool_input.command,
+        session_id: p.session_id,
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -97,7 +116,8 @@ mod tests {
             "tool_input":{"command":"git status"},"tool_use_id":"x",
             "cwd":"/p","permission_mode":"default"}"#;
         let result = translate_claude_code(payload).expect("should parse");
-        assert_eq!(result, "git status");
+        assert_eq!(result.command, "git status");
+        assert_eq!(result.session_id.as_deref(), Some("abc"));
     }
 
     #[test]
@@ -105,7 +125,8 @@ mod tests {
         // Only the load-bearing fields. Extra payload fields are ignored.
         let payload = r#"{"tool_name":"Bash","tool_input":{"command":"ls"}}"#;
         let result = translate_claude_code(payload).expect("should parse");
-        assert_eq!(result, "ls");
+        assert_eq!(result.command, "ls");
+        assert_eq!(result.session_id, None);
     }
 
     #[test]
@@ -221,7 +242,7 @@ mod tests {
             })
             .to_string();
             let extracted = translate_claude_code(&payload).expect("valid round-trip");
-            prop_assert_eq!(extracted, cmd);
+            prop_assert_eq!(extracted.command, cmd);
         }
 
         /// Round-trip: a valid Gemini payload with arbitrary args joins them

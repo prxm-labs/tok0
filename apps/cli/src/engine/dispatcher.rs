@@ -1,12 +1,5 @@
 use crate::compressors;
-
-/// Default global hard cap for compressed output. Anything larger gets
-/// head/tail truncation via `apply_output_cap`. Phase 1 tightening:
-/// dropped from 50k chars / 100/50 lines to be more aggressive on long
-/// CI logs, terraform plans, kubectl describe, etc.
-const DEFAULT_MAX_CHARS: usize = 30_000;
-const DEFAULT_HEAD: usize = 60;
-const DEFAULT_TAIL: usize = 30;
+use crate::engine::tool_policy;
 
 /// Extract the value of `-o <fmt>` / `-o=<fmt>` / `--output <fmt>` /
 /// `--output=<fmt>` from a kubectl-style argv slice. Returns the first
@@ -293,9 +286,16 @@ pub fn dispatch_with_rule_index(
     stdout: &str,
     index: &RuleIndex,
 ) -> Option<String> {
+    let policy = tool_policy::current();
+
     // Try native compressor first
     if let Some(compressed) = dispatch(cmd, args, stdout) {
-        let capped = apply_output_cap(&compressed, DEFAULT_MAX_CHARS, DEFAULT_HEAD, DEFAULT_TAIL);
+        let capped = apply_output_cap(
+            &compressed,
+            policy.max_chars,
+            policy.head_lines,
+            policy.tail_lines,
+        );
         return Some(apply_post_pass(&capped));
     }
 
@@ -307,7 +307,12 @@ pub fn dispatch_with_rule_index(
     };
     if let Some(rule) = index.find(&full_command) {
         let output = crate::engine::rules::apply_filter_config(stdout, rule);
-        let capped = apply_output_cap(&output, DEFAULT_MAX_CHARS, DEFAULT_HEAD, DEFAULT_TAIL);
+        let capped = apply_output_cap(
+            &output,
+            policy.max_chars,
+            policy.head_lines,
+            policy.tail_lines,
+        );
         return Some(apply_post_pass(&capped));
     }
 

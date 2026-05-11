@@ -1,5 +1,13 @@
 use lazy_static::lazy_static;
+use regex::Regex;
 use std::collections::HashMap;
+
+lazy_static! {
+    /// Session-id sanitization: only allow URL-safe identifier chars so we
+    /// can safely inline `TOK0_SESSION_ID=<id>` into the shell command without
+    /// quoting. Anything else is dropped (env var omitted).
+    static ref SAFE_SESSION_ID: Regex = Regex::new(r"^[A-Za-z0-9_\-]+$").unwrap();
+}
 
 lazy_static! {
     /// Map of command names to tok0 subcommands. Commands not in this map
@@ -16,6 +24,34 @@ lazy_static! {
         m.insert("rg",   "grep");
         m
     };
+}
+
+/// Sanitize a tool id: allow only `[a-z_]` (canonical form is snake_case
+/// like `claude_code`). Anything else returns `None` so the env var is
+/// omitted — never trust upstream identifiers verbatim in a shell context.
+fn sanitize_tool(tool: &str) -> Option<&str> {
+    if tool.is_empty() || !tool.bytes().all(|b| b.is_ascii_lowercase() || b == b'_') {
+        return None;
+    }
+    Some(tool)
+}
+
+/// Build the inline-env prefix for a rewritten command. PreToolUse hooks
+/// substitute the command string and the substituted command runs in a
+/// fresh shell, so env vars exported in the hook script don't reach the
+/// rewritten `tok0` invocation. Inlining `KEY=val ` at the front is the
+/// only carrier that survives.
+///
+/// Returns an empty string if `tool` is missing or invalid.
+fn env_prefix(tool: Option<&str>, session_id: Option<&str>) -> String {
+    let Some(tool_clean) = tool.and_then(sanitize_tool) else {
+        return String::new();
+    };
+    let session_clean = session_id.filter(|s| SAFE_SESSION_ID.is_match(s));
+    match session_clean {
+        Some(sid) => format!("TOK0_TOOL={tool_clean} TOK0_SESSION_ID={sid} "),
+        None => format!("TOK0_TOOL={tool_clean} "),
+    }
 }
 
 /// Rewrite a single bash command string (as delivered by Claude Code's
@@ -75,6 +111,31 @@ pub fn rewrite_bash_command(cmd: &str) -> String {
     } else {
         format!("tok0 {}", trimmed)
     }
+}
+
+/// Like `rewrite_bash_command`, but when the command is actually rewritten
+/// (not pass-through), prepends `TOK0_TOOL=<tool> TOK0_SESSION_ID=<id> ` so
+/// the downstream tok0 process can dispatch via `tool_policy::current()`
+/// and scope per-session state.
+///
+/// The env prefix is **only** added to rewritten commands. Passthrough
+/// commands (heredocs, compound shells, builtins, etc.) are returned
+/// verbatim — adding env to them would change shell parse semantics and
+/// punts the rewriter's whole reason for not touching them.
+pub fn rewrite_bash_command_with_env(
+    cmd: &str,
+    tool: Option<&str>,
+    session_id: Option<&str>,
+) -> String {
+    let rewritten = rewrite_bash_command(cmd);
+    if rewritten == cmd || !rewritten.starts_with("tok0") {
+        return rewritten;
+    }
+    let prefix = env_prefix(tool, session_id);
+    if prefix.is_empty() {
+        return rewritten;
+    }
+    format!("{prefix}{rewritten}")
 }
 
 /// Rewrite a command so it runs through tok0.
@@ -226,6 +287,83 @@ mod tests {
         // command is built from the trimmed form to avoid awkward
         // `tok0    git status` output.
         assert_eq!(rewrite_bash_command("  git status"), "tok0 git status");
+    }
+
+    // ── Phase 4: inline-env prefix for per-tool dispatch ──────────────
+
+    #[test]
+    fn test_with_env_prepends_tool_only() {
+        let out = rewrite_bash_command_with_env("git status", Some("claude_code"), None);
+        assert_eq!(out, "TOK0_TOOL=claude_code tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_prepends_tool_and_session() {
+        let out =
+            rewrite_bash_command_with_env("git status", Some("claude_code"), Some("abc123-def456"));
+        assert_eq!(
+            out,
+            "TOK0_TOOL=claude_code TOK0_SESSION_ID=abc123-def456 tok0 git status"
+        );
+    }
+
+    #[test]
+    fn test_with_env_applies_rewrite_map() {
+        // rg → grep, env prefix still added
+        let out = rewrite_bash_command_with_env("rg foo", Some("gemini"), None);
+        assert_eq!(out, "TOK0_TOOL=gemini tok0 grep foo");
+    }
+
+    #[test]
+    fn test_with_env_passthrough_no_prefix_on_compound() {
+        // Compound shell op → passthrough → no env prefix (would break shell parse)
+        let cmd = "cargo test && cargo build";
+        let out = rewrite_bash_command_with_env(cmd, Some("claude_code"), None);
+        assert_eq!(out, cmd);
+    }
+
+    #[test]
+    fn test_with_env_passthrough_no_prefix_on_heredoc() {
+        let cmd = "bash <<EOF\nls\nEOF";
+        let out = rewrite_bash_command_with_env(cmd, Some("claude_code"), None);
+        assert_eq!(out, cmd);
+    }
+
+    #[test]
+    fn test_with_env_passthrough_no_prefix_on_builtin() {
+        let out = rewrite_bash_command_with_env("cd /tmp", Some("claude_code"), None);
+        assert_eq!(out, "cd /tmp");
+    }
+
+    #[test]
+    fn test_with_env_no_tool_falls_back_to_plain_rewrite() {
+        let out = rewrite_bash_command_with_env("git status", None, None);
+        assert_eq!(out, "tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_invalid_tool_id_dropped() {
+        // Tool id with uppercase / unsafe chars must not be inlined.
+        let out = rewrite_bash_command_with_env("git status", Some("Claude Code"), None);
+        assert_eq!(out, "tok0 git status");
+        let out2 = rewrite_bash_command_with_env("git status", Some("$EVIL"), None);
+        assert_eq!(out2, "tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_invalid_session_dropped_but_tool_kept() {
+        // session_id with unsafe chars is dropped, but the tool var still
+        // makes it through.
+        let out =
+            rewrite_bash_command_with_env("git status", Some("claude_code"), Some("abc; rm -rf /"));
+        assert_eq!(out, "TOK0_TOOL=claude_code tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_already_tok0_prefixed_no_env_added() {
+        // No double-wrap: if cmd is already tok0-prefixed, env not added.
+        let out = rewrite_bash_command_with_env("tok0 git status", Some("claude_code"), None);
+        assert_eq!(out, "tok0 git status");
     }
 
     #[test]

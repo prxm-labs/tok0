@@ -845,9 +845,13 @@ fn run_rewrite(args: &[String]) -> Result<()> {
         // JSON, missing fields) → exit 0 silently so Claude Code falls
         // back to running the original command. The hook MUST NOT
         // break on inputs it doesn't understand.
-        if let Ok(original) = bridge::adapters::translate_claude_code(&buf) {
-            let rewritten = bridge::rewriter::rewrite_bash_command(&original);
-            if rewritten != original {
+        if let Ok(req) = bridge::adapters::translate_claude_code(&buf) {
+            let rewritten = bridge::rewriter::rewrite_bash_command_with_env(
+                &req.command,
+                Some("claude_code"),
+                req.session_id.as_deref(),
+            );
+            if rewritten != req.command {
                 let response = pretooluse_substitute_command_response(&rewritten);
                 println!("{}", response);
             }
