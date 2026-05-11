@@ -71,14 +71,14 @@ mod tests {
     #[test]
     fn test_grep_savings() {
         let input = include_str!("../../../tests/fixtures/system/grep_raw.txt");
-        let output = filter_grep(input, 50, 5);
+        let output = filter_grep(input, 100, 25);
         let input_t = count_tokens(input);
         let output_t = count_tokens(&output);
         if input_t > 20 {
             let savings = 100.0 - (output_t as f64 / input_t as f64 * 100.0);
             assert!(
-                savings >= 10.0,
-                "Expected >=10% savings, got {:.1}% ({} -> {} tokens)",
+                savings >= 30.0,
+                "Expected >=30% savings, got {:.1}% ({} -> {} tokens)",
                 savings,
                 input_t,
                 output_t

@@ -13,11 +13,23 @@ lazy_static! {
 
 const MAX_PER_FILE: usize = 3;
 
+/// When a `(ts_code, message)` pair appears in this many distinct files, it
+/// is consolidated into a single line rather than repeated per-file. Saves
+/// a lot of tokens on mass-rename / shared-type migrations.
+const CROSS_FILE_DEDUP_THRESHOLD: usize = 3;
+const CROSS_FILE_SAMPLE: usize = 4;
+
 /// Filter `tsc --noEmit` output.
 ///
 /// Groups diagnostics by file. For each file shows the first 3 errors and
 /// "...N more" if there are additional errors. Appends the summary line.
-/// Target: 70% savings.
+///
+/// Cross-file dedup: when the same `(error code, message)` appears in ≥3
+/// distinct files (mass-rename / shared-type migration), it is consolidated
+/// into a single line with a sample of file:line locations instead of
+/// repeating the same error in every file's per-file section.
+///
+/// Target: 70% savings on typical input; ≥90% on mass-rename scenarios.
 pub fn filter_tsc(input: &str) -> String {
     if input.trim().is_empty() {
         return String::new();
@@ -57,10 +69,79 @@ pub fn filter_tsc(input: &str) -> String {
         return input.trim_end().to_string();
     }
 
+    // Cross-file dedup: collect (code, message) → Vec<(file, line)>.
+    type ErrorKey = (String, String);
+    type FileLine = (String, u32);
+    let mut by_error: HashMap<ErrorKey, Vec<FileLine>> = HashMap::new();
+    for file in &file_order {
+        if let Some(errs) = file_errors.get(file) {
+            for (line_no, code, msg) in errs {
+                by_error
+                    .entry((code.clone(), msg.clone()))
+                    .or_default()
+                    .push((file.clone(), *line_no));
+            }
+        }
+    }
+
+    let mut consolidated: Vec<(ErrorKey, Vec<FileLine>)> = by_error
+        .into_iter()
+        .filter(|(_, occs)| {
+            occs.iter()
+                .map(|(f, _)| f.as_str())
+                .collect::<std::collections::HashSet<_>>()
+                .len()
+                >= CROSS_FILE_DEDUP_THRESHOLD
+        })
+        .collect();
+    // Stable order: by code, then message.
+    consolidated.sort_by(|a, b| a.0.cmp(&b.0));
+
+    // Remove consolidated errors from per-file groups.
+    let dedup_keys: std::collections::HashSet<ErrorKey> =
+        consolidated.iter().map(|(k, _)| k.clone()).collect();
+    for errs in file_errors.values_mut() {
+        errs.retain(|(_, code, msg)| !dedup_keys.contains(&(code.clone(), msg.clone())));
+    }
+
     let mut out: Vec<String> = Vec::new();
+
+    for ((code, message), occs) in &consolidated {
+        let distinct_files: Vec<&String> = {
+            let mut seen = std::collections::HashSet::new();
+            let mut v: Vec<&String> = Vec::new();
+            for (f, _) in occs {
+                if seen.insert(f.as_str()) {
+                    v.push(f);
+                }
+            }
+            v
+        };
+        out.push(format!(
+            "{} in {} files: {}",
+            code,
+            distinct_files.len(),
+            message
+        ));
+        let sample: Vec<String> = occs
+            .iter()
+            .take(CROSS_FILE_SAMPLE)
+            .map(|(f, l)| format!("{f}:{l}"))
+            .collect();
+        let more = occs.len().saturating_sub(CROSS_FILE_SAMPLE);
+        let tail = if more > 0 {
+            format!(" (+{more} more)")
+        } else {
+            String::new()
+        };
+        out.push(format!("  {}{}", sample.join(", "), tail));
+    }
 
     for file in &file_order {
         if let Some(errors) = file_errors.get(file) {
+            if errors.is_empty() {
+                continue;
+            }
             let total = errors.len();
             out.push(format!(
                 "{} ({} error{})",
@@ -160,5 +241,77 @@ mod tests {
         let input = "src/foo.ts(1,1): error TS2322: Type mismatch.\n\nFound 1 error.\n";
         let output = filter_tsc(input);
         assert!(output.contains("Found 1 error"), "Should keep summary line");
+    }
+
+    // ── Phase 3: cross-file dedup for mass-rename scenarios ───────────
+
+    #[test]
+    fn test_tsc_collapses_same_error_across_files() {
+        // 5 files, all with the same TS2322 message — should consolidate.
+        let input = "\
+src/a.ts(1,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/b.ts(2,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/c.ts(3,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/d.ts(4,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/e.ts(5,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+
+Found 5 errors.
+";
+        let output = filter_tsc(input);
+        // Consolidated form should NOT have 5 separate per-file sections.
+        assert!(
+            !output.contains("src/a.ts (1 error)"),
+            "expected consolidated form, not per-file groups, got:\n{output}"
+        );
+        // Should mention the error code + count across files
+        assert!(
+            output.contains("TS2322") && output.contains("5 files"),
+            "expected 'TS2322 ... 5 files' consolidation, got:\n{output}"
+        );
+        // Summary preserved
+        assert!(output.contains("Found 5 errors"));
+    }
+
+    #[test]
+    fn test_tsc_preserves_per_file_when_unique() {
+        // All errors unique — should NOT consolidate.
+        let input = "\
+src/a.ts(1,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/b.ts(2,1): error TS2339: Property 'foo' missing.
+src/c.ts(3,1): error TS7006: Implicit any.
+
+Found 3 errors.
+";
+        let output = filter_tsc(input);
+        assert!(output.contains("src/a.ts"));
+        assert!(output.contains("src/b.ts"));
+        assert!(output.contains("src/c.ts"));
+        assert!(
+            !output.contains("files:"),
+            "should not consolidate uniques: {output}"
+        );
+    }
+
+    #[test]
+    fn test_tsc_mixed_consolidates_dups_keeps_uniques() {
+        // 3 duplicates across files + 1 unique.
+        let input = "\
+src/a.ts(1,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/b.ts(2,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/c.ts(3,1): error TS2322: Type 'X' is not assignable to type 'Y'.
+src/unique.ts(99,1): error TS7006: Parameter implicitly any.
+
+Found 4 errors.
+";
+        let output = filter_tsc(input);
+        assert!(
+            output.contains("TS2322") && output.contains("3 files"),
+            "should consolidate the 3 TS2322 dups, got:\n{output}"
+        );
+        assert!(
+            output.contains("src/unique.ts"),
+            "should keep unique error in per-file section, got:\n{output}"
+        );
+        assert!(output.contains("Found 4 errors"));
     }
 }
