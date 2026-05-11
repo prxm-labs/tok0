@@ -13,4 +13,5 @@ pub mod sanitize;
 pub mod shell;
 pub mod telemetry;
 pub mod timeout;
+pub mod tool_policy;
 pub mod updater;
