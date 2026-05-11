@@ -23,6 +23,16 @@ pub struct FilterConfig {
     pub tail_lines: Option<usize>,
     #[serde(default)]
     pub max_line_chars: Option<usize>,
+    /// Token-aware head/tail budget. When set, overrides `head_lines` /
+    /// `tail_lines`: lines are taken whole from head and tail until the
+    /// total token count would exceed this budget. 60% goes to head, 40%
+    /// to tail.
+    #[serde(default)]
+    pub max_tokens: Option<usize>,
+    /// Collapse runs of `≥3` identical adjacent lines into `<line> (×N)`.
+    /// Default `true`; set `dedupe = false` in TOML to disable per-rule.
+    #[serde(default)]
+    pub dedupe: Option<bool>,
     #[serde(default)]
     pub empty_message: Option<String>,
     /// Pre-compiled regexes for strip_patterns (populated by compile_patterns).
@@ -166,11 +176,47 @@ pub fn resolve_extends(rule: &FilterConfig, registry: &[FilterConfig]) -> Result
     if rule.max_line_chars.is_some() {
         merged.max_line_chars = rule.max_line_chars;
     }
+    if rule.max_tokens.is_some() {
+        merged.max_tokens = rule.max_tokens;
+    }
+    if rule.dedupe.is_some() {
+        merged.dedupe = rule.dedupe;
+    }
     if rule.empty_message.is_some() {
         merged.empty_message = rule.empty_message.clone();
     }
     merged.compile_patterns();
     Ok(merged)
+}
+
+/// Collapse runs of `≥ threshold` identical adjacent lines into `<line> (×N)`.
+/// Non-adjacent duplicates are preserved. Threshold below 2 is a no-op.
+///
+/// Used by `apply_filter_config` as a pipeline stage between `strip_patterns`
+/// and `head_tail` to compress repeated warnings/errors that bloat output
+/// (e.g. pnpm `WARN deprecated …` x 20).
+pub fn dedupe_repeated_lines(lines: &[&str], threshold: usize) -> Vec<String> {
+    if threshold < 2 {
+        return lines.iter().map(|s| s.to_string()).collect();
+    }
+    let mut out: Vec<String> = Vec::with_capacity(lines.len());
+    let mut i = 0;
+    while i < lines.len() {
+        let mut j = i + 1;
+        while j < lines.len() && lines[j] == lines[i] {
+            j += 1;
+        }
+        let count = j - i;
+        if count >= threshold {
+            out.push(format!("{} (×{})", lines[i], count));
+        } else {
+            for line in &lines[i..j] {
+                out.push((*line).to_string());
+            }
+        }
+        i = j;
+    }
+    out
 }
 
 /// Apply a FilterConfig's rules to raw output.
@@ -180,27 +226,44 @@ pub fn apply_filter_config(input: &str, config: &FilterConfig) -> String {
     }
 
     // Stage 1: strip_patterns — remove lines matching any pattern
-    let mut lines: Vec<&str> = input.lines().collect();
     let compiled = config.compiled_strip_patterns();
-    for re in &compiled {
-        lines.retain(|line| !re.is_match(line));
-    }
+    let stripped: Vec<&str> = if compiled.is_empty() {
+        input.lines().collect()
+    } else {
+        input
+            .lines()
+            .filter(|line| !compiled.iter().any(|re| re.is_match(line)))
+            .collect()
+    };
 
-    // Stage 2: head/tail window
-    let lines = apply_head_tail(lines, config.head_lines, config.tail_lines);
+    // Stage 2: dedupe runs of ≥3 identical adjacent lines (default on)
+    let deduped: Vec<String> = if config.dedupe.unwrap_or(true) {
+        dedupe_repeated_lines(&stripped, 3)
+    } else {
+        stripped.iter().map(|s| s.to_string()).collect()
+    };
 
-    // Stage 3: max_line_chars truncation
+    // Stage 3: head/tail window. `max_tokens` overrides line-count caps.
+    let windowed: String = if let Some(max_tok) = config.max_tokens {
+        let joined = deduped.join("\n");
+        super::shell::head_tail_by_tokens(&joined, max_tok, 0.6)
+    } else {
+        let refs: Vec<&str> = deduped.iter().map(String::as_str).collect();
+        apply_head_tail(refs, config.head_lines, config.tail_lines).join("\n")
+    };
+
+    // Stage 4: max_line_chars truncation
     let result = if let Some(max) = config.max_line_chars {
-        lines
-            .iter()
+        windowed
+            .lines()
             .map(|l| if l.len() > max { &l[..max] } else { l })
             .collect::<Vec<_>>()
             .join("\n")
     } else {
-        lines.join("\n")
+        windowed
     };
 
-    // Stage 4: empty_message fallback
+    // Stage 5: empty_message fallback
     if result.trim().is_empty() {
         config.empty_message.clone().unwrap_or_default()
     } else {
@@ -587,5 +650,156 @@ strip_patterns = ["^debug:"]
             ..Default::default()
         }];
         assert!(find_matching_rule("cargo build", &rules).is_none());
+    }
+
+    // ── Phase 1: dedupe_repeated_lines ──────────────────────────────────
+
+    #[test]
+    fn test_dedupe_collapses_run_of_three() {
+        let lines = vec!["foo", "foo", "foo", "bar"];
+        let out = dedupe_repeated_lines(&lines, 3);
+        assert_eq!(out, vec!["foo (×3)", "bar"]);
+    }
+
+    #[test]
+    fn test_dedupe_keeps_run_below_threshold() {
+        let lines = vec!["foo", "foo", "bar"];
+        let out = dedupe_repeated_lines(&lines, 3);
+        assert_eq!(out, vec!["foo", "foo", "bar"]);
+    }
+
+    #[test]
+    fn test_dedupe_multiple_runs() {
+        let lines = vec!["a", "a", "a", "b", "c", "c", "c", "c"];
+        let out = dedupe_repeated_lines(&lines, 3);
+        assert_eq!(out, vec!["a (×3)", "b", "c (×4)"]);
+    }
+
+    #[test]
+    fn test_dedupe_non_adjacent_duplicates_preserved() {
+        let lines = vec!["foo", "bar", "foo", "bar", "foo"];
+        let out = dedupe_repeated_lines(&lines, 3);
+        assert_eq!(out, vec!["foo", "bar", "foo", "bar", "foo"]);
+    }
+
+    #[test]
+    fn test_dedupe_empty() {
+        let lines: Vec<&str> = vec![];
+        let out = dedupe_repeated_lines(&lines, 3);
+        assert!(out.is_empty());
+    }
+
+    #[test]
+    fn test_dedupe_threshold_two_collapses_pairs() {
+        let lines = vec!["x", "x", "y"];
+        let out = dedupe_repeated_lines(&lines, 2);
+        assert_eq!(out, vec!["x (×2)", "y"]);
+    }
+
+    #[test]
+    fn test_dedupe_unicode_lines() {
+        let lines = vec!["名前", "名前", "名前", "次"];
+        let out = dedupe_repeated_lines(&lines, 3);
+        assert_eq!(out, vec!["名前 (×3)", "次"]);
+    }
+
+    #[test]
+    fn test_dedupe_large_run() {
+        let lines: Vec<&str> = std::iter::repeat_n("WARN deprecated foo", 50).collect();
+        let out = dedupe_repeated_lines(&lines, 3);
+        assert_eq!(out, vec!["WARN deprecated foo (×50)"]);
+    }
+
+    #[test]
+    fn test_apply_filter_config_dedupes_default() {
+        // Default is dedupe-on; 3+ adjacent identical lines collapse.
+        let config = FilterConfig {
+            name: "test".to_string(),
+            commands: vec!["test".to_string()],
+            ..Default::default()
+        };
+        let input = "WARN foo\nWARN foo\nWARN foo\nWARN foo\nresult: ok";
+        let output = apply_filter_config(input, &config);
+        assert!(
+            output.contains("(×4)"),
+            "expected dedupe marker, got: {output}"
+        );
+        assert!(output.contains("WARN foo"));
+        assert!(output.contains("result: ok"));
+    }
+
+    #[test]
+    fn test_apply_filter_config_dedupe_disabled() {
+        // Setting dedupe = false preserves repeats.
+        let config = FilterConfig {
+            name: "test".to_string(),
+            commands: vec!["test".to_string()],
+            dedupe: Some(false),
+            ..Default::default()
+        };
+        let input = "WARN foo\nWARN foo\nWARN foo\nWARN foo";
+        let output = apply_filter_config(input, &config);
+        assert!(
+            !output.contains("(×"),
+            "dedupe should be off, got: {output}"
+        );
+        assert_eq!(output.matches("WARN foo").count(), 4);
+    }
+
+    #[test]
+    fn test_apply_filter_config_max_tokens_truncates() {
+        // 200 short lines, max_tokens budget 30 → most middle lines dropped.
+        let config = FilterConfig {
+            name: "test".to_string(),
+            commands: vec!["test".to_string()],
+            max_tokens: Some(30),
+            ..Default::default()
+        };
+        let lines: Vec<String> = (0..200).map(|i| format!("line{i}")).collect();
+        let input = lines.join("\n");
+        let output = apply_filter_config(&input, &config);
+        assert!(output.contains("line0"));
+        assert!(output.contains("line199"));
+        assert!(output.contains("omitted"));
+        assert!(!output.contains("line100"));
+    }
+
+    #[test]
+    fn test_apply_filter_config_max_tokens_overrides_head_tail() {
+        // Both max_tokens and head_lines/tail_lines set; max_tokens wins.
+        // Use plenty of head_lines that *would* pass everything, plus
+        // small max_tokens that *must* truncate.
+        let config = FilterConfig {
+            name: "test".to_string(),
+            commands: vec!["test".to_string()],
+            head_lines: Some(500),
+            tail_lines: Some(500),
+            max_tokens: Some(20),
+            ..Default::default()
+        };
+        let lines: Vec<String> = (0..200).map(|i| format!("entry{i}")).collect();
+        let input = lines.join("\n");
+        let output = apply_filter_config(&input, &config);
+        assert!(
+            output.contains("omitted"),
+            "max_tokens must override head/tail"
+        );
+    }
+
+    #[test]
+    fn test_apply_filter_config_dedupe_runs_before_head_tail() {
+        // 100 identical lines → dedupe collapses to 1, head/tail then no-op.
+        let config = FilterConfig {
+            name: "test".to_string(),
+            commands: vec!["test".to_string()],
+            head_lines: Some(5),
+            tail_lines: Some(2),
+            ..Default::default()
+        };
+        let lines: Vec<&str> = std::iter::repeat_n("WARN repeated", 100).collect();
+        let input = lines.join("\n");
+        let output = apply_filter_config(&input, &config);
+        assert!(output.contains("(×100)"));
+        assert!(!output.contains("omitted"));
     }
 }
