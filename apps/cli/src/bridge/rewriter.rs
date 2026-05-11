@@ -100,7 +100,28 @@ pub fn rewrite_command(args: &[String]) -> String {
         return args.join(" ");
     }
 
+    // Shell-metachar passthrough. If args contain a standalone shell
+    // operator (`&&`, `||`, `;`, `|`, `>`, `<`, `&`), the caller most
+    // likely embedded a compound command — wrapping the whole join in
+    // `tok0 ` would change shell parse semantics. Leave it alone.
+    if args
+        .iter()
+        .any(|a| matches!(a.as_str(), "&&" | "||" | ";" | "|" | ">" | "<" | "&"))
+    {
+        return args.join(" ");
+    }
+
     let cmd = args[0].as_str();
+
+    // Guards that would fail at the External arm anyway — pass through
+    // so the caller (typically a test or manual invocation) sees the
+    // original input rather than a tok0-prefixed broken command.
+    if crate::engine::guards::is_shell_builtin(cmd)
+        || crate::engine::guards::is_var_assignment(cmd)
+        || crate::engine::guards::needs_tty(cmd)
+    {
+        return args.join(" ");
+    }
 
     if let Some(&mapped) = REWRITE_MAP.get(cmd) {
         // The rest of the original args (args[1..])
@@ -337,6 +358,34 @@ mod tests {
     }
 
     #[test]
+    fn test_standalone_shell_metachars_passthrough() {
+        // Shells normally consume these as operators, but if argv
+        // contains one as a standalone token (eval-magic, weird
+        // quoting, or a misbehaving adapter), the rewriter must not
+        // wrap the whole join in `tok0 ` — that would change the
+        // shell's parse of the recombined string.
+        for op in ["&&", "||", ";", "|", ">", "<", "&"] {
+            let args = s(&["echo", "a", op, "echo", "b"]);
+            let out = rewrite_command(&args);
+            assert_eq!(
+                out,
+                args.join(" "),
+                "metachar {op:?} must trigger passthrough, got: {out}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_argv_builtins_and_tty_needers_passthrough() {
+        // Mirrors the runtime External-arm + JSON-stdin guards.
+        for cmd in ["cd", "export", "FOO=bar", "vim", "sudo", "htop"] {
+            let args = s(&[cmd, "args"]);
+            let out = rewrite_command(&args);
+            assert_eq!(out, args.join(" "), "{cmd} should pass through, got: {out}");
+        }
+    }
+
+    #[test]
     fn test_double_quoted_args_preserved() {
         // Shell already split these — quotes are gone by the time we see args
         let args = s(&["git", "commit", "-m", "feat: add bridge"]);
@@ -364,15 +413,35 @@ mod tests {
         proptest::collection::vec(arg_strategy(), 1..8)
     }
 
+    /// True if `rewrite_command` is allowed to pass `args` through
+    /// unchanged. Mirrors the early-exit cases in the implementation
+    /// so property tests can filter them out.
+    fn is_passthrough_case(args: &[String]) -> bool {
+        if args.is_empty() || args[0] == "tok0" {
+            return true;
+        }
+        if args.iter().any(|a| a.contains("<<")) {
+            return true;
+        }
+        if args
+            .iter()
+            .any(|a| matches!(a.as_str(), "&&" | "||" | ";" | "|" | ">" | "<" | "&"))
+        {
+            return true;
+        }
+        let first = args[0].as_str();
+        crate::engine::guards::is_shell_builtin(first)
+            || crate::engine::guards::is_var_assignment(first)
+            || crate::engine::guards::needs_tty(first)
+    }
+
     proptest! {
-        /// Any non-heredoc, non-tok0 input must produce output starting with
-        /// exactly one "tok0 " prefix — never zero, never two.
+        /// Any input that doesn't fall into a passthrough case must
+        /// produce output starting with exactly one "tok0 " prefix —
+        /// never zero, never two.
         #[test]
         fn prop_output_always_starts_with_tok0_for_non_tok0(args in args_vec()) {
-            // Filter out the intentionally-passthrough cases so this property
-            // only checks the rewrite path.
-            prop_assume!(args[0] != "tok0");
-            prop_assume!(!args.iter().any(|a| a.contains("<<")));
+            prop_assume!(!is_passthrough_case(&args));
 
             let out = rewrite_command(&args);
             prop_assert!(
@@ -423,8 +492,7 @@ mod tests {
         /// appear verbatim in the output.
         #[test]
         fn prop_tail_args_preserved(args in args_vec()) {
-            prop_assume!(args[0] != "tok0");
-            prop_assume!(!args.iter().any(|a| a.contains("<<")));
+            prop_assume!(!is_passthrough_case(&args));
 
             let out = rewrite_command(&args);
             for tail_arg in &args[1..] {
