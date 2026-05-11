@@ -6,4 +6,4 @@ strip_patterns = [
 ]
 head_lines = 60
 tail_lines = 5
-max_line_chars = 200
+max_line_chars = 140

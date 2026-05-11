@@ -10,11 +10,6 @@ flux-system  gitrepository/billing-config  main@sha1:fedcba0987654    False     
 
 NAMESPACE    NAME                          REVISION                   SUSPENDED  READY  MESSAGE
 flux-system  kustomization/flux-system     main@sha1:abc1234567890    False      True   Applied revision: main@sha1:abc1234567890
-NAMESPACE    NAME                          REVISION                   SUSPENDED  READY  MESSAGE
-default      helmrelease/podinfo           6.5.4                      False      True   Release reconciliation succeeded
-default      helmrelease/postgres          15.4.2                     False      True   Release reconciliation succeeded
-monitoring   helmrelease/prometheus        25.8.0                     False      True   Release reconciliation succeeded
-monitoring   helmrelease/grafana           7.3.7                      False      True   Release reconciliation succeeded
 monitoring   helmrelease/loki              5.41.5                     False      True   Release reconciliation succeeded
 ingress      helmrelease/nginx             4.8.3                      False      True   Release reconciliation succeeded
 cert-manager helmrelease/cert-manager      1.13.2                     False      True   Release reconciliation succeeded

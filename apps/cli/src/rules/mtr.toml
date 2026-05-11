@@ -7,4 +7,4 @@ strip_patterns = [
   "^HOST: ",
 ]
 tail_lines = 30
-max_line_chars = 200
+max_line_chars = 140

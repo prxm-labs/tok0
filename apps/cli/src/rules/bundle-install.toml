@@ -7,4 +7,4 @@ strip_patterns = [
   "^Fetching gem metadata",
   "^Resolving dependencies",
 ]
-head_lines = 30
+head_lines = 20

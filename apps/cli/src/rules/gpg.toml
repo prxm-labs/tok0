@@ -8,6 +8,6 @@ strip_patterns = [
   "^gpg: WARNING: ",
   "^uid\\s+\\[",
 ]
-head_lines = 30
-tail_lines = 10
-max_line_chars = 200
+head_lines = 20
+tail_lines = 5
+max_line_chars = 140

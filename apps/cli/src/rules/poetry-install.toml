@@ -8,4 +8,4 @@ strip_patterns = [
   "^Creating virtualenv",
   "^Using virtualenv",
 ]
-head_lines = 30
+head_lines = 20

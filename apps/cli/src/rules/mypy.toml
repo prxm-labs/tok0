@@ -12,5 +12,5 @@ strip_patterns = [
   "^Type-checking ",
 ]
 head_lines = 80
-tail_lines = 10
+tail_lines = 5
 max_line_chars = 300

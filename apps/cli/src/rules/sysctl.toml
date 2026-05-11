@@ -3,5 +3,5 @@ name = "sysctl"
 commands = ["sysctl"]
 strip_patterns = ["^\\s*$"]
 head_lines = 40
-tail_lines = 10
+tail_lines = 5
 max_line_chars = 300

@@ -8,4 +8,4 @@ strip_patterns = [
   "^Loading composer",
   "^Updating dependencies",
 ]
-head_lines = 30
+head_lines = 20
