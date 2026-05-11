@@ -8,4 +8,4 @@ strip_patterns = [
   "^Non-authoritative answer:",
 ]
 head_lines = 20
-max_line_chars = 200
+max_line_chars = 140

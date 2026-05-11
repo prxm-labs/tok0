@@ -9,7 +9,7 @@ strip_patterns = [
   "✓ ready",
 ]
 head_lines = 10
-tail_lines = 10
+tail_lines = 5
 empty_message = "ok"
 
 [[assertions]]

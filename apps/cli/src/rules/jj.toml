@@ -6,5 +6,5 @@ strip_patterns = [
   "^Hint:",
   "^Working copy now at:",
 ]
-head_lines = 30
+head_lines = 20
 max_line_chars = 120

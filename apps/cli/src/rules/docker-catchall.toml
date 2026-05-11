@@ -15,7 +15,7 @@ strip_patterns = [
   "^\\s*Status: Image is up to date",
   "^[0-9a-f]{64}$",
 ]
-head_lines = 30
-tail_lines = 10
-max_line_chars = 200
+head_lines = 20
+tail_lines = 5
+max_line_chars = 140
 empty_message = "docker: ok"

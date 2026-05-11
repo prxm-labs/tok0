@@ -16,8 +16,8 @@ strip_patterns = [
   "^0 upgraded, 0 newly installed, 0 to remove",
 ]
 head_lines = 20
-tail_lines = 10
-max_line_chars = 200
+tail_lines = 5
+max_line_chars = 140
 empty_message = "apt: ok"
 
 [[assertions]]
