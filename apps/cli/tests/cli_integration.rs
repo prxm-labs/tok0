@@ -193,6 +193,42 @@ fn test_export_builtin_fails_fast() {
 }
 
 #[test]
+fn test_var_assignment_prefix_fails_fast() {
+    // Regression: `tok0 FOO=bar cargo build` used to try to spawn the
+    // literal binary "FOO=bar". The error was buried, and downstream
+    // chained commands ran without the env var the agent wanted to set.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0(&["FOO=bar", "echo", "hi"], &db);
+    assert!(!out.status.success(), "var-assignment prefix must exit 1");
+    assert_eq!(out.status.code(), Some(1));
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        stderr.contains("'FOO=bar' looks like a variable assignment"),
+        "stderr should name the offender: {stderr}"
+    );
+    assert!(
+        stderr.contains("tok0 bash -c"),
+        "stderr should suggest the workaround: {stderr}"
+    );
+}
+
+#[test]
+fn test_path_qualified_name_with_equals_is_not_blocked() {
+    // `./FOO=bar` could be a legitimate (weird) binary name; the var-
+    // assignment guard must skip path-qualified args.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0(&["./FOO=bar"], &db);
+    // We don't care about exit code (the binary doesn't exist, so spawn
+    // will fail) — only that we did NOT short-circuit with the
+    // var-assignment guard.
+    let stderr = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        !stderr.contains("looks like a variable assignment"),
+        "path-qualified name should not trigger the var-assignment guard, got: {stderr}"
+    );
+}
+
+#[test]
 fn test_real_binary_with_builtin_name_in_path_is_not_blocked() {
     // `/usr/bin/cd` is a real (POSIX-mandated) binary on macOS. The
     // path-qualified form is *not* the builtin and must pass through

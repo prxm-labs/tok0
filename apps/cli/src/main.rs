@@ -68,7 +68,7 @@ fn get_extension_rules() -> &'static [engine::rules::FilterConfig] {
     })
 }
 
-use engine::guards::is_shell_builtin;
+use engine::guards::{is_shell_builtin, is_var_assignment};
 
 /// Detect the user's shell from the $SHELL env value. Pure + testable.
 /// Returns None if unset or unrecognized.
@@ -478,6 +478,15 @@ fn run(cli: Cli) -> Result<()> {
                     "tok0: '{cmd}' is a shell builtin and cannot run through tok0 \u{2014} \
                      it would execute in a child process and not affect your shell. \
                      Drop the 'tok0' prefix and run '{cmd}' directly."
+                );
+                std::process::exit(1);
+            }
+            if is_var_assignment(&cmd) {
+                eprintln!(
+                    "tok0: '{cmd}' looks like a variable assignment, not a command. \
+                     tok0 cannot export env vars to a child process this way. \
+                     Use `tok0 bash -c '{cmd} <command>'` instead, or set the variable \
+                     in your shell first."
                 );
                 std::process::exit(1);
             }

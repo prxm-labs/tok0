@@ -30,9 +30,71 @@ pub fn is_shell_builtin(cmd: &str) -> bool {
     )
 }
 
+/// True when `cmd` looks like a POSIX variable assignment (`FOO=bar`,
+/// `_X=1`) rather than a binary name. Agents sometimes write `tok0
+/// FOO=bar cargo build`; clap parses `FOO=bar` as argv[0] and tok0
+/// tries to spawn it as a program.
+///
+/// Path-qualified names (`./FOO=bar`) are treated as literal binaries.
+pub fn is_var_assignment(cmd: &str) -> bool {
+    let Some((name, _value)) = cmd.split_once('=') else {
+        return false;
+    };
+    if name.contains('/') {
+        return false;
+    }
+    let mut chars = name.chars();
+    let Some(first) = chars.next() else {
+        return false;
+    };
+    if !(first.is_ascii_alphabetic() || first == '_') {
+        return false;
+    }
+    chars.all(|c| c.is_ascii_alphanumeric() || c == '_')
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn var_assignment_detects_basic_form() {
+        for cmd in ["FOO=bar", "_X=1", "DEBUG=true", "PATH=/usr/local/bin"] {
+            assert!(is_var_assignment(cmd), "{cmd} should be detected");
+        }
+    }
+
+    #[test]
+    fn var_assignment_detects_empty_value() {
+        assert!(is_var_assignment("FOO="));
+    }
+
+    #[test]
+    fn var_assignment_rejects_flags_and_paths() {
+        assert!(!is_var_assignment("--name=value"));
+        assert!(!is_var_assignment("/path/to/FOO=bar"));
+        assert!(!is_var_assignment("./FOO=bar"));
+    }
+
+    #[test]
+    fn var_assignment_rejects_invalid_identifiers() {
+        assert!(!is_var_assignment("=foo"));
+        assert!(!is_var_assignment("123=foo"));
+        assert!(!is_var_assignment("foo bar=baz"));
+        assert!(!is_var_assignment("foo.bar=baz"));
+    }
+
+    #[test]
+    fn var_assignment_rejects_plain_commands() {
+        for cmd in ["git", "cargo", "npm", "echo", "cd"] {
+            assert!(!is_var_assignment(cmd));
+        }
+    }
+
+    #[test]
+    fn var_assignment_rejects_empty_string() {
+        assert!(!is_var_assignment(""));
+    }
 
     #[test]
     fn builtin_detects_cwd_mutators() {
