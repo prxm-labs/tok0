@@ -3,6 +3,7 @@ pub mod builtin_rules;
 #[allow(dead_code)]
 pub mod cloud;
 pub mod config;
+pub mod context_state;
 pub mod dispatcher;
 pub mod guards;
 pub mod meter;
