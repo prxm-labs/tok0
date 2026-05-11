@@ -36,6 +36,32 @@ fn run_tok0(args: &[&str], db_path: &std::path::Path) -> std::process::Output {
         .expect("failed to execute tok0 binary")
 }
 
+/// Run tok0 with bytes piped to stdin. Exercises code paths that
+/// `run_tok0` (no stdin) can't reach.
+fn run_tok0_with_stdin(
+    args: &[&str],
+    stdin: &str,
+    db_path: &std::path::Path,
+) -> std::process::Output {
+    use std::io::Write;
+    use std::process::Stdio;
+    let mut child = Command::new(tok0_binary())
+        .args(args)
+        .env("TOK0_DB_PATH", db_path)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("failed to spawn tok0");
+    child
+        .stdin
+        .as_mut()
+        .expect("stdin pipe")
+        .write_all(stdin.as_bytes())
+        .expect("write stdin");
+    child.wait_with_output().expect("wait_with_output")
+}
+
 /// Configure `cmd` so that `dirs::home_dir()` inside the spawned process
 /// resolves to `fake_home` on both Unix and Windows. Without this, tests
 /// that pass `HOME=...` silently no-op on Windows runners because the
@@ -190,6 +216,20 @@ fn test_export_builtin_fails_fast() {
         stderr.contains("'export' is a shell builtin"),
         "stderr: {stderr}"
     );
+}
+
+#[test]
+fn test_proxy_inherits_stdin() {
+    // Regression: `tok0 proxy <cmd>` used to call Command::output()
+    // which closes the child's stdin. Pipelines that depend on stdin
+    // (`cat file | tok0 proxy wc -l`) silently received nothing. The
+    // fix uses spawn() + Stdio::inherit() so stdin flows through.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(&["proxy", "wc", "-l"], "a\nb\nc\n", &db);
+    assert!(out.status.success(), "wc -l should succeed");
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let count: u32 = stdout.trim().parse().expect("wc -l should print a number");
+    assert_eq!(count, 3, "wc -l must see piped stdin, got: {stdout:?}");
 }
 
 #[test]

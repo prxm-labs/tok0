@@ -1,33 +1,75 @@
 use anyhow::{bail, Context, Result};
+use std::io::Read;
 use std::process::{Command, Output, Stdio};
 use std::time::{Duration, Instant};
 
+/// Env var to override the default per-command timeout, in seconds.
+/// Useful for slow builds: `TOK0_COMMAND_TIMEOUT=600 tok0 cargo build`.
+/// Precedence: env > caller-supplied default. Invalid values are ignored
+/// silently (no warning) so a malformed value can't break the run path.
+const TIMEOUT_ENV: &str = "TOK0_COMMAND_TIMEOUT";
+
+/// If `TOK0_COMMAND_TIMEOUT` is set to a positive integer (seconds),
+/// returns that as a `Duration`. Otherwise returns the caller default.
+/// Pure + testable via env mutation.
+fn resolve_timeout(default: Duration) -> Duration {
+    match std::env::var(TIMEOUT_ENV) {
+        Ok(v) => match v.trim().parse::<u64>() {
+            Ok(n) if n > 0 => Duration::from_secs(n),
+            _ => default,
+        },
+        Err(_) => default,
+    }
+}
+
 /// Execute a command with a timeout. Returns the output if the command
 /// completes within the timeout, or an error if it times out.
+///
+/// The child inherits stdin so pipelines like `cat file | tok0 grep
+/// pattern` deliver bytes to the spawned command. stdout/stderr are
+/// drained concurrently on background threads so large outputs (cargo
+/// build, npm install) don't deadlock when the OS pipe buffer fills.
 pub fn execute_with_timeout(cmd: &str, args: &[&str], timeout: Duration) -> Result<Output> {
+    let timeout = resolve_timeout(timeout);
+
     let mut child = Command::new(cmd)
         .args(args)
+        .stdin(Stdio::inherit())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
         .with_context(|| format!("Failed to spawn: {} {}", cmd, args.join(" ")))?;
 
-    let start = Instant::now();
+    // Take ownership of the pipe handles so the child won't deadlock
+    // waiting for us to read them (a >64 KB cargo build trivially
+    // fills the OS pipe buffer otherwise).
+    let mut stdout = child.stdout.take().expect("stdout piped");
+    let mut stderr = child.stderr.take().expect("stderr piped");
+    let stdout_thread = std::thread::spawn(move || {
+        let mut buf = Vec::new();
+        let _ = stdout.read_to_end(&mut buf);
+        buf
+    });
+    let stderr_thread = std::thread::spawn(move || {
+        let mut buf = Vec::new();
+        let _ = stderr.read_to_end(&mut buf);
+        buf
+    });
 
-    loop {
+    let start = Instant::now();
+    let status = loop {
         match child
             .try_wait()
             .context("Failed to check child process status")?
         {
-            Some(_status) => {
-                return child
-                    .wait_with_output()
-                    .with_context(|| format!("Failed to get output: {} {}", cmd, args.join(" ")));
-            }
+            Some(status) => break status,
             None => {
                 if start.elapsed() >= timeout {
                     let _ = child.kill();
                     let _ = child.wait();
+                    // Join the reader threads so we don't leak them.
+                    let _ = stdout_thread.join();
+                    let _ = stderr_thread.join();
                     bail!(
                         "Command timed out after {:.1}s: {} {}",
                         timeout.as_secs_f64(),
@@ -38,12 +80,24 @@ pub fn execute_with_timeout(cmd: &str, args: &[&str], timeout: Duration) -> Resu
                 std::thread::sleep(Duration::from_millis(10));
             }
         }
-    }
+    };
+
+    let stdout = stdout_thread.join().unwrap_or_default();
+    let stderr = stderr_thread.join().unwrap_or_default();
+    Ok(Output {
+        status,
+        stdout,
+        stderr,
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::Mutex;
+
+    /// Env-mutation tests must serialize — std::env is process-wide.
+    static ENV_LOCK: Mutex<()> = Mutex::new(());
 
     #[test]
     fn test_command_completes_within_timeout() {
@@ -98,8 +152,68 @@ mod tests {
 
     #[test]
     fn test_short_timeout_fast_command() {
-        // Even with a short timeout, a fast command should succeed
         let result = execute_with_timeout("true", &[], Duration::from_millis(500));
         assert!(result.is_ok(), "true should complete within 500ms");
+    }
+
+    /// Large outputs (>64 KB pipe buffer) must drain concurrently —
+    /// otherwise the child blocks writing and we never see the exit.
+    #[test]
+    fn test_large_output_no_deadlock() {
+        // 200 KB of stdout via printf — well past any typical OS pipe
+        // buffer (Linux: 64 KB, macOS: 16 KB).
+        let line = "x".repeat(200);
+        // Use `yes` clipped via `head` to produce ~200 KB without
+        // depending on portable printf '%s\n' syntax.
+        let result = execute_with_timeout(
+            "bash",
+            &[
+                "-c",
+                &format!("for i in $(seq 1 1000); do echo {}; done", line),
+            ],
+            Duration::from_secs(5),
+        );
+        let output = result.expect("should not deadlock");
+        assert!(output.status.success());
+        assert!(
+            output.stdout.len() > 150_000,
+            "got {} bytes — drain might be deadlocked",
+            output.stdout.len()
+        );
+    }
+
+    #[test]
+    fn resolve_timeout_default_when_unset() {
+        let _g = ENV_LOCK.lock().expect("lock");
+        std::env::remove_var(TIMEOUT_ENV);
+        assert_eq!(
+            resolve_timeout(Duration::from_secs(30)),
+            Duration::from_secs(30)
+        );
+    }
+
+    #[test]
+    fn resolve_timeout_env_override() {
+        let _g = ENV_LOCK.lock().expect("lock");
+        std::env::set_var(TIMEOUT_ENV, "120");
+        assert_eq!(
+            resolve_timeout(Duration::from_secs(30)),
+            Duration::from_secs(120)
+        );
+        std::env::remove_var(TIMEOUT_ENV);
+    }
+
+    #[test]
+    fn resolve_timeout_ignores_malformed_env() {
+        let _g = ENV_LOCK.lock().expect("lock");
+        for bad in ["", "abc", "-1", "0", "1.5"] {
+            std::env::set_var(TIMEOUT_ENV, bad);
+            assert_eq!(
+                resolve_timeout(Duration::from_secs(30)),
+                Duration::from_secs(30),
+                "malformed env {bad:?} must fall back to default"
+            );
+        }
+        std::env::remove_var(TIMEOUT_ENV);
     }
 }

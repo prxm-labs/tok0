@@ -44,13 +44,22 @@ pub fn count_tokens(text: &str) -> usize {
     text.split_whitespace().count()
 }
 
-/// Execute a command and capture its output.
+/// Execute a command and capture its output. Stdin is inherited so
+/// pipelines like `cat file | tok0 proxy jq .field` work — `Command::
+/// output()` would otherwise feed the child an empty stdin.
 pub fn execute_command(cmd: &str, args: &[&str]) -> Result<Output> {
-    Command::new(cmd)
+    let child = Command::new(cmd)
         .args(args)
-        .output()
-        .with_context(|| format!("Failed to execute: {} {}", cmd, args.join(" ")))
+        .stdin(std::process::Stdio::inherit())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .with_context(|| format!("Failed to spawn: {} {}", cmd, args.join(" ")))?;
+    child
+        .wait_with_output()
+        .with_context(|| format!("Failed to wait for: {} {}", cmd, args.join(" ")))
 }
+
 
 /// Truncate a line to max_chars, appending "..." if truncated. Zero-copy when no truncation needed.
 pub fn truncate_line(line: &str, max_chars: usize) -> std::borrow::Cow<'_, str> {
