@@ -11,6 +11,13 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.16](https://github.com/prxm-labs/tok0/compare/v0.1.15...v0.1.16) (2026-05-11)
+
+
+### Bug Fixes
+
+* **test:** replace \$(seq …) with bash brace expansion in large-output test ([#21](https://github.com/prxm-labs/tok0/issues/21)) ([d12c26c](https://github.com/prxm-labs/tok0/commit/d12c26cfaa71a39be5a1e81543e51ec012f398b8))
+
 ## [0.1.15](https://github.com/prxm-labs/tok0/compare/v0.1.14...v0.1.15) (2026-05-11)
 
 
