@@ -9,6 +9,6 @@ strip_patterns = [
   "^Writing manifest",
   "^Storing signatures",
 ]
-head_lines = 30
+head_lines = 20
 max_line_chars = 120
 empty_message = "skopeo: ok"

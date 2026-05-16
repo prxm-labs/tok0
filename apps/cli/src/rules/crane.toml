@@ -2,8 +2,11 @@
 name = "crane"
 commands = ["crane manifest", "crane ls", "crane digest", "crane pull", "crane push"]
 strip_patterns = []
+# crane manifest emits JSON — keep enough head/tail to preserve the
+# opening object + closing braces. Tighter caps clip middle keys and
+# leave structurally invalid JSON.
 head_lines = 30
-tail_lines = 5
+tail_lines = 10
 empty_message = "ok"
 
 [[assertions]]

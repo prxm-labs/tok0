@@ -202,9 +202,12 @@ fn test_pretooluse_rewrites_plain_command() {
         serde_json::from_str(stdout.trim()).expect("hookSpecificOutput must be JSON");
     assert_eq!(parsed["hookSpecificOutput"]["hookEventName"], "PreToolUse");
     assert_eq!(parsed["hookSpecificOutput"]["permissionDecision"], "allow");
+    // Phase 4: rewriter inlines TOK0_TOOL + TOK0_SESSION_ID so the downstream
+    // tok0 process can dispatch via tool_policy::current(). The session_id
+    // is "test" per pretooluse_payload above.
     assert_eq!(
         parsed["hookSpecificOutput"]["updatedInput"]["command"],
-        "tok0 git status"
+        "TOK0_TOOL=claude_code TOK0_SESSION_ID=test tok0 git status"
     );
 }
 
@@ -238,12 +241,37 @@ fn test_pretooluse_skips_var_assignment() {
 }
 
 #[test]
-fn test_pretooluse_skips_compound_command() {
-    // && / || / ; / | — leave alone to avoid half-correct prefixing.
+fn test_pretooluse_rewrites_compound_command_segments() {
+    // Phase 6 supersedes the prior passthrough: && / || / ; chains now
+    // get each segment rewritten independently. Builtins (cd) stay
+    // verbatim; commands get TOK0_TOOL prefix + tok0.
     let (_tmp, db) = isolated_env();
     let out = run_tok0_with_stdin(
         &["rewrite"],
         &pretooluse_payload("cd /tmp && cargo build"),
+        &db,
+    );
+    assert!(out.status.success());
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let parsed: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid hook JSON");
+    let cmd = parsed["hookSpecificOutput"]["updatedInput"]["command"]
+        .as_str()
+        .expect("command field is string");
+    assert!(cmd.contains("cd /tmp"), "cd builtin preserved: {cmd}");
+    assert!(
+        cmd.contains("TOK0_TOOL=claude_code") && cmd.contains("tok0 cargo build"),
+        "cargo build segment rewritten with env: {cmd}"
+    );
+}
+
+#[test]
+fn test_pretooluse_pipe_still_passthrough() {
+    // Pipes remain passthrough in Phase 6 — TOK0_FORCE_COMPRESS plumbing
+    // is deferred to a follow-up.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(
+        &["rewrite"],
+        &pretooluse_payload("cargo test | grep FAIL"),
         &db,
     );
     assert!(out.status.success());
@@ -286,8 +314,29 @@ fn test_pretooluse_non_bash_tool_silent() {
 }
 
 #[test]
+fn test_pretooluse_inlines_env_prefix() {
+    // Phase 4 mitigation guard: PreToolUse hook env exports don't propagate
+    // to the rewritten command (it runs in a fresh shell). The rewriter
+    // must inline TOK0_TOOL into the command itself. This test is the
+    // single point-of-failure check for that contract.
+    let (_tmp, db) = isolated_env();
+    let out = run_tok0_with_stdin(&["rewrite"], &pretooluse_payload("git status"), &db);
+    assert!(out.status.success());
+    let stdout = String::from_utf8_lossy(&out.stdout);
+    let parsed: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid JSON");
+    let cmd = parsed["hookSpecificOutput"]["updatedInput"]["command"]
+        .as_str()
+        .expect("command field must be string");
+    assert!(
+        cmd.starts_with("TOK0_TOOL=claude_code"),
+        "rewritten command must begin with TOK0_TOOL=claude_code so tool identity \
+         survives the hook->shell boundary, got: {cmd}"
+    );
+}
+
+#[test]
 fn test_pretooluse_rewrite_map_applied() {
-    // `rg` → `tok0 grep` per the rewrite map.
+    // `rg` → `tok0 grep` per the rewrite map, with the Phase 4 env prefix.
     let (_tmp, db) = isolated_env();
     let out = run_tok0_with_stdin(&["rewrite"], &pretooluse_payload("rg pattern src/"), &db);
     assert!(out.status.success());
@@ -295,7 +344,7 @@ fn test_pretooluse_rewrite_map_applied() {
     let parsed: serde_json::Value = serde_json::from_str(stdout.trim()).expect("valid JSON");
     assert_eq!(
         parsed["hookSpecificOutput"]["updatedInput"]["command"],
-        "tok0 grep pattern src/"
+        "TOK0_TOOL=claude_code TOK0_SESSION_ID=test tok0 grep pattern src/"
     );
 }
 

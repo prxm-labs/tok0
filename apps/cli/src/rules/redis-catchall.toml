@@ -5,6 +5,6 @@ strip_patterns = [
   "^\\s*$",
   "^\\s*#\\s+(Server|Clients|Memory|Persistence|Stats|Replication|CPU|Modules|Keyspace|Errorstats|Latencystats|Debug)",
 ]
-head_lines = 30
-tail_lines = 10
-max_line_chars = 200
+head_lines = 20
+tail_lines = 5
+max_line_chars = 140

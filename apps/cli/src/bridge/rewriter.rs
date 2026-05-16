@@ -1,5 +1,13 @@
 use lazy_static::lazy_static;
+use regex::Regex;
 use std::collections::HashMap;
+
+lazy_static! {
+    /// Session-id sanitization: only allow URL-safe identifier chars so we
+    /// can safely inline `TOK0_SESSION_ID=<id>` into the shell command without
+    /// quoting. Anything else is dropped (env var omitted).
+    static ref SAFE_SESSION_ID: Regex = Regex::new(r"^[A-Za-z0-9_\-]+$").unwrap();
+}
 
 lazy_static! {
     /// Map of command names to tok0 subcommands. Commands not in this map
@@ -18,26 +26,160 @@ lazy_static! {
     };
 }
 
-/// Rewrite a single bash command string (as delivered by Claude Code's
-/// PreToolUse hook on stdin) so the resulting command runs through tok0.
+/// Sanitize a tool id: allow only `[a-z_]` (canonical form is snake_case
+/// like `claude_code`). Anything else returns `None` so the env var is
+/// omitted — never trust upstream identifiers verbatim in a shell context.
+fn sanitize_tool(tool: &str) -> Option<&str> {
+    if tool.is_empty() || !tool.bytes().all(|b| b.is_ascii_lowercase() || b == b'_') {
+        return None;
+    }
+    Some(tool)
+}
+
+/// Build the inline-env prefix for a rewritten command. PreToolUse hooks
+/// substitute the command string and the substituted command runs in a
+/// fresh shell, so env vars exported in the hook script don't reach the
+/// rewritten `tok0` invocation. Inlining `KEY=val ` at the front is the
+/// only carrier that survives.
 ///
-/// Rules — leave unchanged for any of:
-/// - Empty / whitespace-only input
-/// - Already begins with `tok0 ` (no double-wrap)
-/// - Contains heredoc markers (`<<`)
-/// - First word is a shell builtin (cd/pushd/export/source/…) per
-///   `engine::guards::is_shell_builtin` — the runtime guard would
-///   refuse it anyway, and pass-through lets the bash tool execute it
-///   natively.
-/// - First word looks like a variable-assignment prefix (FOO=bar) per
-///   `engine::guards::is_var_assignment` — same reasoning.
-/// - Contains compound-command operators (`&&`, `||`, `;`, `|`) —
-///   safer to leave alone than to wrap the whole expression in tok0
-///   and confuse shell parsing.
-///
-/// Otherwise: `tok0 <command>`, applying `REWRITE_MAP` to the first
-/// word so e.g. `rg pattern` becomes `tok0 grep pattern`.
-pub fn rewrite_bash_command(cmd: &str) -> String {
+/// Returns an empty string if `tool` is missing or invalid.
+fn env_prefix(tool: Option<&str>, session_id: Option<&str>) -> String {
+    let Some(tool_clean) = tool.and_then(sanitize_tool) else {
+        return String::new();
+    };
+    let session_clean = session_id.filter(|s| SAFE_SESSION_ID.is_match(s));
+    match session_clean {
+        Some(sid) => format!("TOK0_TOOL={tool_clean} TOK0_SESSION_ID={sid} "),
+        None => format!("TOK0_TOOL={tool_clean} "),
+    }
+}
+
+/// A segment of a compound shell command — either a command text or a
+/// top-level operator (`&&`, `||`, `;`). Returned by
+/// `split_compound_command`.
+#[derive(Debug, PartialEq, Eq)]
+enum Segment<'a> {
+    Cmd(&'a str),
+    Op(&'a str),
+}
+
+/// Result of attempting to split a compound command.
+#[derive(Debug)]
+enum SplitResult<'a> {
+    /// No top-level compound operators were found. Caller should fall
+    /// through to the single-command rewrite path.
+    NoCompound,
+    /// A trigger that makes rewriting unsafe was detected (heredoc,
+    /// pipe, command substitution, unbalanced quote, empty segment).
+    /// Caller should return the input verbatim.
+    Passthrough,
+    /// Successfully split into alternating Cmd/Op segments.
+    Compound(Vec<Segment<'a>>),
+}
+
+/// Split a command on top-level `&&`, `||`, `;` while respecting quotes.
+/// See `SplitResult` for the three outcomes.
+fn split_compound_command(cmd: &str) -> SplitResult<'_> {
+    if cmd.contains("<<") {
+        return SplitResult::Passthrough;
+    }
+    let bytes = cmd.as_bytes();
+    let mut segments: Vec<Segment<'_>> = Vec::new();
+    let mut last = 0usize;
+    let mut i = 0usize;
+    // Quote state: ' ', '\'', '"'  (space = not in quotes).
+    let mut quote: u8 = b' ';
+    while i < bytes.len() {
+        let b = bytes[i];
+        // Handle quote state first.
+        match (quote, b) {
+            (b' ', b'\'') => {
+                quote = b'\'';
+                i += 1;
+                continue;
+            }
+            (b' ', b'"') => {
+                quote = b'"';
+                i += 1;
+                continue;
+            }
+            (b'\'', b'\'') => {
+                quote = b' ';
+                i += 1;
+                continue;
+            }
+            (b'"', b'"') => {
+                quote = b' ';
+                i += 1;
+                continue;
+            }
+            (b'"', b'\\') => {
+                // Skip escaped char inside double quotes.
+                i += 2;
+                continue;
+            }
+            _ => {}
+        }
+        if quote != b' ' {
+            i += 1;
+            continue;
+        }
+        // At top level — check for the bail-out triggers.
+        if b == b'|' && bytes.get(i + 1).copied() != Some(b'|') {
+            return SplitResult::Passthrough; // single pipe
+        }
+        if b == b'`' {
+            return SplitResult::Passthrough; // backtick command substitution
+        }
+        if b == b'$' && bytes.get(i + 1).copied() == Some(b'(') {
+            return SplitResult::Passthrough; // $( command substitution
+        }
+        // Top-level escape (outside quotes) — skip next char.
+        if b == b'\\' {
+            i += 2;
+            continue;
+        }
+        // Match operators in order of length: longest first.
+        let next_two = bytes.get(i..i + 2);
+        let op_len: Option<usize> = if next_two == Some(b"&&") || next_two == Some(b"||") {
+            Some(2)
+        } else if b == b';' {
+            Some(1)
+        } else {
+            None
+        };
+        if let Some(len) = op_len {
+            let seg = cmd[last..i].trim_matches(' ');
+            if seg.is_empty() {
+                // Leading/trailing operator or `;;` doubled — too weird.
+                return SplitResult::Passthrough;
+            }
+            segments.push(Segment::Cmd(seg));
+            segments.push(Segment::Op(&cmd[i..i + len]));
+            i += len;
+            last = i;
+            continue;
+        }
+        i += 1;
+    }
+    if quote != b' ' {
+        return SplitResult::Passthrough; // unbalanced quote
+    }
+    let tail = cmd[last..].trim_matches(' ');
+    if segments.is_empty() {
+        return SplitResult::NoCompound;
+    }
+    if tail.is_empty() {
+        return SplitResult::Passthrough; // trailing operator
+    }
+    segments.push(Segment::Cmd(tail));
+    SplitResult::Compound(segments)
+}
+
+/// Rewrite a single-command segment (no compound operators expected).
+/// Used as the per-segment building block by `rewrite_bash_command` after
+/// it splits compound input.
+fn rewrite_single_segment(cmd: &str) -> String {
     let trimmed = cmd.trim_start();
     if trimmed.is_empty() {
         return cmd.to_string();
@@ -48,16 +190,6 @@ pub fn rewrite_bash_command(cmd: &str) -> String {
     if cmd.contains("<<") {
         return cmd.to_string();
     }
-    // Compound shell expressions — leave the bash tool to parse them.
-    // Note: this is intentionally a coarse check; finer-grained splitting
-    // would require a real shell parser. Trade-off: chains like
-    // `cargo test && cargo build` won't be compressed. The agent should
-    // run them as separate Bash calls (each will be rewritten alone).
-    for op in ["&&", "||", ";", "|"] {
-        if cmd.contains(op) {
-            return cmd.to_string();
-        }
-    }
     let first = trimmed.split_whitespace().next().unwrap_or("");
     if crate::engine::guards::is_shell_builtin(first)
         || crate::engine::guards::is_var_assignment(first)
@@ -65,7 +197,6 @@ pub fn rewrite_bash_command(cmd: &str) -> String {
         return cmd.to_string();
     }
     if let Some(&mapped) = REWRITE_MAP.get(first) {
-        // Preserve everything after the first word verbatim.
         let rest = trimmed[first.len()..].trim_start();
         if rest.is_empty() {
             format!("tok0 {}", mapped)
@@ -75,6 +206,105 @@ pub fn rewrite_bash_command(cmd: &str) -> String {
     } else {
         format!("tok0 {}", trimmed)
     }
+}
+
+/// Rewrite a single bash command string (as delivered by Claude Code's
+/// PreToolUse hook on stdin) so the resulting command runs through tok0.
+///
+/// Compound commands joined by `&&`, `||`, `;` are split at top level
+/// (respecting quotes) and each segment is rewritten independently:
+/// `cargo test && cargo build` → `tok0 cargo test && tok0 cargo build`.
+///
+/// Passthrough cases — leave unchanged:
+/// - Empty / whitespace-only input
+/// - Pipes (`|`) — deliberate punt; mixing with `should_compress` is
+///   subtle enough to warrant a follow-up
+/// - Heredocs (`<<`) — would corrupt the heredoc body
+/// - Command substitution (`$(…)`, backticks) — too complex to recurse
+///   into a subshell
+/// - Unbalanced quotes — can't tokenize safely
+///
+/// For each rewriteable segment, applies `REWRITE_MAP` (rg→grep,
+/// cat→read, etc.) and skips shell builtins / variable-assignment
+/// prefixes.
+#[allow(dead_code)] // used by tests + retained as a public API; main.rs calls the _with_env variant
+pub fn rewrite_bash_command(cmd: &str) -> String {
+    if cmd.trim().is_empty() {
+        return cmd.to_string();
+    }
+    let segments = match split_compound_command(cmd) {
+        SplitResult::NoCompound => return rewrite_single_segment(cmd),
+        SplitResult::Passthrough => return cmd.to_string(),
+        SplitResult::Compound(segs) => segs,
+    };
+    emit_compound(cmd, &segments, "")
+}
+
+/// Join the split segments back into a compound command string. `prefix`
+/// is prepended to each Cmd segment that actually got rewritten (so
+/// passthrough segments — builtins, var-assignments — keep their shape).
+fn emit_compound(original: &str, segments: &[Segment<'_>], prefix: &str) -> String {
+    let mut out = String::with_capacity(original.len() + segments.len() * (8 + prefix.len()));
+    for (idx, seg) in segments.iter().enumerate() {
+        match seg {
+            Segment::Cmd(c) => {
+                let rewritten = rewrite_single_segment(c);
+                let was_rewritten = rewritten != *c && rewritten.starts_with("tok0");
+                if was_rewritten && !prefix.is_empty() {
+                    out.push_str(prefix);
+                }
+                out.push_str(&rewritten);
+            }
+            Segment::Op(op) => {
+                // ';' typically hugs the preceding token; '&&'/'||' get
+                // spaces on both sides. Match common shell formatting.
+                if *op == ";" {
+                    out.push_str("; ");
+                } else {
+                    out.push(' ');
+                    out.push_str(op);
+                    out.push(' ');
+                }
+            }
+        }
+        // Defensive: should never end with an Op (split rejects trailing).
+        let _ = idx;
+    }
+    out
+}
+
+/// Like `rewrite_bash_command`, but each rewritten segment is prefixed
+/// with `TOK0_TOOL=<tool> TOK0_SESSION_ID=<id> ` so the downstream tok0
+/// process can dispatch via `tool_policy::current()` and scope per-session
+/// state. For compound commands, every rewritten segment gets its own
+/// prefix; passthrough segments (builtins, var-assignments) keep their
+/// shape.
+///
+/// Passthrough commands (heredocs, pipes, command substitution,
+/// unbalanced quotes) are returned verbatim — adding env to them would
+/// change shell parse semantics and defeats the safety reason for
+/// passthrough.
+pub fn rewrite_bash_command_with_env(
+    cmd: &str,
+    tool: Option<&str>,
+    session_id: Option<&str>,
+) -> String {
+    if cmd.trim().is_empty() {
+        return cmd.to_string();
+    }
+    let prefix = env_prefix(tool, session_id);
+    let segments = match split_compound_command(cmd) {
+        SplitResult::Passthrough => return cmd.to_string(),
+        SplitResult::NoCompound => {
+            let rewritten = rewrite_single_segment(cmd);
+            if rewritten == cmd || !rewritten.starts_with("tok0") || prefix.is_empty() {
+                return rewritten;
+            }
+            return format!("{prefix}{rewritten}");
+        }
+        SplitResult::Compound(segs) => segs,
+    };
+    emit_compound(cmd, &segments, &prefix)
 }
 
 /// Rewrite a command so it runs through tok0.
@@ -195,17 +425,133 @@ mod tests {
     }
 
     #[test]
-    fn test_bash_compound_unchanged() {
-        // && / || / ; / | are coarse-detected; the rewriter punts back
-        // rather than risk a half-correct prefix.
-        for cmd in [
-            "cd /tmp && cargo build",
-            "true || echo nope",
-            "echo hi; echo bye",
-            "git log | head -5",
-        ] {
-            assert_eq!(rewrite_bash_command(cmd), cmd, "{cmd} should pass through");
+    fn test_bash_pipe_still_passthrough() {
+        // | is still passthrough — Phase 6 deliberately doesn't touch pipes
+        // because of TOK0_FORCE_COMPRESS interactions with should_compress().
+        assert_eq!(
+            rewrite_bash_command("git log | head -5"),
+            "git log | head -5"
+        );
+    }
+
+    // ── Phase 6: compound shell rewriter ──────────────────────────────
+
+    #[test]
+    fn test_compound_and_rewrites_each_segment() {
+        // cargo test && cargo build → each side rewritten independently.
+        let out = rewrite_bash_command("cargo test && cargo build");
+        assert_eq!(out, "tok0 cargo test && tok0 cargo build");
+    }
+
+    #[test]
+    fn test_compound_or_rewrites_each_segment() {
+        let out = rewrite_bash_command("cargo test || cargo check");
+        assert_eq!(out, "tok0 cargo test || tok0 cargo check");
+    }
+
+    #[test]
+    fn test_compound_semicolon_rewrites_each_segment() {
+        let out = rewrite_bash_command("git status; git log");
+        assert_eq!(out, "tok0 git status; tok0 git log");
+    }
+
+    #[test]
+    fn test_compound_mixed_operators() {
+        let out = rewrite_bash_command("git pull && cargo test || cargo check");
+        assert_eq!(out, "tok0 git pull && tok0 cargo test || tok0 cargo check");
+    }
+
+    #[test]
+    fn test_compound_builtin_segment_left_alone() {
+        // cd is a builtin → not rewritten; the other segment still wrapped.
+        let out = rewrite_bash_command("cd /tmp && cargo build");
+        assert_eq!(out, "cd /tmp && tok0 cargo build");
+    }
+
+    #[test]
+    fn test_compound_applies_rewrite_map() {
+        // rg → grep; should apply to each chained segment too.
+        let out = rewrite_bash_command("rg foo && rg bar");
+        assert_eq!(out, "tok0 grep foo && tok0 grep bar");
+    }
+
+    #[test]
+    fn test_compound_with_already_prefixed_segment() {
+        // Idempotency: if a segment is already tok0-prefixed, no double-wrap.
+        let out = rewrite_bash_command("tok0 git status && cargo build");
+        assert_eq!(out, "tok0 git status && tok0 cargo build");
+    }
+
+    #[test]
+    fn test_compound_quoted_operator_not_split() {
+        // The && is inside a single-quoted string → it's an arg, not an op.
+        let out = rewrite_bash_command("echo 'a && b'");
+        assert_eq!(out, "tok0 echo 'a && b'");
+    }
+
+    #[test]
+    fn test_compound_double_quoted_operator_not_split() {
+        let out = rewrite_bash_command("echo \"a || b\"");
+        assert_eq!(out, "tok0 echo \"a || b\"");
+    }
+
+    #[test]
+    fn test_compound_pipe_still_passthrough() {
+        // | still triggers passthrough — Phase 6 leaves pipes alone.
+        let out = rewrite_bash_command("cargo test | grep FAIL");
+        assert_eq!(out, "cargo test | grep FAIL");
+    }
+
+    #[test]
+    fn test_compound_heredoc_still_passthrough() {
+        let cmd = "bash <<EOF && ls\nEOF";
+        assert_eq!(rewrite_bash_command(cmd), cmd);
+    }
+
+    #[test]
+    fn test_compound_command_substitution_passthrough() {
+        // $( and backticks introduce subshells we don't want to rewrite into.
+        let out1 = rewrite_bash_command("echo $(date) && ls");
+        assert_eq!(out1, "echo $(date) && ls"); // passthrough on $(
+        let out2 = rewrite_bash_command("echo `date` && ls");
+        assert_eq!(out2, "echo `date` && ls"); // passthrough on backtick
+    }
+
+    #[test]
+    fn test_compound_unbalanced_quote_passthrough() {
+        // Unbalanced quote → can't safely tokenize → leave alone.
+        let cmd = "echo 'foo && ls";
+        assert_eq!(rewrite_bash_command(cmd), cmd);
+    }
+
+    #[test]
+    fn test_compound_var_assignment_segment_preserved() {
+        // FOO=bar cargo build → segment is left as-is (var assignment guard)
+        let out = rewrite_bash_command("FOO=bar cargo build && cargo test");
+        assert_eq!(out, "FOO=bar cargo build && tok0 cargo test");
+    }
+
+    #[test]
+    fn test_compound_empty_segment_passthrough() {
+        // Trailing &&, leading &&, double &&&&, etc. — too weird to rewrite.
+        for cmd in ["cargo build &&", "&& cargo build", "cargo a;;cargo b"] {
+            assert_eq!(rewrite_bash_command(cmd), cmd, "got: {cmd}");
         }
+    }
+
+    #[test]
+    fn test_compound_env_prefix_per_segment() {
+        // With env: each rewritten segment gets its own env prefix.
+        let out = rewrite_bash_command_with_env(
+            "cargo test && cargo build",
+            Some("claude_code"),
+            Some("abc123"),
+        );
+        assert_eq!(
+            out,
+            "TOK0_TOOL=claude_code TOK0_SESSION_ID=abc123 tok0 cargo test \
+             && TOK0_TOOL=claude_code TOK0_SESSION_ID=abc123 tok0 cargo build"
+        );
     }
 
     #[test]
@@ -226,6 +572,87 @@ mod tests {
         // command is built from the trimmed form to avoid awkward
         // `tok0    git status` output.
         assert_eq!(rewrite_bash_command("  git status"), "tok0 git status");
+    }
+
+    // ── Phase 4: inline-env prefix for per-tool dispatch ──────────────
+
+    #[test]
+    fn test_with_env_prepends_tool_only() {
+        let out = rewrite_bash_command_with_env("git status", Some("claude_code"), None);
+        assert_eq!(out, "TOK0_TOOL=claude_code tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_prepends_tool_and_session() {
+        let out =
+            rewrite_bash_command_with_env("git status", Some("claude_code"), Some("abc123-def456"));
+        assert_eq!(
+            out,
+            "TOK0_TOOL=claude_code TOK0_SESSION_ID=abc123-def456 tok0 git status"
+        );
+    }
+
+    #[test]
+    fn test_with_env_applies_rewrite_map() {
+        // rg → grep, env prefix still added
+        let out = rewrite_bash_command_with_env("rg foo", Some("gemini"), None);
+        assert_eq!(out, "TOK0_TOOL=gemini tok0 grep foo");
+    }
+
+    #[test]
+    fn test_with_env_compound_each_segment_prefixed() {
+        // Phase 6 supersedes Phase 4's passthrough — compound chains are
+        // now rewritten per-segment, each with its own env prefix.
+        let cmd = "cargo test && cargo build";
+        let out = rewrite_bash_command_with_env(cmd, Some("claude_code"), None);
+        assert_eq!(
+            out,
+            "TOK0_TOOL=claude_code tok0 cargo test && TOK0_TOOL=claude_code tok0 cargo build"
+        );
+    }
+
+    #[test]
+    fn test_with_env_passthrough_no_prefix_on_heredoc() {
+        let cmd = "bash <<EOF\nls\nEOF";
+        let out = rewrite_bash_command_with_env(cmd, Some("claude_code"), None);
+        assert_eq!(out, cmd);
+    }
+
+    #[test]
+    fn test_with_env_passthrough_no_prefix_on_builtin() {
+        let out = rewrite_bash_command_with_env("cd /tmp", Some("claude_code"), None);
+        assert_eq!(out, "cd /tmp");
+    }
+
+    #[test]
+    fn test_with_env_no_tool_falls_back_to_plain_rewrite() {
+        let out = rewrite_bash_command_with_env("git status", None, None);
+        assert_eq!(out, "tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_invalid_tool_id_dropped() {
+        // Tool id with uppercase / unsafe chars must not be inlined.
+        let out = rewrite_bash_command_with_env("git status", Some("Claude Code"), None);
+        assert_eq!(out, "tok0 git status");
+        let out2 = rewrite_bash_command_with_env("git status", Some("$EVIL"), None);
+        assert_eq!(out2, "tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_invalid_session_dropped_but_tool_kept() {
+        // session_id with unsafe chars is dropped, but the tool var still
+        // makes it through.
+        let out =
+            rewrite_bash_command_with_env("git status", Some("claude_code"), Some("abc; rm -rf /"));
+        assert_eq!(out, "TOK0_TOOL=claude_code tok0 git status");
+    }
+
+    #[test]
+    fn test_with_env_already_tok0_prefixed_no_env_added() {
+        // No double-wrap: if cmd is already tok0-prefixed, env not added.
+        let out = rewrite_bash_command_with_env("tok0 git status", Some("claude_code"), None);
+        assert_eq!(out, "tok0 git status");
     }
 
     #[test]

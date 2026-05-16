@@ -11,6 +11,6 @@ strip_patterns = [
   "^\\s*\\d+ files? (would be )?left unchanged",
   "^\\s*\\d+ files? (would )?fail to reformat",
 ]
-head_lines = 30
+head_lines = 20
 tail_lines = 5
-max_line_chars = 200
+max_line_chars = 140

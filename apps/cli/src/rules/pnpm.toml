@@ -23,10 +23,11 @@ strip_patterns = [
   # post-pass (engine::shell::strip_node_deprecation_footer) — no need
   # to duplicate the patterns per rule.
 ]
-# Keep a generous head budget: a real install lists every direct
-# dep on its own "+ name version" line, and clipping the middle of
-# that list defeats the point of compressing.
-head_lines = 40
+# Slightly larger head budget than the catchall default: pnpm lists
+# every direct dep on its own "+ name version" line and we want to
+# capture the first ~20 of them. Dedupe (engine pipeline) folds any
+# remaining duplicates from monorepo cycles.
+head_lines = 25
 tail_lines = 8
 empty_message = "ok"
 

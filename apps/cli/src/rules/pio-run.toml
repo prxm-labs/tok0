@@ -12,5 +12,5 @@ strip_patterns = [
   "^Building\\s",
   "^Checking size",
 ]
-head_lines = 30
+head_lines = 20
 empty_message = "pio run: ok"

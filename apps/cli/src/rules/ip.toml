@@ -8,4 +8,4 @@ strip_patterns = [
   "^\\s+TX: ",
 ]
 head_lines = 40
-max_line_chars = 200
+max_line_chars = 140

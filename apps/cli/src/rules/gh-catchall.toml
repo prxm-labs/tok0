@@ -7,6 +7,6 @@ strip_patterns = [
   "^\\s*gh auth login",
   "^\\s*Tip:",
 ]
-head_lines = 30
-tail_lines = 10
-max_line_chars = 200
+head_lines = 20
+tail_lines = 5
+max_line_chars = 140

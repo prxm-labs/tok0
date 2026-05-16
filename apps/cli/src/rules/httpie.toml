@@ -15,5 +15,5 @@ strip_patterns = [
   "^Nel: ",
 ]
 head_lines = 60
-tail_lines = 10
+tail_lines = 5
 max_line_chars = 300
