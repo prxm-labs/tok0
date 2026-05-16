@@ -158,13 +158,16 @@ mod tests {
 
     /// Large outputs (>64 KB pipe buffer) must drain concurrently —
     /// otherwise the child blocks writing and we never see the exit.
+    ///
+    /// Cross-platform: `bash` on Unix (always present, brace expansion
+    /// avoids the `seq` coreutil), Windows PowerShell on Windows (which
+    /// is guaranteed on windows-latest and dodges the `System32\bash.exe`
+    /// WSL shim that fails silently when WSL is disabled).
     #[test]
     fn test_large_output_no_deadlock() {
-        // 200 KB of stdout via bash brace expansion — well past any typical
-        // OS pipe buffer (Linux: 64 KB, macOS: 16 KB).
         let line = "x".repeat(200);
-        // Brace expansion `{1..1000}` is a bash builtin (≥3.0) and avoids
-        // the `seq` coreutil, which isn't always on Windows Git-Bash PATH.
+
+        #[cfg(unix)]
         let result = execute_with_timeout(
             "bash",
             &[
@@ -173,10 +176,22 @@ mod tests {
             ],
             Duration::from_secs(5),
         );
+
+        #[cfg(windows)]
+        let result = execute_with_timeout(
+            "powershell",
+            &[
+                "-NoProfile",
+                "-Command",
+                &format!("1..1000 | ForEach-Object {{ Write-Output '{}' }}", line),
+            ],
+            Duration::from_secs(5),
+        );
+
         let output = result.expect("should not deadlock");
         assert!(
             output.status.success(),
-            "bash child exited non-zero (status={:?}); stderr={}",
+            "child exited non-zero (status={:?}); stderr={}",
             output.status.code(),
             String::from_utf8_lossy(&output.stderr)
         );
