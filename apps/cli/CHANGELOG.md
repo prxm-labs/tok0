@@ -11,6 +11,13 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.17](https://github.com/prxm-labs/tok0/compare/v0.1.16...v0.1.17) (2026-05-16)
+
+
+### Features
+
+* land phases 2-6 of aggressive token reduction on main ([#24](https://github.com/prxm-labs/tok0/issues/24)) ([2cdd7f4](https://github.com/prxm-labs/tok0/commit/2cdd7f4813e6dca98002f5811fccca7d9c90c4ee))
+
 ## [0.1.16](https://github.com/prxm-labs/tok0/compare/v0.1.15...v0.1.16) (2026-05-11)
 
 
