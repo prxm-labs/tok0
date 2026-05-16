@@ -11,6 +11,13 @@ All notable changes to tok0 are documented here.
 
 Versions use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.18](https://github.com/prxm-labs/tok0/compare/v0.1.17...v0.1.18) (2026-05-16)
+
+
+### Bug Fixes
+
+* **test:** use PowerShell on Windows for large-output drain test ([#23](https://github.com/prxm-labs/tok0/issues/23)) ([f98f22a](https://github.com/prxm-labs/tok0/commit/f98f22a0be17b6d948a61cc9a2034d0c036c0729))
+
 ## [0.1.17](https://github.com/prxm-labs/tok0/compare/v0.1.16...v0.1.17) (2026-05-16)
 
 
